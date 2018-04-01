@@ -1,12 +1,8 @@
-# editorconfig.org
 root = true
 
 [*]
-indent_style = tab
-trim_trailing_whitespace = true
-end_of_line = lf
 charset = utf-8
+indent_style = tab
+end_of_line = lf
 insert_final_newline = true
-
-[*.{yml}]
-indent_style = tabs
+trim_trailing_whitespace = true

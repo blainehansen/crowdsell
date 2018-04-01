@@ -1,3 +1,3 @@
 # sudo docker build -t crowd-sell .
 
-sudo docker run --rm --name="crowd-sell" --net="host" -v `pwd`/src:/go/src/crowd-sell -v `pwd`/bin:/go/bin -v `pwd`/pkg:/go/pkg -it crowd-sell bash
+sudo docker run --rm --name="crowd-sell" --net="host" -v `pwd`/server:/go/src/main -v `pwd`/server-bin:/go/bin -u `id -u`:`cut -d: -f3 < <(getent group $(whoami))` -it crowd-sell bash
