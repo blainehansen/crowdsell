@@ -28,5 +28,7 @@ yarn-error.log*
 *.out
 
 server/vendor
+server/*.db
+
 server-bin
-server-pkg
+

@@ -1,24 +1,36 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+import Home from '@/Home'
+import Login from '@/Login'
+
+import ProjectsIndex from '@/projects/ProjectsIndex'
+import NewProject from '@/projects/NewProject'
+import Project from '@/projects/Project'
+
+import UserProfile from '@/users/UserProfile'
+import Profile from '@/users/Profile'
+
+import About from '@/pages/About'
+
 Vue.use(Router)
 
 export default new Router({
 	mode: 'history',
 	routes: [
 		{ path: '/', name: 'home', component: Home },
-		{ path: '/login', name: 'home', component: HelloWorld },
+		{ path: '/login', name: 'home', component: Login },
 
-		{ path: '/projects', name: 'home', component: HelloWorld },
+		{ path: '/projects', name: 'home', component: ProjectsIndex },
 
-		{ path: '/projects/new', name: 'home', component: HelloWorld },
-		{ path: '/projects/:entity-slug/:project-slug', name: 'home', component: HelloWorld },
+		{ path: '/projects/new', name: 'home', component: NewProject },
+		{ path: '/projects/:entity-slug/:project-slug', name: 'home', component: Project },
 
-		{ path: '/profile', name: 'home', component: HelloWorld },
+		{ path: '/profile', name: 'home', component: UserProfile },
 
-		{ path: '/profile/:user-slug', name: 'home', component: HelloWorld },
+		{ path: '/profile/:user-slug', name: 'home', component: Profile },
 
-		{ path: '/about', name: 'home', component: HelloWorld },
+		{ path: '/about', name: 'home', component: About },
 
 		// a blog
 		// an engineering blog?
