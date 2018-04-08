@@ -1,0 +1,12 @@
+[package]
+name = "hello-rocket"
+version = "0.1.0"
+authors = ["blainehansen <faichenshing@gmail.com>"]
+
+[[bin]]
+name = "main"
+path = "server/main.rs"
+
+[dependencies]
+rocket = "0.3.8"
+rocket_codegen = "0.3.8"
