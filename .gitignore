@@ -25,3 +25,5 @@ yarn-error.log*
 server-build
 **/*.rs.bk
 
+*.pem
+*.secret

@@ -7,12 +7,20 @@ extern crate rocket;
 extern crate rocket_contrib;
 
 extern crate serde;
-// #[macro_use]
+#[macro_use]
 extern crate serde_json;
 #[macro_use] extern crate serde_derive;
 
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate dotenv_codegen;
+
+extern crate frank_jwt;
+use frank_jwt::{Algorithm, encode, decode};
+extern crate time;
+
+use std::env;
+
+
 
 use diesel::pg::PgConnection;
 use diesel::r2d2::{ConnectionManager, Pool, PooledConnection};
@@ -137,8 +145,41 @@ fn projects(conn: DbConn) -> QueryResponse<Vec<Project>> {
 fn main() {
 	println!("{}", DATABASE_URL);
 
-	rocket::ignite()
-		.manage(init_pool())
-		.mount("/", routes![projects])
-		.launch();
+	// rocket::ignite()
+	// 	.manage(init_pool())
+	// 	.mount("/", routes![projects])
+	// 	.launch();
+
+
+	use time::{self, Duration};
+	let now = time::now_utc();
+	let tomorrow = now + Duration::hours(24);
+
+	let mut payload = json!({
+		"iss": "crowd-sell",
+		"sub": "1",
+		"iat": now.to_timespec().sec,
+		"nbf": now.to_timespec().sec,
+		"exp": tomorrow.to_timespec().sec,
+	});
+	println!("{:?}", payload);
+	let mut header = json!({
+	});
+	println!("{:?}", header);
+
+	let mut private_keypath = env::current_dir().unwrap();
+	private_keypath.push("ecprivate.pem");
+
+	let jwt = encode(header, &private_keypath.to_path_buf(), &payload, Algorithm::ES512).unwrap();
+	println!("{:?}", jwt);
+
+	let mut public_keypath = env::current_dir().unwrap();
+	public_keypath.push("ecpublic.pem");
+	let (header, payload) = decode(&jwt, &public_keypath.to_path_buf(), Algorithm::ES512).unwrap();
+	println!("{:?}", header);
+	println!("{:?}", payload);
 }
+
+
+// openssl ecparam -genkey -name secp521r1 -noout -out ec512-key-pair.pem
+// openssl ec -in ec512-key-pair.pem -pubout -out ecpubkey.pem
