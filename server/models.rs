@@ -1,7 +1,9 @@
-#[derive(Queryable)]
+// use diesel;
+// use diesel::prelude::*;
+// use schema::projects;
+
+#[derive(Serialize, Deserialize, Queryable)]
 pub struct Project {
 	pub id: i32,
-	pub title: String,
-	pub body: String,
-	pub published: bool,
+	pub title: Option<String>,
 }

@@ -2,6 +2,10 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
+import BootstrapVue from 'bootstrap-vue'
+Vue.use(BootstrapVue)
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 Vue.config.productionTip = false
 
 import axios from 'axios'
@@ -18,18 +22,18 @@ Vue.use(AsyncProperties, {
 	debounce: 1000
 })
 
-import store from '@/vuex'
+// import store from '@/vuex'
 
-import Cookies from 'js-cookie'
-const authenticatedUser = Cookies.getJSON('authenticatedUser')
-if (authenticatedUser) {
-	authenticatedUser.userObj = { name: authenticatedUser.name }
-	store.commit('loginUser', authenticatedUser)
-}
+// import Cookies from 'js-cookie'
+// const authenticatedUser = Cookies.getJSON('authenticatedUser')
+// if (authenticatedUser) {
+// 	authenticatedUser.userObj = { name: authenticatedUser.name }
+// 	store.commit('loginUser', authenticatedUser)
+// }
 
 new Vue({
 	el: '#app',
 	router,
-	store,
+	// store,
 	render: h => h(App)
 })

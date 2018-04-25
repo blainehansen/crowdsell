@@ -12,8 +12,20 @@ import api from '@/api'
 
 export default {
 	name: 'Project',
+
+	props: {
+		entitySlug: {
+			type: String,
+			required: true
+		},
+		projectSlug: {
+			type: String,
+			required: true
+		},
+	}
+
 	asyncData: {
-		projects: () => api.getProjects()
+		projects: () => api.getProject()
 	}
 }
 </script>

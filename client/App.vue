@@ -1,13 +1,23 @@
 <template lang="pug">
 
 #app
+	Header
+
 	router-view
+
+	Footer
 
 </template>
 
 <script>
+import Header from '@/layout/Header'
+import Footer from '@/layout/Footer'
+
 export default {
-	name: 'App'
+	name: 'App',
+	components: {
+		Header, Footer
+	}
 }
 </script>
 
@@ -19,5 +29,7 @@ export default {
 	-moz-osx-font-smoothing: grayscale
 	text-align: center
 	margin-top: 60px
+
+@import './styles/main'
 
 </style>

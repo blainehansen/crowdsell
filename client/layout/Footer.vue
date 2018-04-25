@@ -1,13 +1,15 @@
 <template lang="pug">
 
+footer
 
 </template>
 
 
 <script>
 export default {
-	name: 'login'
+	name: 'Footer'
 }
+
 </script>
 
 

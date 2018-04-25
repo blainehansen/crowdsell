@@ -11,7 +11,7 @@
 import api from '@/api'
 
 export default {
-	name: 'ProjectsIndex',
+	name: 'home',
 	asyncData: {
 		projects: () => api.getProjects()
 	}

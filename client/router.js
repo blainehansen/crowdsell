@@ -19,18 +19,18 @@ export default new Router({
 	mode: 'history',
 	routes: [
 		{ path: '/', name: 'home', component: Home },
-		{ path: '/login', name: 'home', component: Login },
+		{ path: '/login', name: 'login', component: Login },
 
-		{ path: '/projects', name: 'home', component: ProjectsIndex },
+		{ path: '/projects', name: 'projects', component: ProjectsIndex },
 
-		{ path: '/projects/new', name: 'home', component: NewProject },
-		{ path: '/projects/:entity-slug/:project-slug', name: 'home', component: Project },
+		{ path: '/projects/new', name: 'projectsNew', component: NewProject },
+		{ path: '/projects/:userSlug/:projectSlug', name: 'project', component: Project, props: true },
 
-		{ path: '/profile', name: 'home', component: UserProfile },
+		{ path: '/profile', name: 'currentUserProfile', component: Profile, props: { userSlug: null, projectSlug: null } },
 
-		{ path: '/profile/:user-slug', name: 'home', component: Profile },
+		{ path: '/profile/:userSlug', name: 'userProfile', component: Profile, props: true },
 
-		{ path: '/about', name: 'home', component: About },
+		{ path: '/about', name: 'about', component: About },
 
 		// a blog
 		// an engineering blog?
