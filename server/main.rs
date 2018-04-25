@@ -142,6 +142,9 @@ fn projects(conn: DbConn) -> QueryResponse<Vec<Project>> {
 }
 
 
+// static PRIVATE_KEYPATH: 'static Type = init;
+
+
 fn main() {
 	println!("{}", DATABASE_URL);
 
@@ -167,15 +170,13 @@ fn main() {
 	});
 	println!("{:?}", header);
 
-	let mut private_keypath = env::current_dir().unwrap();
-	private_keypath.push("ecprivate.pem");
+	let private_keypath = std::path::PathBuf::from("ecprivate.pem");
 
-	let jwt = encode(header, &private_keypath.to_path_buf(), &payload, Algorithm::ES512).unwrap();
+	let jwt = encode(header, &private_keypath, &payload, Algorithm::ES512).unwrap();
 	println!("{:?}", jwt);
 
-	let mut public_keypath = env::current_dir().unwrap();
-	public_keypath.push("ecpublic.pem");
-	let (header, payload) = decode(&jwt, &public_keypath.to_path_buf(), Algorithm::ES512).unwrap();
+	let public_keypath = std::path::PathBuf::from("ecpublic.pem");
+	let (header, payload) = decode(&jwt, &public_keypath, Algorithm::ES512).unwrap();
 	println!("{:?}", header);
 	println!("{:?}", payload);
 }
