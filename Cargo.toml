@@ -9,16 +9,23 @@ path = "server/main.rs"
 
 [dependencies]
 time = "0.1"
-frank_jwt = "3.0"
+rust-argon2 = "0.3"
+openssl = "0.10"
+base64 = "0.9"
+rand = "0.4"
 
-rocket = "0.3.8"
-rocket_codegen = "0.3.8"
-rocket_contrib = "0.3.8"
+rocket = "0.3"
+rocket_codegen = "0.3"
+rocket_contrib = "0.3"
+rocket_cors = { version = "0.2", default-features = false }
+
+log = "0.4"
+yansi = "0.4"
 serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
-diesel = { version = "1.2.0", features = ["postgres", "r2d2"] }
-pq = "1.2.1"
-dotenv_codegen = "0.11.0"
+diesel = { version = "1.2", features = ["postgres", "r2d2"] }
+pq = "1.2"
+dotenv_codegen = "0.11"
 
 # https://github.com/diesel-rs/diesel/issues/321

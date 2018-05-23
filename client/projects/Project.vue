@@ -22,7 +22,7 @@ export default {
 			type: String,
 			required: true
 		},
-	}
+	},
 
 	asyncData: {
 		projects: () => api.getProject()

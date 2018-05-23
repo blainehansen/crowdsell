@@ -1,9 +1,13 @@
 <template lang="pug">
 
-.projects
-	.project(v-for="project in projects")
-		h1 {{ project.title }}
-		p {{ project.description }}
+#home
+
+	h1 Welcome to Crowd Sell
+
+	.projects
+		.project(v-for="project in projects")
+			h1 {{ project.title }}
+			p {{ project.description }}
 
 </template>
 

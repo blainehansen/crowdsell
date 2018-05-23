@@ -3,8 +3,15 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
+import { authModule, authPlugin } from '@/router'
+
 export default new Vuex.Store({
-	state: {
-		asdf: null
-	}
+	modules: {
+		auth: authModule
+	},
+
+	// state: {
+	// },
+
+	plugins: [authPlugin],
 })

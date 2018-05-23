@@ -1,184 +1,196 @@
-#![feature(plugin)]
+#![feature(plugin, custom_derive)]
+#![feature(specialization)]
 #![plugin(rocket_codegen)]
 
+// #[macro_use] extern crate log;
 
-extern crate rocket;
-// #[macro_use]
-extern crate rocket_contrib;
-
-extern crate serde;
 #[macro_use]
-extern crate serde_json;
-#[macro_use] extern crate serde_derive;
-
-#[macro_use] extern crate diesel;
-#[macro_use] extern crate dotenv_codegen;
-
-extern crate frank_jwt;
-use frank_jwt::{Algorithm, encode, decode};
-extern crate time;
-
-use std::env;
-
-
-
-use diesel::pg::PgConnection;
-use diesel::r2d2::{ConnectionManager, Pool, PooledConnection};
-
-// An alias to the type for a pool of Diesel Postgres connections.
-type PostgresPool = Pool<ConnectionManager<PgConnection>>;
-// Connection request guard type: a wrapper around an r2d2 pooled connection.
-struct DbConn(pub PooledConnection<ConnectionManager<PgConnection>>);
-
-// The URL to the database, set via the `DATABASE_URL` environment variable.
-static DATABASE_URL: &'static str = dotenv!("DATABASE_URL");
-
-/// Initializes a database pool.
-fn init_pool() -> PostgresPool {
-	let manager = ConnectionManager::<PgConnection>::new(DATABASE_URL);
-	PostgresPool::new(manager).expect("db pool")
-}
-
-
-
-use std::ops::Deref;
-use rocket::http::Status;
+extern crate rocket;
+use rocket::response::{self, Responder};
+// use rocket::http::{Status, ContentType, RawStr};
+use rocket::http::{Status, ContentType};
+use rocket::response::Response;
+// use rocket::request::{self, FromRequest, FromParam};
 use rocket::request::{self, FromRequest};
+
 use rocket::{Request, State, Outcome};
 
-/// Attempts to retrieve a single connection from the managed database pool. If
-/// no pool is currently managed, fails with an `InternalServerError` status. If
-/// no connections are available, fails with a `ServiceUnavailable` status.
-impl<'a, 'r> FromRequest<'a, 'r> for DbConn {
-	type Error = ();
+// #[macro_use] extern crate dotenv_codegen;
 
-	fn from_request(request: &'a Request<'r>) -> request::Outcome<Self, Self::Error> {
-		let pool = request.guard::<State<PostgresPool>>()?;
-		match pool.get() {
-			Ok(conn) => Outcome::Success(DbConn(conn)),
-			Err(_) => Outcome::Failure((Status::ServiceUnavailable, ()))
-		}
-	}
-}
+extern crate openssl;
+// use openssl::pkey::{self, PKey};
+use openssl::pkey::{PKey};
 
-// For the convenience of using an &DbConn as an &PgConnection.
-impl Deref for DbConn {
-	type Target = PgConnection;
+extern crate base64;
 
-	fn deref(&self) -> &Self::Target {
-		&self.0
-	}
-}
+extern crate yansi;
 
+extern crate rand;
+use rand::os::OsRng;
+use rand::Rng;
 
-mod schema;
-mod models;
+extern crate argon2;
+extern crate time;
+
+extern crate rocket_contrib;
+use rocket_contrib::Json;
+
+extern crate serde;
+use serde::Serialize;
+
+// #[macro_use]
+extern crate serde_json;
+
+#[macro_use] extern crate serde_derive;
+
+mod db;
+use db::{DATABASE_URL, DbConn, init_pool};
+
+#[macro_use]
+extern crate diesel;
 use diesel::prelude::*;
 use diesel::result::Error as DieselError;
-use models::*;
+
+mod schema;
 use schema::*;
-use rocket_contrib::Json as RocketJson;
-use serde::Serialize;
-use rocket::response::{self, Responder};
+mod models;
+use models::*;
 
-use std::error;
-use std::fmt;
+mod auth;
+use auth::{AuthToken, PrivateKey, ValidAuthToken, check_token_user};
 
+mod api_result;
+use api_result::{ApiResult, ApiResponse, ApiError, ApiFailable, ApiRespondable};
 
-#[derive(Debug)]
-struct QueryError(DieselError);
+#[macro_use] mod catchers;
+use catchers::*;
 
-impl fmt::Display for QueryError {
-	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		write!(f, "{}", self.0)
-	}
-}
-impl error::Error for QueryError {
-	fn description(&self) -> &str {
-		match self.0 {
-			DieselError::NotFound => "NotFound",
-			DieselError::InvalidCString(_) => "",
-			DieselError::DatabaseError(_, _) => "DatabaseError",
-			DieselError::QueryBuilderError(_) => "QueryBuilderError",
-			DieselError::DeserializationError(_) => "DeserializationError",
-			DieselError::SerializationError(_) => "SerializationError",
-			DieselError::RollbackTransaction => "RollbackTransaction",
-			DieselError::AlreadyInTransaction => "AlreadyInTransaction",
-			_ => "Unknown DieselError",
-		}
-	}
-}
-
-impl<'r> Responder<'r> for QueryError {
-	fn respond_to(self, _: &Request) -> response::Result<'r> {
-		match self.0 {
-			DieselError::NotFound => Err(Status::NotFound),
-			_ => Err(Status::InternalServerError),
-		}
-	}
-}
-
-
-type QueryResponse<T> = Result<RocketJson<T>, QueryError>;
-
-trait QueryRespondable<T: Serialize> {
-	fn respond(self) -> QueryResponse<T>;
-}
-
-impl<T: Serialize> QueryRespondable<T> for QueryResult<T> {
-	fn respond(self) -> QueryResponse<T> {
-		match self {
-			Ok(value) => Ok(RocketJson(value)),
-			Err(err) => Err(QueryError(err))
-		}
-	}
-}
 
 
 #[get("/projects")]
-fn projects(conn: DbConn) -> QueryResponse<Vec<Project>> {
+fn projects(conn: DbConn) -> ApiResult<Vec<Project>> {
 	projects::table
 		.load::<Project>(&*conn).respond()
 }
 
 
-// static PRIVATE_KEYPATH: 'static Type = init;
+
+#[derive(Debug, Serialize, Deserialize)]
+struct NewUser {
+	name: String,
+	email: String,
+	password: String,
+}
+
+#[derive(Debug, Insertable)]
+#[table_name = "users"]
+struct InsertUser {
+	name: String,
+	email: String,
+	password: String,
+}
+
+#[post("/create-user", data = "<new_user>")]
+fn create_user(new_user: Json<NewUser>, conn: DbConn, signing_key: State<PrivateKey>) -> ApiResult<String> {
+	// hash the password
+	let password = auth::hash_password(new_user.password.to_owned()).or_fail()?;
+	let insert_user = InsertUser {
+		name: new_user.name.to_owned(),
+		email: new_user.email.to_owned(),
+		password,
+	};
+
+	// insert into the table
+	let user_ids: Vec<i32> = diesel::insert_into(users::table)
+		.values(&insert_user)
+		.returning(users::id)
+		.get_results(&*conn).or_fail()?;
+
+	// sign a token and send it up
+	auth::issue_auth_token(user_ids[0], "admin".to_string(), &signing_key).respond()
+}
+
+
+#[derive(Debug, Serialize, Deserialize)]
+struct LoginUser {
+	email: String,
+	password: String,
+}
+
+#[post("/login", data = "<login_user>")]
+fn login(login_user: Json<LoginUser>, conn: DbConn, signing_key: State<PrivateKey>) -> ApiResult<String> {
+	// find one user
+	// if nothing found then return error 403 Status::Forbidden
+	let user = users::table
+		.filter(users::email.eq(&login_user.email))
+		.first::<User>(&*conn).or_status(Status::Forbidden)?;
+
+	if auth::verify_password(user.password, login_user.password.to_owned()) {
+		// // otherwise sign a token and send it up
+		auth::issue_auth_token(user.id, "admin".to_string(), &signing_key).respond()
+	}
+	else {
+		Err(ApiError::ErrorStatus(Status::Forbidden))
+	}
+}
+
+
+#[derive(Debug, Serialize)]
+struct DisplayUser {
+	name: String,
+	email: String,
+}
+
+impl From<User> for DisplayUser {
+	fn from(user: User) -> Self {
+		DisplayUser { name: user.name, email: user.email }
+	}
+}
+
+#[get("/user/<user_id>/info")]
+fn user_info(user_id: i32, token: ValidAuthToken, conn: DbConn) -> ApiResult<DisplayUser> {
+	check_token_user(user_id, token)?;
+
+	// use schema::users::dsl::*;
+		// .select((name, email))
+	let user = users::table
+		.find(user_id)
+		.first::<User>(&*conn)?;
+
+	Ok(ApiResponse::Success(user.into()))
+}
+
+
+
+extern crate rocket_cors;
+use rocket_cors::{AllowedOrigins};
 
 
 fn main() {
-	println!("{}", DATABASE_URL);
+	println!("DATABASE URL: {}", DATABASE_URL);
 
-	// rocket::ignite()
-	// 	.manage(init_pool())
-	// 	.mount("/", routes![projects])
-	// 	.launch();
+	// create an hmac key
+	let hmac_key: [u8; 32] = OsRng::new().unwrap().gen();
+	println!("PRIVATE KEY: {:?}", hmac_key);
+	let key = PKey::hmac(&hmac_key).unwrap();
 
+	let (allowed_origins, failed_origins) = AllowedOrigins::some(&["http://localhost:8000"]);
+	assert!(failed_origins.is_empty());
 
-	use time::{self, Duration};
-	let now = time::now_utc();
-	let tomorrow = now + Duration::hours(24);
+	let cors_options = rocket_cors::Cors {
+		allowed_origins: allowed_origins,
+		// allow_credentials: true,
+		max_age: Some(2592000),
+		..Default::default()
+	};
 
-	let mut payload = json!({
-		"iss": "crowd-sell",
-		"sub": "1",
-		"iat": now.to_timespec().sec,
-		"nbf": now.to_timespec().sec,
-		"exp": tomorrow.to_timespec().sec,
-	});
-	println!("{:?}", payload);
-	let mut header = json!({
-	});
-	println!("{:?}", header);
-
-	let private_keypath = std::path::PathBuf::from("ecprivate.pem");
-
-	let jwt = encode(header, &private_keypath, &payload, Algorithm::ES512).unwrap();
-	println!("{:?}", jwt);
-
-	let public_keypath = std::path::PathBuf::from("ecpublic.pem");
-	let (header, payload) = decode(&jwt, &public_keypath, Algorithm::ES512).unwrap();
-	println!("{:?}", header);
-	println!("{:?}", payload);
+	rocket::ignite()
+		.manage(init_pool())
+		.manage(key)
+		.mount("/", routes![projects, login, create_user, user_info])
+		.attach(cors_options)
+		.catch(errors![ handle_400, handle_401, handle_402, handle_403, handle_404, handle_405, handle_406, handle_407, handle_408, handle_409, handle_410, handle_411, handle_412, handle_413, handle_414, handle_415, handle_416, handle_417, handle_418, handle_421, handle_422, handle_426, handle_428, handle_429, handle_431, handle_451, handle_500, handle_501, handle_503, handle_504, handle_510 ])
+		.launch();
 }
 
 

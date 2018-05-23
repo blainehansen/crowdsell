@@ -15,7 +15,7 @@ import About from '@/pages/About'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
 	mode: 'history',
 	routes: [
 		{ path: '/', name: 'home', component: Home },
@@ -37,76 +37,85 @@ export default new Router({
 	]
 })
 
+export default router
 
 import Cookies from 'js-cookie'
+import api, { privateHttp } from '@/api'
 
-export const auth = {
+async function decodeTokenToUser(token) {
+	const segments = token.split('.')
+	if (segments.length != 2) console.error('invalid token', token)
+	const [id, , ,] = JSON.parse(atob(segments[0]))
+
+	const { data: user } = await api.getUserInfo(id)
+	return user
+}
+
+export const authModule = {
 	state: {
-		locationInApp: null,
-		user: {
-			name: null,
-			expiresIn: 0,
-			accessToken: null,
-			tokenCreationTimestamp: 0,
+		token: null,
+		user: null,
+		goingTo: null,
+	},
+
+	getters: {
+		userLoggedIn(state) {
+			// TODO check expiration
+			// you'll probably have to set timeouts
+			return !!state.token
+		},
+		userName(state) {
+			return state.user ? state.user.name : null
 		}
 	},
-	getters: {
-		loggedIn(state) {
-			// we need to make sure claims are signed with a valid public key,
-			// and we need to use the exp claim because it's correctly signed
-			// https://tools.ietf.org/html/rfc7519#section-4.1.4
-			const timestamp = moment().unix()
-			return !!state.user.accessToken && (timestamp < state.user.tokenCreationTimestamp + state.user.expiresIn)
+
+	mutations: {
+		async login(state, token) {
+			state.token = token
+			privateHttp.defaults.headers.common['Authorization'] = `Bearer ${token}`
+			Cookies.set('authToken', token)
+
+			state.user = await decodeTokenToUser(token)
+		},
+
+		logout(state) {
+			state.token = null
+			state.user = null
+			delete privateHttp.defaults.headers.common['Authorization']
+			Cookies.remove('authToken')
+		},
+
+		setGoingTo(state, location) {
+			state.goingTo = location
+		},
+
+		unsetGoingTo(state) {
+			state.goingTo = null
 		},
 	},
-	mutations: {
-		setLocationInApp(state, name) {
-			state.locationInApp = name
-		},
 
-		loginUser(state, {accessToken, userObj, expiresIn, tokenCreationTimestamp}) {
-			const userObject = {
-				name: userObj.name,
-				accessToken: accessToken,
-				expiresIn: expiresIn || 86400,
-				tokenCreationTimestamp: tokenCreationTimestamp
-			}
-
-			state.user = cloneDeep(userObject)
-			axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
-
-			Cookies.set('authenticatedUser', userObject)
-
-			// TODO settimeout
-		},
-
-		logoutUser(state) {
-			state.user = { name: null, accessToken: null, expiresIn: 0, tokenCreationTimestamp: 0 }
-			axios.defaults.headers.common['Authorization'] = null
-
-			Cookies.remove('authenticatedUser')
+	actions: {
+		grabGoingTo({ commit, state }) {
+			const goingTo = state.goingTo
+			commit('unsetGoingTo')
+			return goingTo
 		}
 	}
 }
 
 
 export function authPlugin(store) {
-	store.watch((state, getters) => getters.loggedIn, (isLoggedIn) => {
-		if (!isLoggedIn) {
-			router.push({ name: 'login' })
-		}
-	})
+	// store.watch((state, getters) => getters.userLoggedIn, (isLoggedIn) => {
+	// 	if (!isLoggedIn) {
+	// 		router.push({ name: 'login' })
+	// 	}
+	// })
 
 	router.beforeEach((to, from, next) => {
-		if (store.getters.loggedIn) {
-			next()
-		}
-		else if (!to.meta.allowAnonymous) {
+		if (to.matched.some(record => record.meta.private)) {
 			next({ name: 'login', replace: true })
-			store.commit('setLocationInApp', to.name)
+			store.commit('setGoingTo', to.fullPath)
 		}
-		else {
-			next()
-		}
+		else next()
 	})
 }

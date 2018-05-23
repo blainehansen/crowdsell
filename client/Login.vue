@@ -1,17 +1,64 @@
 <template lang="pug">
 
+#login
+	h2(v-if="inLoginMode") Login
+	h2(v-else) Create Account
+
+	template(v-if="apiError")
+		h3 There was an error!
+		p {{ apiError.message }}
+
+	input(v-if="!inLoginMode", v-model="name")
+	input(v-model="email")
+	input(v-model="password", type="password")
+
+	button(@click="submit") {{ inLoginMode ? "Login" : "Create Account" }}
+
+	label(for="creation-mode-checkbox") {{ inLoginMode ? "Logging in" : "Creating new account" }}
+	input#creation-mode-checkbox(v-model="inLoginMode", type="checkbox")
 
 </template>
 
 
 <script>
+import api from '@/api'
+
 export default {
-	name: 'login'
+	name: 'login',
+	data() {
+		return {
+			inLoginMode: true,
+			name: '',
+			email: '',
+			password: '',
+
+			apiError: null,
+		}
+	},
+
+	methods: {
+		async submit() {
+			const { inLoginMode, name, email, password } = this
+
+			const apiFunction = inLoginMode ? api.login : api.createUser
+			const args = inLoginMode ? [email, password] : [name, email, password]
+			try {
+				const { data: token } = await apiFunction(...args)
+				this.$store.commit('login', token)
+
+				const goingTo = this.$store.state.auth.goingTo
+				const routeObj = !!goingTo ? { path: goingTo } : { name: 'home' }
+				this.$router.replace(routeObj)
+			}
+			catch (e) {
+				this.apiError = e
+				this.$store.commit('logout')
+			}
+		},
+	}
 }
 </script>
 
 
 <style lang="sass">
-
-
 </style>
