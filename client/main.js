@@ -16,9 +16,9 @@ Vue.use(AsyncProperties, {
 import store from '@/vuex'
 
 import Cookies from 'js-cookie'
-const authToken = Cookies.getJSON('authToken')
-if (authToken) {
-	store.commit('login', authToken)
+const signedUser = Cookies.getJSON('signedUser')
+if (signedUser) {
+	store.commit('login', signedUser)
 }
 
 new Vue({

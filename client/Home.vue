@@ -16,8 +16,9 @@ import api from '@/api'
 
 export default {
 	name: 'home',
+
 	asyncData: {
-		projects: () => api.getProjects()
+		projects: () => api.getProjects(),
 	}
 }
 </script>

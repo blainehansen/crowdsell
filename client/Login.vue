@@ -17,6 +17,9 @@
 	label(for="creation-mode-checkbox") {{ inLoginMode ? "Logging in" : "Creating new account" }}
 	input#creation-mode-checkbox(v-model="inLoginMode", type="checkbox")
 
+	label(for="remember-me-checkbox") Keep me Logged In
+	input#remember-me-checkbox(v-model="rememberMe", type="checkbox")
+
 </template>
 
 
@@ -32,6 +35,8 @@ export default {
 			email: '',
 			password: '',
 
+			rememberMe: false,
+
 			apiError: null,
 		}
 	},
@@ -43,8 +48,8 @@ export default {
 			const apiFunction = inLoginMode ? api.login : api.createUser
 			const args = inLoginMode ? [email, password] : [name, email, password]
 			try {
-				const { data: token } = await apiFunction(...args)
-				this.$store.commit('login', token)
+				const { data: signedUser } = await apiFunction(...args)
+				this.$store.commit('login', signedUser)
 
 				const goingTo = this.$store.state.auth.goingTo
 				const routeObj = !!goingTo ? { path: goingTo } : { name: 'home' }

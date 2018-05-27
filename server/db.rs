@@ -2,7 +2,7 @@ use diesel::pg::PgConnection;
 use diesel::r2d2::{ConnectionManager, Pool, PooledConnection};
 
 // The URL to the database, set via the `DATABASE_URL` environment variable.
-pub static DATABASE_URL: &'static str = "postgres://user:asdf@localhost/crowdsell";
+pub static DATABASE_URL: &'static str = dotenv!("DATABASE_URL");
 
 // An alias to the type for a pool of Diesel Postgres connections.
 type PostgresPool = Pool<ConnectionManager<PgConnection>>;

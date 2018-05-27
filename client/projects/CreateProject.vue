@@ -23,7 +23,7 @@
 import api from '@/api'
 
 export default {
-	name: 'NewProject',
+	name: 'CreateProject',
 	asyncData: {
 		projects: () => api.getProjects()
 	}

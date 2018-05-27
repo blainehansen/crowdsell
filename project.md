@@ -13,23 +13,32 @@ Things to skimp on:
 - discovery system
 - side merch
 
+
 [Full Auth Flow]
-- login form
-- create account form
-- automatic renewal of tokens for active users
+- X login form
+- X create account form
+- X token on all authenticated requests
+- redirect on token expiration
 - "remember me"
-- [token on all authenticated requests](https://github.com/axios/axios#creating-an-instance)
+
+[Deployment]
+- netlify setup for client
+- docker multistage build for server
+- deploy server
+- nginx
+- logging/notifications
+- autoscaling with supergiant
+
+[File Upload and CDN]
+- get files from client
+- upload to digital ocean space
+- use keys for renders
 
 [Full Security]
 - secure login and create account pages and forms
 - secure card storage
 - secure card page and form
 - tls
-
-[File Upload and CDN]
-- get files from client
-- upload to digital ocean space
-- use keys for renders
 
 [Payments and Escrow]
 - find provider
@@ -47,7 +56,7 @@ Things to skimp on:
 
 [Aesthetics and Skin]
 - great theme
-- unified component thoughts
+- unified ux thinking
 
 [Home Page]
 - algorithm for shown projects

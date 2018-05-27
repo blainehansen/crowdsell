@@ -1,7 +1,7 @@
 -- Your SQL goes here
 CREATE TABLE projects (
 	id SERIAL PRIMARY KEY,
-	title VARCHAR
+	title VARCHAR,
 );
 
 CREATE TABLE users (
@@ -9,6 +9,8 @@ CREATE TABLE users (
 	name VARCHAR NOT NULL,
 	-- https://stackoverflow.com/questions/386294/what-is-the-maximum-length-of-a-valid-email-address
 	email VARCHAR(254) NOT NULL,
+	slug VARCHAR NOT NULL,
 	password VARCHAR NOT NULL,
-	UNIQUE(email)
+	UNIQUE(email),
+	UNIQUE(slug),
 );

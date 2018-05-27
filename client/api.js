@@ -16,6 +16,4 @@ export default {
 
 	login: (email, password) => publicHttp.post('/login', { email, password }),
 	createUser: (name, email, password) => publicHttp.post('/create-user', { name, email, password }),
-
-	getUserInfo: (id) => privateHttp.get(`/user/${id}/info`),
 }

@@ -22,10 +22,10 @@ use catchers::log_status;
 // use std::hash::{Hash};
 
 // trait ApiValue: Serialize + Hash {}
-trait ApiValue: Serialize {}
+// trait ApiValue: Serialize {}
 
 #[derive(Debug)]
-pub enum ApiResponse<T: ApiValue> {
+pub enum ApiResponse<T: Serialize> {
 	Success(T),
 	SuccessStatus(Status),
 	SuccessStatusContent(Status, T),
@@ -37,7 +37,7 @@ pub enum ApiResponse<T: ApiValue> {
 // 	s.finish()
 // }
 
-pub fn build_json_response<'r, T: ApiValue>(value: T, option_status: Option<Status>) -> response::Result<'r> {
+pub fn build_json_response<'r, T: Serialize>(value: T, option_status: Option<Status>) -> response::Result<'r> {
 	let response_string = match serde_json::to_string(&value) {
 		Err(e) => {
 			println!("    => JSON failed to serialize: {:?}", Paint::red(e));
@@ -56,12 +56,14 @@ pub fn build_json_response<'r, T: ApiValue>(value: T, option_status: Option<Stat
 		.finalize();
 
 	if let Some(status) = option_status {
-		return Response::build_from(res).status(status).ok();
+		Response::build_from(res).status(status).ok()
 	}
-	Ok(res)
+	else {
+		Ok(res)
+	}
 }
 
-impl<'r, T: ApiValue> Responder<'r> for ApiResponse<T> {
+impl<'r, T: Serialize> Responder<'r> for ApiResponse<T> {
 	fn respond_to(self, _: &Request) -> response::Result<'r> {
 		let (status, response) = match self {
 			ApiResponse::Success(value) => (Status::Ok, build_json_response(value, None)),
@@ -160,11 +162,11 @@ impl<T> ApiFailable<T> for Option<T> {
 }
 
 
-pub trait ApiRespondable<T: ApiValue> {
+pub trait ApiRespondable<T: Serialize> {
 	fn respond(self) -> ApiResult<T>;
 }
 
-impl<T: ApiValue, E: std::fmt::Debug> ApiRespondable<T> for Result<T, E> {
+impl<T: Serialize, E: std::fmt::Debug> ApiRespondable<T> for Result<T, E> {
 	default fn respond(self) -> ApiResult<T> {
 		match self {
 			Ok(value) => Ok(ApiResponse::Success(value)),
@@ -176,7 +178,7 @@ impl<T: ApiValue, E: std::fmt::Debug> ApiRespondable<T> for Result<T, E> {
 	}
 }
 
-impl<T: ApiValue, E: std::fmt::Debug + Into<ApiError>> ApiRespondable<T> for Result<T, E> {
+impl<T: Serialize, E: std::fmt::Debug + Into<ApiError>> ApiRespondable<T> for Result<T, E> {
 	fn respond(self) -> ApiResult<T> {
 		match self {
 			Ok(value) => Ok(ApiResponse::Success(value)),
@@ -186,7 +188,7 @@ impl<T: ApiValue, E: std::fmt::Debug + Into<ApiError>> ApiRespondable<T> for Res
 }
 
 
-impl<T: ApiValue> ApiRespondable<T> for Option<T> {
+impl<T: Serialize> ApiRespondable<T> for Option<T> {
 	fn respond(self) -> ApiResult<T> {
 		match self {
 			Some(value) => Ok(ApiResponse::Success(value)),

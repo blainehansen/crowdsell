@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-import { authModule, authPlugin } from '@/router'
+import { authModule, authPlugin } from '@/auth'
 
 export default new Vuex.Store({
 	modules: {
