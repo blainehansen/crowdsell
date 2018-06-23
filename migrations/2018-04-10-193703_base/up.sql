@@ -11,6 +11,10 @@ CREATE TABLE users (
 	email VARCHAR(254) NOT NULL,
 	slug VARCHAR NOT NULL,
 	password VARCHAR NOT NULL,
+
+	hash_id VARCHAR,
+	profile_photo_hash VARCHAR,
+
 	UNIQUE(email),
 	UNIQUE(slug),
 );
