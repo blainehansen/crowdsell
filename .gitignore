@@ -21,9 +21,14 @@ yarn-error.log*
 *.so
 *.dylib
 
+# Test binary, build with `go test -c`
+*.test
 
-server-build
-**/*.rs.bk
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
 
 *.pem
 *.secret
+
+server/vendor

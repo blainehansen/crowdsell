@@ -19,3 +19,12 @@ npm run build --report
 ```
 
 For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+
+## Go Stuff
+
+```base
+sudo docker build -t go-anywhere .
+
+go run $(ls -1 *.go | grep -v _test.go)
+```

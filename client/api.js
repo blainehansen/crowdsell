@@ -9,7 +9,7 @@ axios.defaults.responseType = 'json'
 // })
 
 export const publicHttp = axios.create()
-export const privateHttp = axios.create()
+export const privateHttp = axios.create({ baseURL: config.baseURL + '/secure' })
 
 export default {
 	getProjects: () => publicHttp.get('/projects'),
