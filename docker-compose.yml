@@ -3,7 +3,7 @@ services:
   database:
     image: postgres:9.6-alpine
     environment:
-      - POSTGRES_DB=crowdsell
+      - POSTGRES_DB=dev_database
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=asdf
     container_name: database
