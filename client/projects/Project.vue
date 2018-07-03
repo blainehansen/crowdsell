@@ -31,7 +31,4 @@ export default {
 </script>
 
 <style lang="sass">
-.thing
-	color: red
-
 </style>

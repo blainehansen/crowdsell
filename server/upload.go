@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
+
 var S3Client *s3.S3 = s3.New(session.New(&aws.Config{
 	Credentials: credentials.NewStaticCredentials(
 		// accessKeyID

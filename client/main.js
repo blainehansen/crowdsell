@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import App from './App'
-import router from './router'
 
 import BootstrapVue from 'bootstrap-vue'
 Vue.use(BootstrapVue)
@@ -14,16 +13,17 @@ Vue.use(AsyncProperties, {
 })
 
 import store from '@/vuex'
+import router from './router'
 
 import Cookies from 'js-cookie'
 const signedUser = Cookies.getJSON('signedUser')
 if (signedUser) {
-	store.commit('login', signedUser)
+	store.commit('auth/login', signedUser)
 }
 
 new Vue({
 	el: '#app',
-	router,
 	store,
+	router,
 	render: h => h(App)
 })

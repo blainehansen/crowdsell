@@ -1,5 +1,7 @@
 <template lang="pug">
 
+.user
+	p hello user
 
 </template>
 
@@ -13,6 +15,4 @@ export default {
 
 
 <style lang="sass">
-
-
 </style>

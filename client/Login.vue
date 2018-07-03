@@ -8,9 +8,9 @@
 		h3 There was an error!
 		p {{ apiError.message }}
 
-	input(v-if="!inLoginMode", v-model="name")
-	input(v-model="email")
-	input(v-model="password", type="password")
+	input(v-if="!inLoginMode", v-model="name", placeholder="name")
+	input(v-model="email", placeholder="email")
+	input(v-model="password", type="password", placeholder="password")
 
 	button(@click="submit") {{ inLoginMode ? "Login" : "Create Account" }}
 
@@ -49,7 +49,7 @@ export default {
 			const args = inLoginMode ? [email, password] : [name, email, password]
 			try {
 				const { data: signedUser } = await apiFunction(...args)
-				this.$store.commit('login', signedUser)
+				this.$store.commit('auth/login', signedUser)
 
 				const goingTo = this.$store.state.auth.goingTo
 				const routeObj = !!goingTo ? { path: goingTo } : { name: 'home' }
@@ -57,7 +57,7 @@ export default {
 			}
 			catch (e) {
 				this.apiError = e
-				this.$store.commit('logout')
+				this.$store.commit('auth/logout')
 			}
 		},
 	}

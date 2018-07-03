@@ -25,8 +25,12 @@ Things to skimp on:
 - netlify setup for client
 - docker multistage build for server
 - deploy server
-- nginx
 - logging/notifications
+- nginx?
+
+[Scaling]
+- cdn cache policies
+- caching middleware
 - autoscaling with supergiant
 
 [File Upload and CDN]
@@ -105,11 +109,6 @@ Things to skimp on:
 -- change password
 -- payment methods
 
-[Overall Scaling]
-- cdn cache policies
-- caching responders
-- auto-scaling systems for digital ocean
-
 [Torrent Seeding System]
 - create torrent files based on project
 - gittorrent or other git system
@@ -147,24 +146,3 @@ All files will be seeded for torrenting by crowd sell
 
 
 The funding going through should be contingent on some sort of sanity check by the group
-
-
-[Auth]
-create new user
-- X create users table
--- X migration
--- X unique constraint on email
-- X receive email and password
-- X create salt
-- X hash password with salt
-- X save both in database
-- X sign a token
-- (future?) send confirm email
-login user
-- X receive email and password
-- X find user with email
--- X fail if not found
-- X hash received password with salt
-- X compare against database
--- X fail if not same
-- X sign a token

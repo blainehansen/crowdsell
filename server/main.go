@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -72,6 +75,15 @@ func addRoutesToGroup(router gin.IRouter, routesArray []Route) {
 
 func main() {
 	router := gin.Default()
+
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:8080"}
+	config.AllowMethods = []string{"HEAD", "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE"}
+	config.AddAllowHeaders("Authorization")
+	// config.AllowHeaders = []string{"Authorization", "Content-Type"}
+	config.MaxAge = 24 * time.Hour
+
+	router.Use(cors.New(config))
 
 	var connectionError error
 	db, connectionError = gorm.Open("postgres", "host=localhost port=5432 dbname=crowdsell user=user password=asdf sslmode=disable")

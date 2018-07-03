@@ -1,6 +1,5 @@
 import Cookies from 'js-cookie'
 import api, { privateHttp } from '@/api'
-import router from '@/router'
 
 function decodeToken(token) {
 	const segments = token.split('.')
@@ -9,6 +8,8 @@ function decodeToken(token) {
 }
 
 export const authModule = {
+	namespaced: true,
+
 	state: {
 		token: null,
 		user: null,
@@ -28,7 +29,7 @@ export const authModule = {
 			return state.user ? state.user.name : null
 		},
 		userId(state, getters) {
-			return getters.decodedToken ? getters.decodedToken[0] : null
+			return getters.decodedToken ? getters.decodedToken.I : null
 		},
 		userSlug(state) {
 			return state.user ? state.user.slug : null
@@ -37,10 +38,10 @@ export const authModule = {
 
 	mutations: {
 		login(state, signedUser) {
-			const { token, user } = signedUser
+			const { token, name, email } = signedUser
 			state.token = token
-			state.user = user
-			privateHttp.defaults.headers.common['Authorization'] = `Bearer ${token}`
+			state.user = { name, email }
+			privateHttp.defaults.headers.common['Authorization'] = token
 			Cookies.set('signedUser', signedUser)
 		},
 
@@ -69,18 +70,20 @@ export const authModule = {
 	}
 }
 
-export function authPlugin(store) {
-	store.watch((state, getters) => getters.userLoggedIn, (isLoggedIn) => {
-		if (!isLoggedIn && router.currentRoute.matched.some((route) => route.meta.private)) {
-			router.push({ name: 'login' })
-		}
-	})
+export function authPluginMaker(router) {
+	return function(store) {
+		store.watch((state, getters) => getters.userLoggedIn, (isLoggedIn) => {
+			if (!isLoggedIn && router.currentRoute.matched.some((route) => route.meta.private)) {
+				router.push({ name: 'login' })
+			}
+		})
 
-	router.beforeEach((to, from, next) => {
-		if (to.matched.some(route => route.meta.private)) {
-			next({ name: 'login', replace: true })
-			store.commit('setGoingTo', to.fullPath)
-		}
-		else next()
-	})
+		router.beforeEach((to, from, next) => {
+			if (to.matched.some(route => route.meta.private) && !store.getters.userLoggedIn) {
+				next({ name: 'login', replace: true })
+				store.commit('setGoingTo', to.fullPath)
+			}
+			else next()
+		})
+	}
 }

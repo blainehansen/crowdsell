@@ -23,60 +23,58 @@ type SignedUser struct {
 	Email string `json:"email"`
 	Token string `json:"token"`
 }
-type NewUserJson struct {
-	Name string `json:"name" binding:"required"`
-	Email string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
+
 var _ r = route(POST, "/create-user", func(c *gin.Context) {
-	var newUser NewUserJson
+	newUser := struct {
+		Name string `json:"name" binding:"required"`
+		Email string `json:"email" binding:"required"`
+		Password []byte `json:"password" binding:"required"`
+	}{}
 	if err := c.ShouldBindJSON(&newUser); err != nil {
 		c.AbortWithError(422, err)
 		return
 	}
 
-	hashedPassword, hashError := hashPassword([]byte(newUser.Password))
+	hashedPassword, hashError := hashPassword(&newUser.Password)
 	if hashError != nil {
 		c.AbortWithError(500, hashError)
 		return
 	}
 
-	user := User { Name: newUser.Name, Email: newUser.Email, Password: string(hashedPassword) }
-	if err := db.Create(&user).Error; err != nil {
+	createdUser := User { Name: newUser.Name, Email: newUser.Email, Password: string(hashedPassword) }
+	if err := db.Create(&createdUser).Error; err != nil {
 		c.AbortWithError(500, err)
 		return
 	}
 
-	fmt.Println("user.Id", user.Id)
 	// TODO don't have an empty role
-	authTokenString, issueError := issueAuthToken(user.Id, "")
+	authTokenString, issueError := issueAuthToken(createdUser.Id, "")
 	if issueError != nil {
 		c.AbortWithError(500, issueError)
 		return
 	}
 
-	c.JSON(200, SignedUser { Name: user.Name, Email: user.Email, Token: authTokenString })
+	c.JSON(200, SignedUser { Name: createdUser.Name, Email: createdUser.Email, Token: authTokenString })
 })
 
 
 
-type LoginJson struct {
-	Email string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-type LoginUser struct {
-	Id uint32
-	Password []byte
-}
 var _ r = route(POST, "/login", func(c *gin.Context) {
-	var loginAttempt LoginJson
+	loginAttempt := struct {
+		Email string `json:"email" binding:"required"`
+		Password []byte `json:"password" binding:"required"`
+	}{}
 	if err := c.ShouldBindJSON(&loginAttempt); err != nil {
 		c.AbortWithError(422, err)
 		return
 	}
 
-	var user LoginUser
-	queryResult := db.Table("users").Select("id, password").Where("email = ?", loginAttempt.Email).Scan(&user)
+	databaseUser := struct {
+		Id uint32
+		Name string
+		Password []byte
+	}{}
+	queryResult := db.Table("users").Select("id, name, password").Where("email = ?", &loginAttempt.Email).Scan(&databaseUser)
 	if queryResult.RecordNotFound() {
 		c.AbortWithStatus(403)
 		return
@@ -86,32 +84,31 @@ var _ r = route(POST, "/login", func(c *gin.Context) {
 		return
 	}
 
-	if !verifyPassword(user.Password, []byte(loginAttempt.Password)) {
+	if !verifyPassword(&databaseUser.Password, &loginAttempt.Password) {
 		c.AbortWithStatus(403)
 		return
 	}
 
 	// TODO don't have an empty role
-	authTokenString, issueError := issueAuthToken(user.Id, "")
+	authTokenString, issueError := issueAuthToken(databaseUser.Id, "")
 	if issueError != nil {
 		c.AbortWithError(500, issueError)
 		return
 	}
-	c.JSON(200, authTokenString)
+	c.JSON(200, SignedUser { Name: databaseUser.Name, Email: loginAttempt.Email, Token: authTokenString })
 })
 
-var _ r = authRoute(GET, "/special", func(c *gin.Context) {
-	userId := c.MustGet("userId").(uint32)
-	fmt.Println(userId)
-	c.JSON(200, "stuff")
-})
+// var _ r = authRoute(GET, "/special", func(c *gin.Context) {
+// 	userId := c.MustGet("userId").(uint32)
+// 	fmt.Println(userId)
+// 	c.JSON(200, "stuff")
+// })
 
 
-func generateKey() *[]byte {
+var privateKey *[]byte = func() *[]byte {
 	key := []byte("somepass")
 	return &key
-}
-var privateKey *[]byte = generateKey()
+}()
 
 
 type AuthToken struct {
@@ -141,7 +138,6 @@ func issueAuthToken(userId uint32, role string) (string, error) {
 	if serializationError != nil {
 		return "", serializationError
 	}
-	fmt.Printf("%s\n", serializedToken)
 
 	encodedToken := encodeBase64(serializedToken)
 
@@ -188,36 +184,26 @@ func VerifyTokenMiddleWare(c *gin.Context) {
 }
 
 func verifyAuthToken(token string) (uint32, string, error) {
-	// p := fmt.Println
-	// f := fmt.Printf
-
 	// split the segments
 	segments := strings.SplitN(token, ".", 2)
-	// p(segments)
 
 	if len(segments) != 2 {
 		return 0, "", InvalidTokenError
 	}
 	proposedEncodedToken := []byte(segments[0])
 	proposedEncodedSignature := []byte(segments[1])
-	// f("proposedEncodedToken %s\n", proposedEncodedToken)
-	// f("proposedEncodedSignature %s\n", proposedEncodedSignature)
 
 	// decode the signature
 	proposedSignature, signatureDecodeError := decodeBase64(proposedEncodedSignature)
 	if signatureDecodeError != nil {
 		return 0, "", InvalidTokenError
 	}
-	// f("proposedSignature %s\n", proposedSignature)
-	// p("proposedSignature", proposedSignature)
 
 	signer := hmac.New(crypto.SHA256.New, *privateKey)
 	// sign the incoming encoded token
 	signer.Write(proposedEncodedToken)
 	actualSignature := signer.Sum(nil)
 
-	// f("actualSignature %s\n", actualSignature)
-	// p("actualSignature", actualSignature)
 	// and see if the signature they have matches what we would produce
 	if !hmac.Equal(proposedSignature, actualSignature) {
 		return 0, "", UnauthorizedError
@@ -227,13 +213,11 @@ func verifyAuthToken(token string) (uint32, string, error) {
 	if tokenDecodeError != nil {
 		return 0, "", InvalidTokenError
 	}
-	// f("proposedSerializedToken %s\n", proposedSerializedToken)
 
 	var successfulToken AuthToken
 	if deserializationError := jsoniter.Unmarshal(proposedSerializedToken, &successfulToken); deserializationError != nil {
 		return 0, "", InvalidTokenError
 	}
-	// p("successfulToken", successfulToken)
 
 	// check the expires
 	if successfulToken.Expires() <= time.Now().Unix() {
@@ -246,14 +230,16 @@ func verifyAuthToken(token string) (uint32, string, error) {
 
 var passwordHasher argon2.Config = argon2.DefaultConfig()
 
-func hashPassword(password []byte) ([]byte, error) {
-	encodedPassword, encodingError := passwordHasher.HashEncoded(password)
-	argon2.SecureZeroMemory(password)
+func hashPassword(password *[]byte) ([]byte, error) {
+	encodedPassword, encodingError := passwordHasher.HashEncoded(*password)
+	argon2.SecureZeroMemory(*password)
 	return encodedPassword, encodingError
 }
 
-func verifyPassword(encodedPassword []byte, trialPassword []byte) bool {
-	match, err := argon2.VerifyEncoded(trialPassword, encodedPassword)
+func verifyPassword(encodedPassword *[]byte, trialPassword *[]byte) bool {
+	match, err := argon2.VerifyEncoded(*trialPassword, *encodedPassword)
+	argon2.SecureZeroMemory(*encodedPassword)
+	argon2.SecureZeroMemory(*trialPassword)
 	if err != nil {
 		return false
 	}

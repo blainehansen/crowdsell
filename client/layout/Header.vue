@@ -1,12 +1,25 @@
 <template lang="pug">
 
-header
-	.login
-		template(v-if="userLoggedIn")
-			p Current User: {{ userName }}
-			a.btn.btn-link(@click="logout") Logout
-		template(v-else)
-			router-link(to="login") Login
+b-navbar(toggleable="md")
+	router-link.navbar-brand(:to="{ name: 'home' }") Crowdsell
+
+	b-navbar-toggle(target="nav-collapse")
+
+	b-collapse#nav-collapse(is-nav)
+		ul.navbar-nav.mr-auto
+			router-link.nav-item(:to="{ name: 'about' }", tag="li")
+				a.nav-link About
+		ul.navbar-nav
+			template(v-if="userLoggedIn")
+				//- router-link.nav-item(:to="{ name: 'currentUserProfile' }", tag="li")
+				//- 	a.nav-link {{ userName }}
+				router-link.nav-item(:to="{ name: 'projectCreate' }", tag="li")
+					a.nav-link Create Project
+				li.nav-item(@click="logout")
+					a.nav-link Logout
+			template(v-else)
+				router-link.nav-item(:to="{ name: 'login' }", tag="li")
+					a.nav-link Login
 
 </template>
 
@@ -18,11 +31,11 @@ export default {
 	name: 'Header',
 
 	computed: {
-		...mapGetters(['userName', 'userLoggedIn'])
+		...mapGetters(['auth/userName', 'auth/userLoggedIn'])
 	},
 
 	methods: {
-		...mapMutations(['logout'])
+		...mapMutations(['auth/logout'])
 	},
 }
 
@@ -30,6 +43,4 @@ export default {
 
 
 <style lang="sass">
-
-
 </style>
