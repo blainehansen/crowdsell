@@ -1,8 +1,8 @@
 What's the mvp?
 
 People can create (very bare) profiles.
-People can create projects.
-People can contribute to those projects.
+People can create.
+People can contribute.
 It's reasonably fluid to use.
 There's no errors.
 
@@ -11,7 +11,7 @@ Things to skimp on:
 - full profiles
 - teams
 - discovery system
-- side merch
+- side products
 
 
 [Full Auth Flow]
@@ -63,37 +63,37 @@ Things to skimp on:
 - unified ux thinking
 
 [Home Page]
-- algorithm for shown projects
+- algorithm for shown
 -- consider not having any, for fairness, instead have exploration and "subscription" systems where people can set notifications for things they're interested in. home page would focus on mission stuff and news
 - header
 -- link to login/profile
 -- search
--- start a new project
+-- start new
 -- explore
 
-[Project Creation]
+[Creation]
 - media
 -- title
 -- description
 -- story
 -- tags/category
 -- location
-- thought work deliverables
+- deliverables
 - goal
 - blind period
 - promises
-- side merch
+- side products
 - finalize your account necessaries
 - advice
 
-[Project Pages]
+[Creation Pages]
 - all media
 -- video
 -- demo materials
 -- description
 -- promises
-- funding tickers
-- websocket system for nearly complete projects?
+- tickers
+- websocket system for nearly complete?
 
 [Profile Management]
 - create a profile
@@ -116,7 +116,7 @@ Things to skimp on:
 - servers to act as guaranteed seeders
 -- program that will actually do the seeding
 
-[Project Discovery]
+[Creation Discovery]
 - easy to search and explore
 -- date started/funded/etc
 -- current status
@@ -134,15 +134,4 @@ Things to skimp on:
 - manage permissions
 
 [Publicity Partnership (future)]
-- reach out to truly excellent projects and offer help getting the word out
-
-
-People need to be able to create projects, upload "demo" material of any kind, accept many potentially small payments that are charged immediately and held in escrow, and paid to them after the project is funded.
-
-Once the project goes through, the information is released into the world with a permissive open culture license of some kind.
-If it's code it could be released onto a git repo hub
-If it's just files it could just be served on crowd sell
-All files will be seeded for torrenting by crowd sell
-
-
-The funding going through should be contingent on some sort of sanity check by the group
+- reach out to truly excellent and offer help getting the word out
