@@ -1,4 +1,4 @@
-# crowd-sell
+# go-http-parser-bot
 
 > A bot for parsing http
 
