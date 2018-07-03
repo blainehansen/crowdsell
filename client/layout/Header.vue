@@ -1,7 +1,7 @@
 <template lang="pug">
 
 b-navbar(toggleable="md")
-	router-link.navbar-brand(:to="{ name: 'home' }") Crowdsell
+	router-link.navbar-brand(:to="{ name: 'home' }") Home
 
 	b-navbar-toggle(target="nav-collapse")
 
