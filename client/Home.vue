@@ -1,7 +1,7 @@
 <template lang="pug">
 
 #home
-	h1 Welcome to Crowd Sell
+	h1 Welcome
 
 </template>
 
