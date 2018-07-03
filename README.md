@@ -1,6 +1,6 @@
 # crowd-sell
 
-> Destroying Intellectual Property once and for all.
+> A bot for parsing http
 
 ## Build Setup
 
