@@ -1,7 +1,7 @@
 {
-  "name": "crowd-sell",
+  "name": "go-http-parser-bot",
   "version": "1.0.0",
-  "description": "Destroying Intellectual Property once and for all.",
+  "description": "A bot for parsing http",
   "author": "blainehansen <faichenshing@gmail.com>",
   "private": true,
   "scripts": {
