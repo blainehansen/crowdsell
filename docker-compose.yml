@@ -1,12 +1,25 @@
 version: '3'
 services:
-  database:
+  go-api:
+    image: go-anywhere:latest
+    container_name: go-api
+    links:
+      - go-database
+    ports:
+      - "5050:5050"
+    tty: true
+    volumes:
+      - ./server:/go/src/main
+      - ./server-bin:/go/bin
+    working_dir: /go/src/main
+    command: reflex -g '*.go' -G '*_test.go' --start-service=true -- sh -c "go run *.go"
+  go-database:
     image: postgres:9.6-alpine
     environment:
       - POSTGRES_DB=dev_database
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=asdf
-    container_name: database
+    container_name: go-database
     ports:
       - "5432:5432"
     # volumes:

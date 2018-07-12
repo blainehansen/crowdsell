@@ -31,11 +31,15 @@ export default {
 	name: 'Header',
 
 	computed: {
-		...mapGetters(['auth/userName', 'auth/userLoggedIn'])
+		...mapGetters('auth', [
+			'userName', 'userLoggedIn'
+		])
 	},
 
 	methods: {
-		...mapMutations(['auth/logout'])
+		...mapMutations({
+			logout: 'auth/logout'
+		})
 	},
 }
 

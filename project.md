@@ -21,47 +21,6 @@ Things to skimp on:
 - redirect on token expiration
 - "remember me"
 
-[Deployment]
-- netlify setup for client
-- docker multistage build for server
-- deploy server
-- logging/notifications
-- nginx?
-
-[Scaling]
-- cdn cache policies
-- caching middleware
-- autoscaling with supergiant
-
-[File Upload and CDN]
-- get files from client
-- upload to digital ocean space
-- use keys for renders
-
-[Full Security]
-- secure login and create account pages and forms
-- secure card storage
-- secure card page and form
-- tls
-
-[Payments and Escrow]
-- find provider
-- secure credit card entry form
-- remembering credit cards for accounts
-- payment flow
-- escrow mechanics
--- charge
--- release to creator
-
-[Static Content]
-- mission
-- explanation of mechanics
-- beliefs
-
-[Aesthetics and Skin]
-- great theme
-- unified ux thinking
-
 [Home Page]
 - algorithm for shown
 -- consider not having any, for fairness, instead have exploration and "subscription" systems where people can set notifications for things they're interested in. home page would focus on mission stuff and news
@@ -109,13 +68,6 @@ Things to skimp on:
 -- change password
 -- payment methods
 
-[Torrent Seeding System]
-- create torrent files based on project
-- gittorrent or other git system
-- search engine for existing fulfilled thought work
-- servers to act as guaranteed seeders
--- program that will actually do the seeding
-
 [Creation Discovery]
 - easy to search and explore
 -- date started/funded/etc
@@ -127,6 +79,58 @@ Things to skimp on:
 -- all above with search
 -- curated?
 - easy to register specific notifications for *types* of things they're interested in hearing about
+
+[Deployment]
+- netlify setup for client
+- docker multistage build for server
+- deployment script
+- logging/notifications
+- cd/ci system for server?
+- nginx?
+
+[Scaling]
+- cdn cache policies
+- caching load balancer
+- cache headers middleware
+- autoscaling with supergiant
+- prerendering of client
+- regularly prerendering certain pages with actual api results
+
+[File Upload and CDN]
+- X get files from client
+- X upload to digital ocean space
+- use keys for renders
+
+[Full Security]
+- secure login and create account pages and forms
+- secure card storage
+- secure card page and form
+- tls
+
+[Payments and Escrow]
+- find provider
+- secure credit card entry form
+- remembering credit cards for accounts
+- payment flow
+- escrow mechanics
+-- charge
+-- release to creator
+
+[Static Content]
+- mission
+- explanation of mechanics
+- beliefs
+
+[Aesthetics and Skin]
+- great theme
+- unified ux thinking
+
+[Torrent Seeding System (future)]
+- create torrent files based on project
+- gittorrent or other git system
+- search engine for existing fulfilled thought work
+- servers to act as guaranteed seeders
+-- program that will actually do the seeding
 
 [Teams (future)]
 - create a team

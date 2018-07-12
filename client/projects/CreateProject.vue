@@ -1,6 +1,10 @@
 <template lang="pug">
 
 .create-project
+	p
+		button(v-if="project$anyTouched", @click="saveProject") save project
+		button(v-else, disabled) project saved
+
 	ul.nav.justify-content-center
 		li.nav-item(v-for="componentObject in componentManifest")
 			.nav-link(
@@ -37,6 +41,7 @@
 
 <script>
 import api from '@/api'
+import { call, get } from '@/packages/vuex-pathify'
 
 import Overall from './create/Overall'
 
@@ -52,11 +57,17 @@ export default {
 			activeComponentObject: null,
 		}
 	},
+	computed: {
+		project$anyTouched: get('project/$anyTouched'),
+	},
+
 	methods: {
 		componentIsActive(componentObject) {
 			const active = this.activeComponentObject
 			return active && active.id == componentObject.id
-		}
+		},
+
+		saveProject: call('project/saveProject'),
 	}
 }
 </script>

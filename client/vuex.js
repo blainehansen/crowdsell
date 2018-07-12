@@ -1,19 +1,18 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import pathify from './pathify'
+import pathify from '@/packages/vuex-pathify'
 
 Vue.use(Vuex)
 
 import { authModule, authPluginMaker } from '@/auth'
+import projectModule from '@/projects/create/projectVuex'
 
 const store = new Vuex.Store({
 	modules: {
-		auth: authModule
+		auth: authModule,
+		project: projectModule,
 	},
-
-	// state: {
-	// },
 
 	plugins: [pathify.plugin],
 })

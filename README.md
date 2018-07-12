@@ -23,7 +23,9 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 
 ## Go Stuff
 
-```base
+https://github.com/cespare/reflex
+
+```bash
 sudo docker build -t go-anywhere .
 
 go run $(ls -1 *.go | grep -v _test.go)

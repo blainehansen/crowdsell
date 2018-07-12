@@ -8,6 +8,7 @@ RUN mv `which dep` /usr/bin
 
 WORKDIR $GOPATH/src/main
 
-COPY ./server .
+RUN go get github.com/cespare/reflex
+RUN go install github.com/cespare/reflex
 
-RUN go install .
+COPY ./server .

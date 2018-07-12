@@ -1,6 +1,8 @@
 package main
 
 import (
+	// "os"
+	// "log"
 	"fmt"
 	"time"
 
@@ -47,10 +49,6 @@ func authRoute(method RouteMethod, path string, handler gin.HandlerFunc) r {
 }
 
 
-// gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
-// 	return defaultTableName;
-// }
-
 var db *gorm.DB
 
 func addRoutesToGroup(router gin.IRouter, routesArray []Route) {
@@ -80,13 +78,13 @@ func main() {
 	config.AllowOrigins = []string{"http://localhost:8080"}
 	config.AllowMethods = []string{"HEAD", "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE"}
 	config.AddAllowHeaders("Authorization")
-	// config.AllowHeaders = []string{"Authorization", "Content-Type"}
 	config.MaxAge = 24 * time.Hour
 
 	router.Use(cors.New(config))
 
 	var connectionError error
-	db, connectionError = gorm.Open("postgres", "host=localhost port=5432 dbname=dev_database user=user password=asdf sslmode=disable")
+	// db, connectionError = gorm.Open("postgres", "host=localhost port=5432 dbname=dev_database user=user password=asdf sslmode=disable")
+	db, connectionError = gorm.Open("postgres", "host=go-database port=5432 dbname=dev_database user=user password=asdf sslmode=disable")
 	if connectionError != nil {
 		fmt.Println(connectionError)
 		panic("failed to connect to database")

@@ -2,6 +2,7 @@ package main
 
 import (
 	"io"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 
@@ -9,6 +10,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+
+	"github.com/speps/go-hashids"
 )
 
 
@@ -26,42 +29,81 @@ var S3Client *s3.S3 = s3.New(session.New(&aws.Config{
 }))
 
 
+type UploadParams struct {
+	Private bool
+	NoCache bool
+	DispositionFilename string
+}
+
 const bucketName string = "blaine-final-spaces-test"
-func UploadToSpace(fileObject io.ReadSeeker) error {
-	objectName := "user/9/profile.jpg"
+func UploadToSpace(fileObject io.ReadSeeker, objectKey string, contentType string, params UploadParams) error {
+	var aclString string
+	if params.Private {
+		aclString = "private"
+	} else {
+		aclString = "public-read"
+	}
+
+	var cacheString string
+	if params.NoCache {
+		cacheString = "private, must-revalidate"
+	} else {
+		cacheString = "public, max-age=31556926"
+	}
+
+	var dispositionString string
+	if params.DispositionFilename != "" {
+		dispositionString = fmt.Sprintf(`attachment; filename="%s"`, params.DispositionFilename)
+	} else {
+		dispositionString = "inline"
+	}
 
 	object := s3.PutObjectInput{
 		Body: fileObject,
 		Bucket: aws.String(bucketName),
-		Key: aws.String(objectName),
-		ACL: aws.String("public-read"),
-		CacheControl: aws.String("public, max-age=31556926"),
-		ContentEncoding: aws.String("gzip"),
-		ContentDisposition: aws.String("inline"),
-		ContentType: aws.String("image/jpeg"),
+		Key: aws.String(objectKey),
+		ACL: aws.String(aclString),
+		CacheControl: aws.String(cacheString),
+		// ContentEncoding: aws.String("gzip"),
+		ContentDisposition: aws.String(dispositionString),
+		ContentType: aws.String(contentType),
 	}
 	_, err := S3Client.PutObject(&object)
 	return err
 }
 
+var _ r = authRoute(POST, "/profile-image/:imageHash/:imageType", func(c *gin.Context) {
+	userId := int64(c.MustGet("userId").(uint32))
 
-var _ r = route(POST, "/upload", func(c *gin.Context) {
+	hashId, hashIdError := hashids.NewWithData(HashIdData)
+	encodedUserId, encodedUserIdError := hashId.EncodeInt64([]int64{userId})
+	if hashIdError != nil || encodedUserIdError != nil {
+		c.AbortWithStatus(500); return }
+
 	file, parseErr := c.FormFile("file")
 	if parseErr != nil {
-		c.AbortWithStatus(400)
-		return
-	}
+		c.AbortWithStatus(400); return }
 
 	fileInternal, openErr := file.Open()
 	if openErr != nil {
-		c.AbortWithError(500, openErr)
-		return
+		c.AbortWithError(500, openErr); return }
+
+	imageType := c.Param("imageType")
+	switch imageType {
+		case "png", "jpeg":
+			break
+		default:
+			c.AbortWithStatus(400); return
 	}
-	uploadErr := UploadToSpace(fileInternal)
+	imageHash := c.Param("imageHash")
+
+	objectName := fmt.Sprintf("profile-images/%s/%s.%s", encodedUserId, imageHash, imageType)
+	mimeType := fmt.Sprintf("image/%s", imageType)
+	uploadErr := UploadToSpace(fileInternal, objectName, mimeType, UploadParams{})
 
 	if uploadErr != nil {
-		c.AbortWithError(500, uploadErr)
+		c.AbortWithError(500, uploadErr); return
 	} else {
-		c.Status(204)
+		c.JSON(200, objectName)
 	}
 })

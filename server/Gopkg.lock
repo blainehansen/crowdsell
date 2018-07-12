@@ -45,6 +45,12 @@
   version = "v1.1.0"
 
 [[projects]]
+  name = "github.com/fatih/structs"
+  packages = ["."]
+  revision = "a720dfa8df582c51dee1b36feabb906bde1588bd"
+  version = "v1.0"
+
+[[projects]]
   name = "github.com/gin-contrib/cors"
   packages = ["."]
   revision = "cf4846e6a636a76237a28d9286f163c132e841bc"
@@ -84,6 +90,12 @@
   name = "github.com/google/go-querystring"
   packages = ["query"]
   revision = "53e6ce116135b80d037921a7fdd5138cf32d7a8a"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/iancoleman/strcase"
+  packages = ["."]
+  revision = "90d371a664d668ca3e61d3ddddf1916662959f11"
 
 [[projects]]
   name = "github.com/jinzhu/gorm"
@@ -146,6 +158,12 @@
   version = "1.0.0"
 
 [[projects]]
+  name = "github.com/speps/go-hashids"
+  packages = ["."]
+  revision = "ad304c6ede07ca1f915c30a5510c45860aa165a7"
+  version = "v2.0.0"
+
+[[projects]]
   name = "github.com/ugorji/go"
   packages = ["codec"]
   revision = "b4c50a2b199d93b13dc15e78929cfb23bfdf21ab"
@@ -172,6 +190,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1011f6142a9d54db0741dc3a55b80aedc6d7306cda17aac2b781e1b5a6248709"
+  inputs-digest = "0b3ee601bacc497a8cc9ac4962d1ce2fd20989035b19932779c70b5d2407a298"
   solver-name = "gps-cdcl"
   solver-version = 1

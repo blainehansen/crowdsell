@@ -12,10 +12,21 @@ import (
 	"github.com/json-iterator/go"
 	"github.com/lhecker/argon2"
 
+	"github.com/speps/go-hashids"
+
 	"crypto"
 	_ "crypto/sha256"
 	"crypto/hmac"
 )
+
+var HashIdData *hashids.HashIDData = func() *hashids.HashIDData {
+	hashIdData := hashids.HashIDData {
+		Alphabet: "abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+		MinLength: 8,
+		Salt: "id obfusctator string",
+	}
+	return &hashIdData
+}()
 
 
 type SignedUser struct {
@@ -41,6 +52,9 @@ var _ r = route(POST, "/create-user", func(c *gin.Context) {
 		return
 	}
 
+	// h, _ := hashids.NewWithData(hd)
+	// e, _ := h.Encode([]int{45, 434, 1313, 99})
+	// fmt.Println(e)
 	createdUser := User { Name: newUser.Name, Email: newUser.Email, Password: string(hashedPassword) }
 	if err := db.Create(&createdUser).Error; err != nil {
 		c.AbortWithError(500, err)
@@ -97,12 +111,6 @@ var _ r = route(POST, "/login", func(c *gin.Context) {
 	}
 	c.JSON(200, SignedUser { Name: databaseUser.Name, Email: loginAttempt.Email, Token: authTokenString })
 })
-
-// var _ r = authRoute(GET, "/special", func(c *gin.Context) {
-// 	userId := c.MustGet("userId").(uint32)
-// 	fmt.Println(userId)
-// 	c.JSON(200, "stuff")
-// })
 
 
 var privateKey *[]byte = func() *[]byte {
