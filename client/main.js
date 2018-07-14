@@ -21,6 +21,9 @@ if (signedUser) {
 	store.commit('auth/login', signedUser)
 }
 
+import { formatSpacesUrl } from './utils'
+Vue.filter('formatSpacesUrl', formatSpacesUrl)
+
 new Vue({
 	el: '#app',
 	store,

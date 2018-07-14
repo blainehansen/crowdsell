@@ -7,15 +7,13 @@
 
 	ul.nav.justify-content-center
 		li.nav-item(v-for="componentObject in componentManifest")
-			.nav-link(
-				@click="activeComponentObject = componentObject",
-				:class="{ active: componentIsActive(componentObject) }"
-			) {{ componentObject.pageName }}
+			router-link.nav-link(:to="{ name: componentObject.name }") {{ componentObject.pageName }}
 
-	template(v-if="activeComponentObject")
-		h1 {{ activeComponentObject.componentTitle }}
-		p {{ activeComponentObject.componentDescription }}
-		component(v-if="activeComponentObject", :is="activeComponentObject.component")
+		//- router-link.nav-item(tag="li", :to="{ name: componentObject.name }", v-for="componentObject in componentManifest")
+		//- 	a.nav-link {{ componentObject.pageName }}
+
+	//- portal-target(name="createProjectDescription")
+	router-view
 
 	h2(v-else) Choose a step
 
@@ -43,18 +41,21 @@
 import api from '@/api'
 import { call, get } from '@/packages/vuex-pathify'
 
-import Overall from './create/Overall'
-
-const componentManifest = [
-	{ id: 1, component: Overall, pageName: "Overall", componentTitle: "Get started", componentDescription: "Make the overall decisions" },
-]
+import componentManifest from './create'
 
 export default {
 	name: 'CreateProject',
+
+	props: {
+		projectId: {
+			type: Number,
+			default: null,
+		}
+	},
+
 	data() {
 		return {
 			componentManifest,
-			activeComponentObject: null,
 		}
 	},
 	computed: {
@@ -62,11 +63,6 @@ export default {
 	},
 
 	methods: {
-		componentIsActive(componentObject) {
-			const active = this.activeComponentObject
-			return active && active.id == componentObject.id
-		},
-
 		saveProject: call('project/saveProject'),
 	}
 }

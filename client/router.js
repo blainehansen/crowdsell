@@ -8,6 +8,8 @@ import Login from '@/Login'
 import CreateProject from '@/projects/CreateProject'
 import Project from '@/projects/Project'
 
+import CreateProjectManifest from '@/projects/create'
+
 import UserProfile from '@/users/UserProfile'
 import Profile from '@/users/Profile'
 
@@ -26,11 +28,22 @@ const router = new Router({
 
 		// { path: '/projects', name: 'projects', component: ProjectsIndex },
 
-		{ path: '/projects/create', name: 'projectCreate', component: CreateProject, meta: { private: true } },
+		{
+			path: '/projects/create', name: 'projectCreate', component: CreateProject,
+			props: { projectId: null },
+			meta: { private: true },
+			children: CreateProjectManifest,
+		},
+
+		{
+			path: '/projects/create/:projectId', name: 'projectEdit', component: CreateProject,
+			props: true,
+			meta: { private: true },
+			children: CreateProjectManifest,
+		}
 		// { path: '/projects/:userSlug/:projectSlug', name: 'project', component: Project, props: true },
 
-		// { path: '/profile', name: 'currentUserProfile', component: Profile, props: { userSlug: null, projectSlug: null } },
-
+		// { path: '/profile', name: 'currentUserProfile', component: Profile, props: { userSlug: null } },
 		// { path: '/profile/:userSlug', name: 'userProfile', component: Profile, props: true },
 
 		{ path: '/about', name: 'about', component: About },

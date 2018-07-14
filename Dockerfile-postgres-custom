@@ -1,0 +1,16 @@
+FROM postgres:9.6-alpine
+
+RUN apk update \
+	&& apk add --no-cache alpine-sdk postgresql-dev=10.4-r0 \
+	&& git clone https://github.com/iCyberon/pg_hashids.git \
+	&& cd pg_hashids \
+	&& make; make install \
+	&& cd .. \
+	&& rm -rf pg_hashids \
+	&& apk del alpine-sdk postgresql-dev
+
+# RUN echo "CREATE extension pg_hashids;" >> sudo -u postgres postgres postgres
+
+# COPY ../base-migration.sql /tmp
+# RUN cat /tmp/base-migration.sql >> sudo -u postgres postgres --single postgres
+# RUN rm -rf /tmp/base-migration.sql
