@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"encoding/base64"
-	"github.com/json-iterator/go"
 	"github.com/lhecker/argon2"
+	"github.com/json-iterator/go"
 
 	"github.com/speps/go-hashids"
 
@@ -22,7 +22,7 @@ import (
 var HashIdData *hashids.HashIDData = func() *hashids.HashIDData {
 	hashIdData := hashids.HashIDData {
 		Alphabet: "abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-		MinLength: 8,
+		MinLength: 6,
 		Salt: "id obfusctator string",
 	}
 	return &hashIdData
@@ -52,9 +52,6 @@ var _ r = route(POST, "/create-user", func(c *gin.Context) {
 		return
 	}
 
-	// h, _ := hashids.NewWithData(hd)
-	// e, _ := h.Encode([]int{45, 434, 1313, 99})
-	// fmt.Println(e)
 	createdUser := User { Name: newUser.Name, Email: newUser.Email, Password: string(hashedPassword) }
 	if err := db.Create(&createdUser).Error; err != nil {
 		c.AbortWithError(500, err)
@@ -62,7 +59,7 @@ var _ r = route(POST, "/create-user", func(c *gin.Context) {
 	}
 
 	// TODO don't have an empty role
-	authTokenString, issueError := issueAuthToken(createdUser.Id, "")
+	authTokenString, issueError := issueAuthToken(createdUser.Id, createdUser.Slug, "")
 	if issueError != nil {
 		c.AbortWithError(500, issueError)
 		return
@@ -122,7 +119,8 @@ var privateKey *[]byte = func() *[]byte {
 type AuthToken struct {
 	I uint32
 	E int64
-	R string
+	S string
+	R map[int]int
 }
 func (tok *AuthToken) Id() uint32 {
 	return tok.I

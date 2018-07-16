@@ -25,13 +25,13 @@ CREATE extension pg_hashids;
 
 CREATE OR REPLACE FUNCTION hashid(BIGINT) RETURNS TEXT
 AS $$
-	SELECT id_encode($1, 'salt', 6, 'abcdefghijklmnopqrstuvwxyz-');
+	SELECT id_encode($1, 'id obfusctator string', 6, 'abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ');
 $$
 LANGUAGE sql;
 
 CREATE OR REPLACE FUNCTION unhashid(TEXT) RETURNS BIGINT
 AS $$
-	SELECT id_decode_once($1, 'salt', 6, 'abcdefghijklmnopqrstuvwxyz-');
+	SELECT id_decode_once($1, 'id obfusctator string', 6, 'abcdefghijklmnopqrstuvwxyz-ABCDEFGHIJKLMNOPQRSTUVWXYZ');
 $$
 LANGUAGE sql;
 

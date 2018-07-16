@@ -1,3 +1,5 @@
+//go:generate kallax gen
+
 package main
 
 import (
@@ -9,6 +11,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/iancoleman/strcase"
 
+	"gopkg.in/src-d/go-kallax.v1"
 )
 
 

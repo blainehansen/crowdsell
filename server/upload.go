@@ -75,6 +75,8 @@ func UploadToSpace(fileObject io.ReadSeeker, objectKey string, contentType strin
 var _ r = authRoute(POST, "/profile-image/:imageHash/:imageType", func(c *gin.Context) {
 	userId := int64(c.MustGet("userId").(uint32))
 
+	userSlug := c.MustGet("userSlug")
+
 	hashId, hashIdError := hashids.NewWithData(HashIdData)
 	encodedUserId, encodedUserIdError := hashId.EncodeInt64([]int64{userId})
 	if hashIdError != nil || encodedUserIdError != nil {
