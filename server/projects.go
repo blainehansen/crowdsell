@@ -16,7 +16,7 @@ var _ r = route(GET, "/projects", func(c *gin.Context) {
 })
 
 var _ r = authRoute(POST, "/projects", func(c *gin.Context) {
-	userId := c.MustGet("userId").(uint32)
+	userId := c.MustGet("userId").(int64)
 
 	var project Project
 	if err := c.ShouldBindJSON(&project); err != nil {
@@ -34,29 +34,25 @@ var _ r = authRoute(POST, "/projects", func(c *gin.Context) {
 })
 
 var _ r = authRoute(PATCH, "/projects/:projectId", func(c *gin.Context) {
-	// this can't possibly be unset if we've made it this far
-	userId := c.MustGet("userId").(uint32)
+	userId := c.MustGet("userId").(int64)
 
 	projectId, parseErr := strconv.ParseUint(c.Param("projectId"), 10, 32)
 	if parseErr != nil {
-		c.AbortWithError(400, parseErr)
-		return
+		c.AbortWithError(400, parseErr); return
 	}
 
 	var project map[string]interface{}
 	bindErr := BindJSONWithTemplate(c, &project, Project{})
 	if bindErr != nil {
-		return
+		c.AbortWithStatus(404); return
 	}
 
 	queryResult := db.Model(Project{}).Where("id = ?", projectId).Where("user_id = ?", userId).Updates(project)
 	if err := queryResult.Error; err != nil {
-		c.AbortWithError(500, err)
-		return
+		c.AbortWithError(500, err); return
 	}
 	if queryResult.RowsAffected == 0 {
-		c.AbortWithStatus(404)
-		return
+		c.AbortWithStatus(404); return
 	}
 
 	c.Status(204)

@@ -11,8 +11,8 @@ b-navbar(toggleable="md")
 				a.nav-link About
 		ul.navbar-nav
 			template(v-if="userLoggedIn")
-				//- router-link.nav-item(:to="{ name: 'currentUserProfile' }", tag="li")
-				//- 	a.nav-link {{ userName }}
+				router-link.nav-item(:to="{ name: 'userProfile' }", tag="li")
+					a.nav-link {{ userName }}
 				router-link.nav-item(:to="{ name: 'projectCreate' }", tag="li")
 					a.nav-link Create Project
 				li.nav-item(@click="logout")

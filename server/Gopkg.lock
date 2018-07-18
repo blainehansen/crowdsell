@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/Masterminds/squirrel"
+  packages = ["."]
+  revision = "a6b93000bd219143c56c16e6cb1c4b91da3f224b"
+  version = "v1.0"
+
+[[projects]]
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -125,6 +131,18 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/lann/builder"
+  packages = ["."]
+  revision = "1b87b36280d04fe7882d1512bf038ea2967ad534"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lann/ps"
+  packages = ["."]
+  revision = "62de8c46ede02a7675c4c79c84883eb164cb71e3"
+
+[[projects]]
+  branch = "master"
   name = "github.com/lhecker/argon2"
   packages = ["."]
   revision = "c0922d56400404114424781cd2a091e75124cb0d"
@@ -158,6 +176,18 @@
   version = "1.0.0"
 
 [[projects]]
+  name = "github.com/oklog/ulid"
+  packages = ["."]
+  revision = "d311cb43c92434ec4072dfbbda3400741d0a6337"
+  version = "v0.3.0"
+
+[[projects]]
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
+
+[[projects]]
   name = "github.com/speps/go-hashids"
   packages = ["."]
   revision = "ad304c6ede07ca1f915c30a5510c45860aa165a7"
@@ -182,6 +212,15 @@
   version = "v8.18.2"
 
 [[projects]]
+  name = "gopkg.in/src-d/go-kallax.v1"
+  packages = [
+    ".",
+    "types"
+  ]
+  revision = "54324d6a2cb11186536d8f30e409742fa0c26272"
+  version = "v1.3.5"
+
+[[projects]]
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
@@ -190,6 +229,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0b3ee601bacc497a8cc9ac4962d1ce2fd20989035b19932779c70b5d2407a298"
+  inputs-digest = "fdf9dc67eb5e270954a03a27f10159c30d8844405740750b3b57811d89cde125"
   solver-name = "gps-cdcl"
   solver-version = 1

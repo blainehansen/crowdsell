@@ -83,7 +83,6 @@ func main() {
 	router.Use(cors.New(config))
 
 	var connectionError error
-	// db, connectionError = gorm.Open("postgres", "host=localhost port=5432 dbname=dev_database user=user password=asdf sslmode=disable")
 	db, connectionError = gorm.Open("postgres", "host=go-database port=5432 dbname=dev_database user=user password=asdf sslmode=disable")
 	if connectionError != nil {
 		fmt.Println(connectionError)

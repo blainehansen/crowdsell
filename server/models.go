@@ -11,12 +11,12 @@ import (
 	"github.com/fatih/structs"
 	"github.com/iancoleman/strcase"
 
-	"gopkg.in/src-d/go-kallax.v1"
+	// "gopkg.in/src-d/go-kallax.v1"
 )
 
 
 type Model struct {
-	Id uint32 `gorm:"primary_key" json:"id"`
+	Id int64 `gorm:"primary_key" json:"id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at"`
@@ -25,19 +25,23 @@ type Model struct {
 type User struct {
 	Model
 	Name string `json:"name"`
-	// https://stackoverflow.com/questions/386294/what-is-the-maximum-length-of-a-valid-email-address
 	Email string `gorm:"type:varchar(254);unique;not null" json:"email"`
-	// Slug string `gorm:"unique;not null" json:"slug"`
-	Password string `gorm:"not null"`
+	Slug string `gorm:"unique;not null" json:"slug"`
+	InternalSlug string `gorm:"unique;not null" json:"internal_slug"`
+	Password []byte `gorm:"not null"`
+
+	ProfilePhotoSlug string `json:"profile_photo_slug"`
 }
 
 type Project struct {
 	Model
 	Name string `json:"name"`
 	Description string `json:"description"`
+	Slug string `gorm:"unique;not null" json:"slug"`
+	InternalSlug string `gorm:"unique;not null" json:"internal_slug"`
 
 	User User `json:"user"`
-	UserId uint32 `json:"user_id"`
+	UserId int64 `json:"user_id"`
 }
 
 

@@ -21,11 +21,14 @@ export const privateApi = {
 		return this.uploadFile(`/profile-image/${hash}/${type}`, file)
 	},
 
-	saveProject: (projectId, projectPatches) => {
+	fetchFullUser: (userSlug) => privateHttp.get(`/users/${userSlug}`),
+	changeSlug(currentSlug, newSlug) => privateHttp.put(`/users/${currentSlug}/slug`, { slug: newSlug }),
+
+	saveProject(projectId, projectPatches) {
 		return projectId === null
 			? privateHttp.post(`/projects`, projectPatches)
 			: privateHttp.patch(`/projects/${projectId}`, projectPatches)
-	},
+	}
 }
 
 export default {

@@ -10,8 +10,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-
-	"github.com/speps/go-hashids"
 )
 
 
@@ -73,14 +71,8 @@ func UploadToSpace(fileObject io.ReadSeeker, objectKey string, contentType strin
 }
 
 var _ r = authRoute(POST, "/profile-image/:imageHash/:imageType", func(c *gin.Context) {
-	userId := int64(c.MustGet("userId").(uint32))
-
-	userSlug := c.MustGet("userSlug")
-
-	hashId, hashIdError := hashids.NewWithData(HashIdData)
-	encodedUserId, encodedUserIdError := hashId.EncodeInt64([]int64{userId})
-	if hashIdError != nil || encodedUserIdError != nil {
-		c.AbortWithStatus(500); return }
+	userId := c.MustGet("userId").(int64)
+	userInternalSlug := c.MustGet("userInternalSlug")
 
 	file, parseErr := c.FormFile("file")
 	if parseErr != nil {
@@ -99,13 +91,19 @@ var _ r = authRoute(POST, "/profile-image/:imageHash/:imageType", func(c *gin.Co
 	}
 	imageHash := c.Param("imageHash")
 
-	objectName := fmt.Sprintf("profile-images/%s/%s.%s", encodedUserId, imageHash, imageType)
+	objectName := fmt.Sprintf("profile-images/%s/%s.%s", userInternalSlug, imageHash, imageType)
 	mimeType := fmt.Sprintf("image/%s", imageType)
 	uploadErr := UploadToSpace(fileInternal, objectName, mimeType, UploadParams{})
 
 	if uploadErr != nil {
 		c.AbortWithError(500, uploadErr); return
-	} else {
-		c.JSON(200, objectName)
 	}
+
+	updateUser := User{}
+	updateUser.Id = userId
+	db.Model(&updateUser).Update("profile_photo_slug", objectName)
+
+	c.JSON(200, objectName)
+	// else {
+	// }
 })

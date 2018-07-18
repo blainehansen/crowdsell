@@ -6,7 +6,7 @@ import { hasValue } from '@/packages/vuex-pathify/utils/object'
 // we want to create a system that allows us to specify state variables whose mutations will automatically set a "$touched"
 const touchedKeyManifest = []
 
-function makeMutations(stateObject, relevantKeys) {
+function makeMutations(stateObject, relevantKeys, touchedKeyManifest) {
 	const mutations = {}
 
 	for (let i = relevantKeys.length - 1; i >= 0; i--) {
@@ -34,9 +34,26 @@ function makeMutations(stateObject, relevantKeys) {
 		// 	stateObject[`${key}$anyTouched`] = false
 		// 	makeMutations(value, mutations)
 		// }
+
+		mutations.RESET = function(state) {
+			for (let i = touchedKeyManifest.length - 1; i >= 0; i--) {
+				state[touchedKeyManifest[i]] = false
+			}
+		}
 	}
 
 	return mutations
+}
+
+function makeGetters(touchedKeyManifest) {
+	return {
+		$anyTouched(state) {
+			for (let i = touchedKeyManifest.length - 1; i >= 0; i--) {
+				if (state[touchedKeyManifest[i]]) return true
+			}
+			return false
+		}
+	}
 }
 
 
@@ -61,41 +78,56 @@ export default {
 		SET_ID(state, id) {
 			state.id = id
 		},
-		...makeMutations(state, Object.keys(projectState)),
-
-		RESET(state) {
-			for (let i = touchedKeyManifest.length - 1; i >= 0; i--) {
-				state[touchedKeyManifest[i]] = false
-			}
-		}
+		...makeMutations(state, Object.keys(projectState), touchedKeyManifest),
 	},
 
 	getters: {
-		$anyTouched(state) {
-			for (let i = touchedKeyManifest.length - 1; i >= 0; i--) {
-				if (state[touchedKeyManifest[i]]) return true
-			}
-			return false
-		}
+		...makeGetters(touchedKeyManifest),
 	},
 
 	actions: {
-		async saveProject({ state, getters, commit }) {
-			if (!getters.$anyTouched) return
-
-			const projectPatches = {}
-			for (let i = touchedKeyManifest.length - 1; i >= 0; i--) {
-				const touchedKey = touchedKeyManifest[i]
-				if (state[touchedKey]) {
-					const actualKey = touchedKey.replace(/\$touched$/, '')
-					projectPatches[actualKey] = state[actualKey]
-				}
-			}
-
+		saveProject: genericSaveAction(touchedKeyManifest, function({ state, getters, commit }, patches) {
 			const response = await api.saveProject(state.id, projectPatches)
 			if (hasValue(response, 'data.id')) commit('SET_ID', response.data.id)
+		}),
 
-			commit('RESET')
+		// async saveProject({ state, getters, commit }) {
+		// 	if (!getters.$anyTouched) return
+
+		// 	const projectPatches = {}
+		// 	for (let i = touchedKeyManifest.length - 1; i >= 0; i--) {
+		// 		const touchedKey = touchedKeyManifest[i]
+		// 		if (state[touchedKey]) {
+		// 			const actualKey = touchedKey.replace(/\$touched$/, '')
+		// 			projectPatches[actualKey] = state[actualKey]
+		// 		}
+		// 	}
+
+		// 	const response = await api.saveProject(state.id, projectPatches)
+		// 	if (hasValue(response, 'data.id')) commit('SET_ID', response.data.id)
+
+		// 	commit('RESET')
+		// }
+	}
+}
+
+function genericSaveAction(touchedKeyManifest, saveFunction) {
+	return async function(context) {
+		const { state, getters, commit } = context
+
+		if (!getters.$anyTouched) return
+
+		const patches = {}
+		for (let i = touchedKeyManifest.length - 1; i >= 0; i--) {
+			const touchedKey = touchedKeyManifest[i]
+			if (state[touchedKey]) {
+				const actualKey = touchedKey.replace(/\$touched$/, '')
+				patches[actualKey] = state[actualKey]
+			}
 		}
+
+		await saveFunction(context, patches)
+
+		commit('RESET')
 	}
 }

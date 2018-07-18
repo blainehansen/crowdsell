@@ -43,8 +43,8 @@ const router = new Router({
 		}
 		// { path: '/projects/:userSlug/:projectSlug', name: 'project', component: Project, props: true },
 
-		// { path: '/profile', name: 'currentUserProfile', component: Profile, props: { userSlug: null } },
-		// { path: '/profile/:userSlug', name: 'userProfile', component: Profile, props: true },
+		{ path: '/you', name: 'userProfile', component: UserProfile, meta: { private: true } },
+		{ path: '/profile/:userSlug', name: 'profile', component: Profile, props: { previewing: false } },
 
 		{ path: '/about', name: 'about', component: About },
 

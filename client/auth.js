@@ -40,6 +40,7 @@ export const authModule = {
 		login(state, signedUser) {
 			const { token, name, email } = signedUser
 			state.token = token
+			// TODO perhaps this should store some of this in the user module?
 			state.user = { name, email }
 			privateHttp.defaults.headers.common['Authorization'] = token
 			Cookies.set('signedUser', signedUser)
