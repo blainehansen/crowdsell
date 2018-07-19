@@ -2,16 +2,17 @@ package main
 
 import (
 	// "net/http"
+	"fmt"
 	"github.com/dghubble/sling"
 
 	"github.com/gin-gonic/gin"
 
 )
 
-const assemblyBaseUrl string = "https://test.api.promisepay.com"
+const assemblyBaseUrl string = environment["ASSEMBLY_ENDPOINT"]
 var AssemblyClient *sling.Sling = sling.New().Base(assemblyBaseUrl).Set(
 	"Authorization",
-	"Basic ZmFpY2hlbnNoaW5nQGdtYWlsLmNvbTpZVFk0TURKalpEaGpNelpsWXpVMk5qTXhaRGsxTlRKaVlURmpZalU0WlRjPQ==",
+	fmt.Sprintf("Basic %s", environment["ASSEMBLY_AUTH"]),
 )
 
 type AssemblyStatus struct {

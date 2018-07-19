@@ -9,9 +9,21 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
 
+	"github.com/joho/godotenv"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
+
+
+var environment *map[string]string = func() {
+	env, err := godotenv.Read()
+	if err != nil {
+		panic("error reading .env file")
+	}
+	return &env
+}()
+
 
 
 type RouteMethod int
@@ -83,7 +95,18 @@ func main() {
 	router.Use(cors.New(config))
 
 	var connectionError error
-	db, connectionError = gorm.Open("postgres", "host=go-database port=5432 dbname=dev_database user=user password=asdf sslmode=disable")
+	db, connectionError = gorm.Open(
+		"postgres",
+		fmt.Sprintf(
+			"host=%s port=%s dbname=%s user=%s password=%s sslmode=%s",
+			environment["DATABASE_HOST"],
+			environment["DATABASE_PORT"],
+			environment["DATABASE_DB_NAME"],
+			environment["DATABASE_USER"],
+			environment["DATABASE_PASSWORD"],
+			environment["DATABASE_SSL"],
+		),
+	)
 	if connectionError != nil {
 		fmt.Println(connectionError)
 		panic("failed to connect to database")

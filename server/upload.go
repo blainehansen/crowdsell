@@ -16,12 +16,13 @@ import (
 var S3Client *s3.S3 = s3.New(session.New(&aws.Config{
 	Credentials: credentials.NewStaticCredentials(
 		// accessKeyID
-		"WVTBP6TRFMDIQSRFHNQS",
+		environment["SPACES_ACCESS_KEY"],
 		// secretAccessKey
-		"ulHKld8JmkSqIoebaKVXyqZQEVc9+bODk4zblJAuZT8",
+		environment["SPACES_SECRET_KEY"],
+		// some unknown unimportant thing
 		"",
 	),
-	Endpoint: aws.String("https://nyc3.digitaloceanspaces.com"),
+	Endpoint: aws.String(environment["SPACES_ENDPOINT"]),
 	// dumb aws hack
 	Region: aws.String("us-east-1"),
 }))
@@ -33,7 +34,7 @@ type UploadParams struct {
 	DispositionFilename string
 }
 
-const bucketName string = "blaine-final-spaces-test"
+const bucketName string = environment["SPACES_BUCKET_NAME"]
 func UploadToSpace(fileObject io.ReadSeeker, objectKey string, contentType string, params UploadParams) error {
 	var aclString string
 	if params.Private {
