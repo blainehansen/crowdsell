@@ -1,0 +1,7 @@
+BEGIN;
+
+DROP TABLE project;
+
+DROP TABLE user;
+
+COMMIT;

@@ -1,4 +1,4 @@
-FROM postgres:9.6-alpine
+FROM postgres:10-alpine
 
 RUN apk update \
 	&& apk add --no-cache alpine-sdk postgresql-dev=10.4-r0 \

@@ -11,6 +11,8 @@ import (
 
 	"github.com/joho/godotenv"
 
+	"github.com/json-iterator/go/extra"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -84,6 +86,8 @@ func addRoutesToGroup(router gin.IRouter, routesArray []Route) {
 }
 
 func main() {
+	extra.SetNamingStrategy(extra.LowerCaseWithUnderscores)
+
 	router := gin.Default()
 
 	config := cors.DefaultConfig()
