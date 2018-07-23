@@ -6,26 +6,25 @@ import (
 	"fmt"
 	"time"
 
+	"database/sql"
+	_ "github.com/lib/pq"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
 
 	"github.com/joho/godotenv"
 
 	"github.com/json-iterator/go/extra"
-
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 
-var environment *map[string]string = func() {
+var environment *map[string]string = func() *map[string]string {
 	env, err := godotenv.Read()
 	if err != nil {
 		panic("error reading .env file")
 	}
 	return &env
 }()
-
 
 
 type RouteMethod int
@@ -63,8 +62,6 @@ func authRoute(method RouteMethod, path string, handler gin.HandlerFunc) r {
 }
 
 
-var db *gorm.DB
-
 func addRoutesToGroup(router gin.IRouter, routesArray []Route) {
 	for _, routeStruct := range routesArray {
 		switch routeStruct.Method {
@@ -85,21 +82,12 @@ func addRoutesToGroup(router gin.IRouter, routesArray []Route) {
 	}
 }
 
+var dbUserStore *UserStore
+var dbProjectStore *ProjectStore
+
 func main() {
-	extra.SetNamingStrategy(extra.LowerCaseWithUnderscores)
-
-	router := gin.Default()
-
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:8080"}
-	config.AllowMethods = []string{"HEAD", "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE"}
-	config.AddAllowHeaders("Authorization")
-	config.MaxAge = 24 * time.Hour
-
-	router.Use(cors.New(config))
-
-	var connectionError error
-	db, connectionError = gorm.Open(
+	// CONNECTING TO DATABASE
+	db, connectionError := sql.Open(
 		"postgres",
 		fmt.Sprintf(
 			"host=%s port=%s dbname=%s user=%s password=%s sslmode=%s",
@@ -117,8 +105,25 @@ func main() {
 	}
 	defer db.Close()
 
-	db.AutoMigrate(&Project{}, &User{})
+	// INSTANTIATING STORES
+	dbUserStore = NewUserStore(db)
+	dbProjectStore = NewProjectStore(db)
 
+	// CHANGING JSON NAMING CONVENTION
+	extra.SetNamingStrategy(extra.LowerCaseWithUnderscores)
+
+	// SETTING UP ROUTER
+	router := gin.Default()
+
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:8080"}
+	config.AllowMethods = []string{"HEAD", "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE"}
+	config.AddAllowHeaders("Authorization")
+	config.MaxAge = 24 * time.Hour
+
+	router.Use(cors.New(config))
+
+	// SETTING UP ROUTES
 	addRoutesToGroup(router, routes)
 
 	authorized := router.Group("/secure")

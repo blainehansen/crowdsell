@@ -6,10 +6,15 @@ import (
 )
 
 var _ r = route(GET, "/projects", func(c *gin.Context) {
-	var projects []Project
-	if err := db.Find(&projects).Error; err != nil {
-		c.AbortWithError(404, err)
-		return
+	projects, err := dbProjectStore.FindAll(
+		NewProjectQuery().WithUser().Select(
+			Schema.Projects.Slug, Schema.Projects.InternalSlug, Schema.Projects.Name, Schema.Projects.Description,
+			Schema.Users.InternalSlug, Schema.Users.Name,
+		).Limit(5),
+	)
+
+	if err != nil {
+		c.AbortWithError(500, err); return
 	}
 
 	c.JSON(200, &projects)
@@ -20,14 +25,12 @@ var _ r = authRoute(POST, "/projects", func(c *gin.Context) {
 
 	var project Project
 	if err := c.ShouldBindJSON(&project); err != nil {
-		c.AbortWithError(422, err)
-		return
+		c.AbortWithError(422, err); return
 	}
 	project.UserId = userId
 
-	if err := db.Create(&project).Error; err != nil {
-		c.AbortWithError(500, err)
-		return
+	if err := dbProjectStore.Insert(&project); err != nil {
+		c.AbortWithError(500, err); return
 	}
 
 	c.JSON(200, &project)
