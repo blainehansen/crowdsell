@@ -36,28 +36,28 @@ var _ r = authRoute(POST, "/projects", func(c *gin.Context) {
 	c.JSON(200, &project)
 })
 
-// var _ r = authRoute(PATCH, "/projects/:projectId", func(c *gin.Context) {
-// 	userId := c.MustGet("userId").(int64)
+var _ r = authRoute(PATCH, "/projects/:projectId", func(c *gin.Context) {
+	userId := c.MustGet("userId").(int64)
 
-// 	projectId, parseErr := strconv.ParseInt(c.Param("projectId"), 10, 32)
-// 	if parseErr != nil {
-// 		c.AbortWithError(400, parseErr); return
-// 	}
+	projectId, parseErr := strconv.ParseInt(c.Param("projectId"), 10, 32)
+	if parseErr != nil {
+		c.AbortWithError(400, parseErr); return
+	}
 
-// 	var project map[string]interface{}
-// 	bindErr := BindJSONWithTemplate(c, &project, Project{})
-// 	if bindErr != nil {
-// 		c.AbortWithStatus(404); return
-// 	}
+	var project map[string]interface{}
+	bindErr := BindJSONWithTemplate(c, &project, Project{})
+	if bindErr != nil {
+		c.AbortWithStatus(404); return
+	}
 
-// 	queryResult := db.Model(Project{}).Where("id = ?", projectId).Where("user_id = ?", userId).Updates(project)
-// 	rowsUpdated, err := dbProjectStore.Update(&project, Schema.User.Slug)
-// 	if err := queryResult.Error; err != nil {
-// 		c.AbortWithError(500, err); return
-// 	}
-// 	if rowsUpdated == 0 {
-// 		c.AbortWithStatus(404); return
-// 	}
+	queryResult := db.Model(Project{}).Where("id = ?", projectId).Where("user_id = ?", userId).Updates(project)
+	rowsUpdated, err := dbProjectStore.Update(&project, Schema.User.Slug)
+	if err := queryResult.Error; err != nil {
+		c.AbortWithError(500, err); return
+	}
+	if rowsUpdated == 0 {
+		c.AbortWithStatus(404); return
+	}
 
-// 	c.Status(204)
-// })
+	c.Status(204)
+})

@@ -1,11 +1,11 @@
 package main
 
 import (
-	// "fmt"
-	// "bytes"
+	"fmt"
+	"bytes"
 
 	"github.com/gin-gonic/gin"
-	// "github.com/badoux/checkmail"
+	"github.com/badoux/checkmail"
 )
 
 type SignedUser struct {
@@ -100,106 +100,106 @@ var _ r = authRoute(POST, "/users/change-slug", func(c *gin.Context) {
 })
 
 
-// var _ r = route(POST, "/users/forgot-password", func(c *gin.Context) {
-// 	forgottenEmailPayload := struct {
-// 		Email string `binding:"required"`
-// 	}{}
-// 	if err := c.ShouldBindJSON(&forgottenEmailPayload); err != nil {
-// 		c.AbortWithError(422, err); return
-// 	}
+var _ r = route(POST, "/users/forgot-password", func(c *gin.Context) {
+	forgottenEmailPayload := struct {
+		Email string `binding:"required"`
+	}{}
+	if err := c.ShouldBindJSON(&forgottenEmailPayload); err != nil {
+		c.AbortWithError(422, err); return
+	}
 
-// 	forgottenEmail := forgottenEmailPayload.Email
-// 	if err := checkmail.ValidateFormat(forgottenEmail); err != nil {
-// 		c.AbortWithError(400, err)
-// 	}
+	forgottenEmail := forgottenEmailPayload.Email
+	if err := checkmail.ValidateFormat(forgottenEmail); err != nil {
+		c.AbortWithError(400, err)
+	}
 
-// 	user, err := dbUserStore.FindOne(
-// 		NewUserQuery().FindByEmail(forgottenEmail).Select(Schema.User.Id, Schema.User.ForgotPasswordToken),
-// 	)
-// 	if err != nil {
-// 		c.AbortWithError(500, err); return
-// 	}
-// 	if user == nil {
-// 		c.Status(204); return
-// 	}
+	user, err := dbUserStore.FindOne(
+		NewUserQuery().FindByEmail(forgottenEmail).Select(Schema.User.Id, Schema.User.ForgotPasswordToken),
+	)
+	if err != nil {
+		c.AbortWithError(500, err); return
+	}
+	if user == nil {
+		c.Status(204); return
+	}
 
-// 	forgotPasswordToken, generationError := generateRandomToken()
-// 	if generationError != nil {
-// 		c.AbortWithError(500, generationError)
-// 	}
-// 	user.ForgotPasswordToken = &forgotPasswordToken
+	forgotPasswordToken, generationError := generateRandomToken()
+	if generationError != nil {
+		c.AbortWithError(500, generationError)
+	}
+	user.ForgotPasswordToken = &forgotPasswordToken
 
-// 	rowsUpdated, err := dbUserStore.Update(user, Schema.User.ForgotPasswordToken)
-// 	if err != nil || rowsUpdated == 0 {
-// 		c.AbortWithStatus(500); return
-// 	}
+	rowsUpdated, err := dbUserStore.Update(user, Schema.User.ForgotPasswordToken)
+	if err != nil || rowsUpdated == 0 {
+		c.AbortWithStatus(500); return
+	}
 
-// 	recoveryToken := []byte(fmt.Sprintf("%s:%s", forgottenEmail, forgotPasswordToken))
-// 	message := fmt.Sprintf(`%s%s/recover-password?t=%s`, environment["SERVER_PROTOCOL"], environment["SERVER_DOMAIN"], encodeBase64(recoveryToken))
+	recoveryToken := []byte(fmt.Sprintf("%s:%s", forgottenEmail, forgotPasswordToken))
+	message := fmt.Sprintf(`%s%s/recover-password?t=%s`, environment["SERVER_PROTOCOL"], environment["SERVER_DOMAIN"], encodeBase64(recoveryToken))
 
-// 	// TODO this will be real
-// 	// if err := sendMessage("no-reply@crowdsell.io", "Forgot Password", message, forgottenEmail); err != nil {
-// 	// 	c.AbortWithError(500, err)
-// 	// }
+	// TODO this will be real
+	// if err := sendMessage("no-reply@crowdsell.io", "Forgot Password", message, forgottenEmail); err != nil {
+	// 	c.AbortWithError(500, err)
+	// }
 
-// 	c.Status(204)
-// })
+	c.Status(204)
+})
 
-// var _ r = route(POST, "/users/recover-password", func(c *gin.Context) {
-// 	recoveryTokenPayload := struct {
-// 		RecoveryToken *[]byte `binding:"required"`
-// 		NewPassword *[]byte `binding:"required"`
-// 	}{}
-// 	if err := c.ShouldBindJSON(&recoveryTokenPayload); err != nil {
-// 		c.AbortWithError(422, err); return
-// 	}
+var _ r = route(POST, "/users/recover-password", func(c *gin.Context) {
+	recoveryTokenPayload := struct {
+		RecoveryToken *[]byte `binding:"required"`
+		NewPassword *[]byte `binding:"required"`
+	}{}
+	if err := c.ShouldBindJSON(&recoveryTokenPayload); err != nil {
+		c.AbortWithError(422, err); return
+	}
 
-// 	recoveryToken, err := decodeBase64(*recoveryTokenPayload.RecoveryToken)
-// 	if err != nil {
-// 		c.AbortWithStatus(400); return
-// 	}
+	recoveryToken, err := decodeBase64(*recoveryTokenPayload.RecoveryToken)
+	if err != nil {
+		c.AbortWithStatus(400); return
+	}
 
-// 	lastIndex := bytes.LastIndexByte(recoveryToken, ':')
-// 	if lastIndex < 1 {
-// 		c.AbortWithStatus(400); return
-// 	}
+	lastIndex := bytes.LastIndexByte(recoveryToken, ':')
+	if lastIndex < 1 {
+		c.AbortWithStatus(400); return
+	}
 
-// 	forgottenEmail := string(recoveryToken[:lastIndex])
-// 	forgotPasswordToken := recoveryToken[lastIndex:]
+	forgottenEmail := string(recoveryToken[:lastIndex])
+	forgotPasswordToken := recoveryToken[lastIndex:]
 
-// 	user, err := dbUserStore.FindOne(
-// 		NewUserQuery().FindByEmail(forgottenEmail).Select(Schema.User.Id, Schema.User.Name, Schema.User.Slug, Schema.User.InternalSlug, Schema.User.Password, Schema.User.ForgotPasswordToken),
-// 	)
-// 	if err != nil || user == nil {
-// 		c.AbortWithStatus(400); return
-// 	}
+	user, err := dbUserStore.FindOne(
+		NewUserQuery().FindByEmail(forgottenEmail).Select(Schema.User.Id, Schema.User.Name, Schema.User.Slug, Schema.User.InternalSlug, Schema.User.Password, Schema.User.ForgotPasswordToken),
+	)
+	if err != nil || user == nil {
+		c.AbortWithStatus(400); return
+	}
 
-// 	if !bytes.Equal(*user.ForgotPasswordToken, forgotPasswordToken) {
-// 		c.AbortWithStatus(400); return
-// 	}
+	if !bytes.Equal(*user.ForgotPasswordToken, forgotPasswordToken) {
+		c.AbortWithStatus(400); return
+	}
 
 
-// 	hashedPassword, hashError := hashPassword(recoveryTokenPayload.NewPassword)
-// 	if hashError != nil {
-// 		c.AbortWithError(500, hashError); return
-// 	}
+	hashedPassword, hashError := hashPassword(recoveryTokenPayload.NewPassword)
+	if hashError != nil {
+		c.AbortWithError(500, hashError); return
+	}
 
-// 	// TODO or something
-// 	user.ForgotPasswordToken = nil
-// 	user.Password = hashedPassword
+	// TODO or something
+	user.ForgotPasswordToken = nil
+	user.Password = hashedPassword
 
-// 	rowsUpdated, err := dbUserStore.Update(user, Schema.User.Password, Schema.User.ForgotPasswordToken)
-// 	if rowsUpdated == 0 || err != nil {
-// 		c.AbortWithStatus(500); return
-// 	}
+	rowsUpdated, err := dbUserStore.Update(user, Schema.User.Password, Schema.User.ForgotPasswordToken)
+	if rowsUpdated == 0 || err != nil {
+		c.AbortWithStatus(500); return
+	}
 
-// 	authTokenString, issueError := issueAuthToken(user.InternalSlug)
-// 	if issueError != nil {
-// 		c.AbortWithError(500, issueError); return
-// 	}
+	authTokenString, issueError := issueAuthToken(user.InternalSlug)
+	if issueError != nil {
+		c.AbortWithError(500, issueError); return
+	}
 
-// 	c.JSON(200, SignedUser { Name: *user.Name, Slug: user.Slug, Email: user.Email, Token: authTokenString })
-// })
+	c.JSON(200, SignedUser { Name: *user.Name, Slug: user.Slug, Email: user.Email, Token: authTokenString })
+})
 
 func VerifyTokenMiddleWare(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
