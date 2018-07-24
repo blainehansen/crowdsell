@@ -18,12 +18,12 @@ import (
 )
 
 
-var environment *map[string]string = func() *map[string]string {
+var environment map[string]string = func() map[string]string {
 	env, err := godotenv.Read()
 	if err != nil {
 		panic("error reading .env file")
 	}
-	return &env
+	return env
 }()
 
 

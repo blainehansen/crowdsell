@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"time"
-	"strings"
 	"errors"
+	"strconv"
+	"strings"
 
 	"encoding/base64"
 	"github.com/lhecker/argon2"
@@ -25,23 +26,29 @@ var signingKey *[]byte = func() *[]byte {
 }()
 
 var HashIDData *hashids.HashIDData = func() *hashids.HashIDData {
+	hashidMinLength, parseErr := strconv.ParseInt(environment["HASHID_MIN_LENGTH"], 10, 32)
+	if parseErr != nil {
+		panic(fmt.Sprintf("invalid int: %s", environment["HASHID_MIN_LENGTH"]))
+	}
+	HASHID_MIN_LENGTH := int(hashidMinLength)
+
 	internalHashIdData := hashids.HashIDData {
 		Alphabet: environment["HASHID_ALPHABET"],
-		MinLength: environment["HASHID_MIN_LENGTH"],
+		MinLength: HASHID_MIN_LENGTH,
 		Salt: environment["HASHID_SALT"],
 	}
 	return &internalHashIdData
 }()
 
 
-func generateRandomToken() (string, error) {
+func generateRandomToken() ([]byte, error) {
 	tokenBytes := make([]byte, 32)
 	_, err := rand.Read(tokenBytes)
 	if err != nil {
 		return nil, err
 	}
 
-	return localEncoding.EncodeToString(tokenBytes), nil
+	return encodeBase64(tokenBytes), nil
 }
 
 

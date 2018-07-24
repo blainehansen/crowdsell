@@ -45,10 +45,22 @@
   version = "v1.14.14"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/badoux/checkmail"
+  packages = ["."]
+  revision = "0755fe2dc241caebab64327c352006712f6a55c4"
+
+[[projects]]
   name = "github.com/dghubble/sling"
   packages = ["."]
   revision = "eb56e89ac5088bebb12eef3cb4b293300f43608b"
   version = "v1.1.0"
+
+[[projects]]
+  name = "github.com/fatih/structs"
+  packages = ["."]
+  revision = "a720dfa8df582c51dee1b36feabb906bde1588bd"
+  version = "v1.0"
 
 [[projects]]
   name = "github.com/gin-contrib/cors"
@@ -92,19 +104,10 @@
   revision = "53e6ce116135b80d037921a7fdd5138cf32d7a8a"
 
 [[projects]]
-  name = "github.com/jinzhu/gorm"
-  packages = [
-    ".",
-    "dialects/postgres"
-  ]
-  revision = "6ed508ec6a4ecb3531899a69cbc746ccf65a4166"
-  version = "v1.9.1"
-
-[[projects]]
   branch = "master"
-  name = "github.com/jinzhu/inflection"
+  name = "github.com/iancoleman/strcase"
   packages = ["."]
-  revision = "04140366298a54a039076d798123ffa108fff46c"
+  revision = "90d371a664d668ca3e61d3ddddf1916662959f11"
 
 [[projects]]
   name = "github.com/jmespath/go-jmespath"
@@ -149,7 +152,6 @@
   name = "github.com/lib/pq"
   packages = [
     ".",
-    "hstore",
     "oid"
   ]
   revision = "90697d60dd844d5ef6ff15135d0203f65d2f53b8"
@@ -238,6 +240,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "73c77b6621761cd37fec49f6566fcc9b1372f1e3bed154e1440a01d922bd8f5c"
+  inputs-digest = "e9cc4b5f70bfa1260c5e5c67f43746be800997f6c2bf882c502456d048efd1ec"
   solver-name = "gps-cdcl"
   solver-version = 1

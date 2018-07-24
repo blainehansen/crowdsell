@@ -34,7 +34,7 @@ type UploadParams struct {
 	DispositionFilename string
 }
 
-const bucketName string = environment["SPACES_BUCKET_NAME"]
+var bucketName string = environment["SPACES_BUCKET_NAME"]
 func UploadToSpace(fileObject io.ReadSeeker, objectKey string, contentType string, params UploadParams) error {
 	var aclString string
 	if params.Private {
@@ -100,9 +100,14 @@ var _ r = authRoute(POST, "/profile-image/:imageHash/:imageType", func(c *gin.Co
 		c.AbortWithError(500, uploadErr); return
 	}
 
-	updateUser := User{}
-	updateUser.Id = userId
-	db.Model(&updateUser).Update("profile_photo_slug", objectName)
+	updateUser := User{ Id: userId, ProfilePhotoSlug: &objectName }
+	rowsUpdated, err := dbUserStore.Update(&updateUser, Schema.User.ProfilePhotoSlug)
+	if err != nil {
+		c.AbortWithError(500, err); return
+	}
+	if rowsUpdated == 0 {
+		c.AbortWithStatus(404); return
+	}
 
 	c.JSON(200, objectName)
 	// else {

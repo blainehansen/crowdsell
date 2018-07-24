@@ -9,7 +9,8 @@ import (
 
 )
 
-const assemblyBaseUrl string = environment["ASSEMBLY_ENDPOINT"]
+var assemblyBaseUrl string = environment["ASSEMBLY_ENDPOINT"]
+
 var AssemblyClient *sling.Sling = sling.New().Base(assemblyBaseUrl).Set(
 	"Authorization",
 	fmt.Sprintf("Basic %s", environment["ASSEMBLY_AUTH"]),

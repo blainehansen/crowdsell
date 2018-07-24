@@ -1,30 +1,4 @@
--- CREATE TABLE user (
--- 	id SERIAL PRIMARY KEY,
--- 	internal_slug TEXT NOT NULL,
--- 	slug TEXT NOT NULL,
-
--- 	name TEXT NOT NULL,
--- 	-- https://stackoverflow.com/questions/386294/what-is-the-maximum-length-of-a-valid-email-address
--- 	email TEXT NOT NULL,
--- 	password bytea NOT NULL,
-
--- 	profile_photo_slug TEXT,
-
--- 	UNIQUE(email),
--- 	UNIQUE(slug)
--- );
-
--- CREATE TABLE project (
--- 	id SERIAL PRIMARY KEY,
--- 	internal_slug TEXT NOT NULL,
--- 	slug TEXT NOT NULL,
-
--- 	title TEXT,
-
--- 	UNIQUE(slug)
--- );
-
-CREATE OR REPLACE extension pg_hashids;
+CREATE extension IF NOT EXISTS pg_hashids;
 
 CREATE OR REPLACE FUNCTION hashid(BIGINT) RETURNS TEXT
 AS $$
@@ -49,14 +23,14 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER default_slug_for_user
+CREATE TRIGGER default_slug_for_user
 	BEFORE INSERT
-	ON user
+	ON users
 	FOR EACH ROW
 	EXECUTE PROCEDURE default_slug();
 
-CREATE OR REPLACE TRIGGER default_slug_for_project
+CREATE TRIGGER default_slug_for_project
 	BEFORE INSERT
-	ON project
+	ON projects
 	FOR EACH ROW
 	EXECUTE PROCEDURE default_slug();

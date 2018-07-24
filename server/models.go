@@ -18,14 +18,14 @@ type User struct {
 
 	Id int64 `pk:"autoincr"`
 	Slug string `unique:"true"`
-	InternalSlug string `unique:"true"`
+	DisplaySlug string `unique:"true"`
 
 	Name *string
 	Email string `unique:"true"`
 	Password []byte
 
 	ProfilePhotoSlug *string
-	ForgotPasswordToken []byte
+	ForgotPasswordToken *[]byte
 
 	Projects []*Project `fk:"user_id"`
 }
@@ -36,7 +36,7 @@ type Project struct {
 
 	Id int64 `pk:"autoincr"`
 	Slug string `unique:"true"`
-	InternalSlug string `unique:"true"`
+	DisplaySlug string `unique:"true"`
 
 	Name *string
 	Description *string

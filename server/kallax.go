@@ -45,6 +45,8 @@ func (r *Project) ColumnAddress(col string) (interface{}, error) {
 		return types.Nullable(&r.Name), nil
 	case "description":
 		return types.Nullable(&r.Description), nil
+	case "user_id":
+		return types.Nullable(kallax.VirtualColumn("user_id", r, new(kallax.NumericID))), nil
 
 	default:
 		return nil, fmt.Errorf("kallax: invalid column in Project: %s", col)
@@ -74,6 +76,12 @@ func (r *Project) Value(col string) (interface{}, error) {
 			return nil, nil
 		}
 		return r.Description, nil
+	case "user_id":
+		v := r.Model.VirtualColumn(col)
+		if v == nil {
+			return nil, kallax.ErrEmptyVirtualColumn
+		}
+		return v, nil
 
 	default:
 		return nil, fmt.Errorf("kallax: invalid column in Project: %s", col)
@@ -145,14 +153,13 @@ func (s *ProjectStore) DisableCacher() *ProjectStore {
 	return &ProjectStore{s.Store.DisableCacher()}
 }
 
-func (s *ProjectStore) relationshipRecords(record *Project) []modelSaveFunc {
+func (s *ProjectStore) inverseRecords(record *Project) []modelSaveFunc {
 	var result []modelSaveFunc
 
 	if !record.User.GetID().IsEmpty() && !record.User.IsSaving() {
-		r := &record.User
-		r.AddVirtualColumn("project_id", record.GetID())
+		record.AddVirtualColumn("user_id", record.User.GetID())
 		result = append(result, func(store *kallax.Store) error {
-			_, err := (&UserStore{store}).Save(r)
+			_, err := (&UserStore{store}).Save(&record.User)
 			return err
 		})
 	}
@@ -173,18 +180,18 @@ func (s *ProjectStore) Insert(record *Project) error {
 		return err
 	}
 
-	records := s.relationshipRecords(record)
+	inverseRecords := s.inverseRecords(record)
 
-	if len(records) > 0 {
+	if len(inverseRecords) > 0 {
 		return s.Store.Transaction(func(s *kallax.Store) error {
-			if err := s.Insert(Schema.Project.BaseSchema, record); err != nil {
-				return err
-			}
-
-			for _, r := range records {
+			for _, r := range inverseRecords {
 				if err := r(s); err != nil {
 					return err
 				}
+			}
+
+			if err := s.Insert(Schema.Project.BaseSchema, record); err != nil {
+				return err
 			}
 
 			return nil
@@ -211,19 +218,19 @@ func (s *ProjectStore) Update(record *Project, cols ...kallax.SchemaField) (upda
 		return 0, err
 	}
 
-	records := s.relationshipRecords(record)
+	inverseRecords := s.inverseRecords(record)
 
-	if len(records) > 0 {
+	if len(inverseRecords) > 0 {
 		err = s.Store.Transaction(func(s *kallax.Store) error {
-			updated, err = s.Update(Schema.Project.BaseSchema, record, cols...)
-			if err != nil {
-				return err
-			}
-
-			for _, r := range records {
+			for _, r := range inverseRecords {
 				if err := r(s); err != nil {
 					return err
 				}
+			}
+
+			updated, err = s.Update(Schema.Project.BaseSchema, record, cols...)
+			if err != nil {
+				return err
 			}
 
 			return nil
@@ -352,37 +359,6 @@ func (s *ProjectStore) Transaction(callback func(*ProjectStore) error) error {
 	})
 }
 
-// RemoveUser removes from the database the given relationship of the
-// model. It also resets the field User of the model.
-func (s *ProjectStore) RemoveUser(record *Project) error {
-	var r kallax.Record = &record.User
-	if beforeDeleter, ok := r.(kallax.BeforeDeleter); ok {
-		if err := beforeDeleter.BeforeDelete(); err != nil {
-			return err
-		}
-	}
-
-	var err error
-	if afterDeleter, ok := r.(kallax.AfterDeleter); ok {
-		err = s.Store.Transaction(func(s *kallax.Store) error {
-			err := s.Delete(Schema.User.BaseSchema, r)
-			if err != nil {
-				return err
-			}
-
-			return afterDeleter.AfterDelete()
-		})
-	} else {
-		err = s.Store.Delete(Schema.User.BaseSchema, r)
-	}
-	if err != nil {
-		return err
-	}
-
-	record.User = User{}
-	return nil
-}
-
 // ProjectQuery is the object used to create queries for the Project
 // entity.
 type ProjectQuery struct {
@@ -492,6 +468,12 @@ func (q *ProjectQuery) FindBySlug(v string) *ProjectQuery {
 // the InternalSlug property is equal to the passed value.
 func (q *ProjectQuery) FindByInternalSlug(v string) *ProjectQuery {
 	return q.Where(kallax.Eq(Schema.Project.InternalSlug, v))
+}
+
+// FindByUser adds a new filter to the query that will require that
+// the foreign key of User is equal to the passed value.
+func (q *ProjectQuery) FindByUser(v int64) *ProjectQuery {
+	return q.Where(kallax.Eq(Schema.Project.UserFK, v))
 }
 
 // ProjectResultSet is the set of results returned by a query to the
@@ -632,9 +614,9 @@ func (r *User) ColumnAddress(col string) (interface{}, error) {
 	case "password":
 		return types.Slice(&r.Password), nil
 	case "profile_photo_slug":
-		return &r.ProfilePhotoSlug, nil
-	case "project_id":
-		return types.Nullable(kallax.VirtualColumn("project_id", r, new(kallax.NumericID))), nil
+		return types.Nullable(&r.ProfilePhotoSlug), nil
+	case "forgot_password_token":
+		return types.Slice(r.ForgotPasswordToken), nil
 
 	default:
 		return nil, fmt.Errorf("kallax: invalid column in User: %s", col)
@@ -664,13 +646,15 @@ func (r *User) Value(col string) (interface{}, error) {
 	case "password":
 		return types.Slice(r.Password), nil
 	case "profile_photo_slug":
-		return r.ProfilePhotoSlug, nil
-	case "project_id":
-		v := r.Model.VirtualColumn(col)
-		if v == nil {
-			return nil, kallax.ErrEmptyVirtualColumn
+		if r.ProfilePhotoSlug == (*string)(nil) {
+			return nil, nil
 		}
-		return v, nil
+		return r.ProfilePhotoSlug, nil
+	case "forgot_password_token":
+		if r.ForgotPasswordToken == (*byte)(nil) {
+			return nil, nil
+		}
+		return types.Slice(r.ForgotPasswordToken), nil
 
 	default:
 		return nil, fmt.Errorf("kallax: invalid column in User: %s", col)
@@ -680,12 +664,35 @@ func (r *User) Value(col string) (interface{}, error) {
 // NewRelationshipRecord returns a new record for the relatiobship in the given
 // field.
 func (r *User) NewRelationshipRecord(field string) (kallax.Record, error) {
-	return nil, fmt.Errorf("kallax: model User has no relationships")
+	switch field {
+	case "Projects":
+		return new(Project), nil
+
+	}
+	return nil, fmt.Errorf("kallax: model User has no relationship %s", field)
 }
 
 // SetRelationship sets the given relationship in the given field.
 func (r *User) SetRelationship(field string, rel interface{}) error {
-	return fmt.Errorf("kallax: model User has no relationships")
+	switch field {
+	case "Projects":
+		records, ok := rel.([]kallax.Record)
+		if !ok {
+			return fmt.Errorf("kallax: relationship field %s needs a collection of records, not %T", field, rel)
+		}
+
+		r.Projects = make([]*Project, len(records))
+		for i, record := range records {
+			rel, ok := record.(*Project)
+			if !ok {
+				return fmt.Errorf("kallax: element of type %T cannot be added to relationship %s", record, field)
+			}
+			r.Projects[i] = rel
+		}
+		return nil
+
+	}
+	return fmt.Errorf("kallax: model User has no relationship %s", field)
 }
 
 // UserStore is the entity to access the records of the type User
@@ -727,6 +734,23 @@ func (s *UserStore) DisableCacher() *UserStore {
 	return &UserStore{s.Store.DisableCacher()}
 }
 
+func (s *UserStore) relationshipRecords(record *User) []modelSaveFunc {
+	var result []modelSaveFunc
+
+	for i := range record.Projects {
+		r := record.Projects[i]
+		if !r.IsSaving() {
+			r.AddVirtualColumn("user_id", record.GetID())
+			result = append(result, func(store *kallax.Store) error {
+				_, err := (&ProjectStore{store}).Save(r)
+				return err
+			})
+		}
+	}
+
+	return result
+}
+
 // Insert inserts a User in the database. A non-persisted object is
 // required for this operation.
 func (s *UserStore) Insert(record *User) error {
@@ -738,6 +762,24 @@ func (s *UserStore) Insert(record *User) error {
 
 	if err := record.BeforeSave(); err != nil {
 		return err
+	}
+
+	records := s.relationshipRecords(record)
+
+	if len(records) > 0 {
+		return s.Store.Transaction(func(s *kallax.Store) error {
+			if err := s.Insert(Schema.User.BaseSchema, record); err != nil {
+				return err
+			}
+
+			for _, r := range records {
+				if err := r(s); err != nil {
+					return err
+				}
+			}
+
+			return nil
+		})
 	}
 
 	return s.Store.Insert(Schema.User.BaseSchema, record)
@@ -758,6 +800,30 @@ func (s *UserStore) Update(record *User, cols ...kallax.SchemaField) (updated in
 
 	if err := record.BeforeSave(); err != nil {
 		return 0, err
+	}
+
+	records := s.relationshipRecords(record)
+
+	if len(records) > 0 {
+		err = s.Store.Transaction(func(s *kallax.Store) error {
+			updated, err = s.Update(Schema.User.BaseSchema, record, cols...)
+			if err != nil {
+				return err
+			}
+
+			for _, r := range records {
+				if err := r(s); err != nil {
+					return err
+				}
+			}
+
+			return nil
+		})
+		if err != nil {
+			return 0, err
+		}
+
+		return updated, nil
 	}
 
 	return s.Store.Update(Schema.User.BaseSchema, record, cols...)
@@ -877,6 +943,98 @@ func (s *UserStore) Transaction(callback func(*UserStore) error) error {
 	})
 }
 
+// RemoveProjects removes the given items of the Projects field of the
+// model. If no items are given, it removes all of them.
+// The items will also be removed from the passed record inside this method.
+// Note that is required that `Projects` is not empty. This method clears the
+// the elements of Projects in a model, it does not retrieve them to know
+// what relationships the model has.
+func (s *UserStore) RemoveProjects(record *User, deleted ...*Project) error {
+	var updated []*Project
+	var clear bool
+	if len(deleted) == 0 {
+		clear = true
+		deleted = record.Projects
+		if len(deleted) == 0 {
+			return nil
+		}
+	}
+
+	if len(deleted) > 1 {
+		err := s.Store.Transaction(func(s *kallax.Store) error {
+			for _, d := range deleted {
+				var r kallax.Record = d
+
+				if beforeDeleter, ok := r.(kallax.BeforeDeleter); ok {
+					if err := beforeDeleter.BeforeDelete(); err != nil {
+						return err
+					}
+				}
+
+				if err := s.Delete(Schema.Project.BaseSchema, d); err != nil {
+					return err
+				}
+
+				if afterDeleter, ok := r.(kallax.AfterDeleter); ok {
+					if err := afterDeleter.AfterDelete(); err != nil {
+						return err
+					}
+				}
+			}
+			return nil
+		})
+
+		if err != nil {
+			return err
+		}
+
+		if clear {
+			record.Projects = nil
+			return nil
+		}
+	} else {
+		var r kallax.Record = deleted[0]
+		if beforeDeleter, ok := r.(kallax.BeforeDeleter); ok {
+			if err := beforeDeleter.BeforeDelete(); err != nil {
+				return err
+			}
+		}
+
+		var err error
+		if afterDeleter, ok := r.(kallax.AfterDeleter); ok {
+			err = s.Store.Transaction(func(s *kallax.Store) error {
+				err := s.Delete(Schema.Project.BaseSchema, r)
+				if err != nil {
+					return err
+				}
+
+				return afterDeleter.AfterDelete()
+			})
+		} else {
+			err = s.Store.Delete(Schema.Project.BaseSchema, deleted[0])
+		}
+
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, r := range record.Projects {
+		var found bool
+		for _, d := range deleted {
+			if d.GetID().Equals(r.GetID()) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			updated = append(updated, r)
+		}
+	}
+	record.Projects = updated
+	return nil
+}
+
 // UserQuery is the object used to create queries for the User
 // entity.
 type UserQuery struct {
@@ -945,6 +1103,11 @@ func (q *UserQuery) Where(cond kallax.Condition) *UserQuery {
 	return q
 }
 
+func (q *UserQuery) WithProjects(cond kallax.Condition) *UserQuery {
+	q.AddRelation(Schema.Project.BaseSchema, "Projects", kallax.OneToMany, cond)
+	return q
+}
+
 // FindById adds a new filter to the query that will require that
 // the Id property is equal to one of the passed values; if no passed values,
 // it will do nothing.
@@ -1001,12 +1164,6 @@ func (q *UserQuery) FindByPassword(v ...byte) *UserQuery {
 		values[i] = val
 	}
 	return q.Where(kallax.ArrayContains(Schema.User.Password, values...))
-}
-
-// FindByProfilePhotoSlug adds a new filter to the query that will require that
-// the ProfilePhotoSlug property is equal to the passed value.
-func (q *UserQuery) FindByProfilePhotoSlug(v string) *UserQuery {
-	return q.Where(kallax.Eq(Schema.User.ProfilePhotoSlug, v))
 }
 
 // UserResultSet is the set of results returned by a query to the
@@ -1131,29 +1288,31 @@ type schemaProject struct {
 	InternalSlug kallax.SchemaField
 	Name         kallax.SchemaField
 	Description  kallax.SchemaField
+	UserFK       kallax.SchemaField
 }
 
 type schemaUser struct {
 	*kallax.BaseSchema
-	Id               kallax.SchemaField
-	CreatedAt        kallax.SchemaField
-	UpdatedAt        kallax.SchemaField
-	Slug             kallax.SchemaField
-	InternalSlug     kallax.SchemaField
-	Name             kallax.SchemaField
-	Email            kallax.SchemaField
-	Password         kallax.SchemaField
-	ProfilePhotoSlug kallax.SchemaField
+	Id                  kallax.SchemaField
+	CreatedAt           kallax.SchemaField
+	UpdatedAt           kallax.SchemaField
+	Slug                kallax.SchemaField
+	InternalSlug        kallax.SchemaField
+	Name                kallax.SchemaField
+	Email               kallax.SchemaField
+	Password            kallax.SchemaField
+	ProfilePhotoSlug    kallax.SchemaField
+	ForgotPasswordToken kallax.SchemaField
 }
 
 var Schema = &schema{
 	Project: &schemaProject{
 		BaseSchema: kallax.NewBaseSchema(
-			"project",
+			"projects",
 			"__project",
 			kallax.NewSchemaField("id"),
 			kallax.ForeignKeys{
-				"User": kallax.NewForeignKey("project_id", false),
+				"User": kallax.NewForeignKey("user_id", true),
 			},
 			func() kallax.Record {
 				return new(Project)
@@ -1166,6 +1325,7 @@ var Schema = &schema{
 			kallax.NewSchemaField("internal_slug"),
 			kallax.NewSchemaField("name"),
 			kallax.NewSchemaField("description"),
+			kallax.NewSchemaField("user_id"),
 		),
 		Id:           kallax.NewSchemaField("id"),
 		CreatedAt:    kallax.NewSchemaField("created_at"),
@@ -1174,13 +1334,16 @@ var Schema = &schema{
 		InternalSlug: kallax.NewSchemaField("internal_slug"),
 		Name:         kallax.NewSchemaField("name"),
 		Description:  kallax.NewSchemaField("description"),
+		UserFK:       kallax.NewSchemaField("user_id"),
 	},
 	User: &schemaUser{
 		BaseSchema: kallax.NewBaseSchema(
-			"user",
+			"users",
 			"__user",
 			kallax.NewSchemaField("id"),
-			kallax.ForeignKeys{},
+			kallax.ForeignKeys{
+				"Projects": kallax.NewForeignKey("user_id", false),
+			},
 			func() kallax.Record {
 				return new(User)
 			},
@@ -1194,16 +1357,17 @@ var Schema = &schema{
 			kallax.NewSchemaField("email"),
 			kallax.NewSchemaField("password"),
 			kallax.NewSchemaField("profile_photo_slug"),
-			kallax.NewSchemaField("project_id"),
+			kallax.NewSchemaField("forgot_password_token"),
 		),
-		Id:               kallax.NewSchemaField("id"),
-		CreatedAt:        kallax.NewSchemaField("created_at"),
-		UpdatedAt:        kallax.NewSchemaField("updated_at"),
-		Slug:             kallax.NewSchemaField("slug"),
-		InternalSlug:     kallax.NewSchemaField("internal_slug"),
-		Name:             kallax.NewSchemaField("name"),
-		Email:            kallax.NewSchemaField("email"),
-		Password:         kallax.NewSchemaField("password"),
-		ProfilePhotoSlug: kallax.NewSchemaField("profile_photo_slug"),
+		Id:                  kallax.NewSchemaField("id"),
+		CreatedAt:           kallax.NewSchemaField("created_at"),
+		UpdatedAt:           kallax.NewSchemaField("updated_at"),
+		Slug:                kallax.NewSchemaField("slug"),
+		InternalSlug:        kallax.NewSchemaField("internal_slug"),
+		Name:                kallax.NewSchemaField("name"),
+		Email:               kallax.NewSchemaField("email"),
+		Password:            kallax.NewSchemaField("password"),
+		ProfilePhotoSlug:    kallax.NewSchemaField("profile_photo_slug"),
+		ForgotPasswordToken: kallax.NewSchemaField("forgot_password_token"),
 	},
 }
