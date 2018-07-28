@@ -10,6 +10,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+
+	"gopkg.in/doug-martin/goqu.v4"
 )
 
 
@@ -73,15 +75,17 @@ func UploadToSpace(fileObject io.ReadSeeker, objectKey string, contentType strin
 
 var _ r = authRoute(POST, "/profile-image/:imageHash/:imageType", func(c *gin.Context) {
 	userId := c.MustGet("userId").(int64)
-	userInternalSlug := c.MustGet("userInternalSlug")
+	userSlug := c.MustGet("userSlug")
 
 	file, parseErr := c.FormFile("file")
 	if parseErr != nil {
-		c.AbortWithStatus(400); return }
+		c.AbortWithStatus(400); return
+	}
 
 	fileInternal, openErr := file.Open()
 	if openErr != nil {
-		c.AbortWithError(500, openErr); return }
+		c.AbortWithError(500, openErr); return
+	}
 
 	imageType := c.Param("imageType")
 	switch imageType {
@@ -92,7 +96,7 @@ var _ r = authRoute(POST, "/profile-image/:imageHash/:imageType", func(c *gin.Co
 	}
 	imageHash := c.Param("imageHash")
 
-	objectName := fmt.Sprintf("profile-images/%s/%s.%s", userInternalSlug, imageHash, imageType)
+	objectName := fmt.Sprintf("profile-images/%s/%s.%s", userSlug, imageHash, imageType)
 	mimeType := fmt.Sprintf("image/%s", imageType)
 	uploadErr := UploadToSpace(fileInternal, objectName, mimeType, UploadParams{})
 
@@ -100,16 +104,17 @@ var _ r = authRoute(POST, "/profile-image/:imageHash/:imageType", func(c *gin.Co
 		c.AbortWithError(500, uploadErr); return
 	}
 
-	updateUser := User{ Id: userId, ProfilePhotoSlug: &objectName }
-	rowsUpdated, err := dbUserStore.Update(&updateUser, Schema.User.ProfilePhotoSlug)
+	result, err := db.From("users").Where(
+		goqu.Ex{ "id": userId },
+	).Update(
+		goqu.Record{ "profile_photo_slug": objectName },
+	).Exec()
 	if err != nil {
 		c.AbortWithError(500, err); return
 	}
-	if rowsUpdated == 0 {
+	if rowsAffected, err := result.RowsAffected(); rowsAffected == 0 || err != nil {
 		c.AbortWithStatus(404); return
 	}
 
 	c.JSON(200, objectName)
-	// else {
-	// }
 })

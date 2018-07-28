@@ -40,6 +40,23 @@ var HashIDData *hashids.HashIDData = func() *hashids.HashIDData {
 	return &internalHashIdData
 }()
 
+func decodeSlug(slug string) (int64, error) {
+	hashId, hashIdError := hashids.NewWithData(HashIDData)
+	if hashIdError != nil {
+		return 0, hashIdError
+	}
+
+	idArray, decodeError := hashId.DecodeInt64WithError(slug)
+	if decodeError != nil {
+		return 0, decodeError
+	}
+	if len(idArray) != 1 {
+		return 0, fmt.Errorf(`slug ("%s") decoded into something other than one value: %#v`, slug, idArray)
+	}
+
+	return idArray[0], nil
+}
+
 
 func generateRandomToken() ([]byte, error) {
 	tokenBytes := make([]byte, 32)
@@ -57,7 +74,7 @@ type AuthToken struct {
 	E int64
 	// R map[int]int
 }
-func (tok *AuthToken) InternalSlug() string {
+func (tok *AuthToken) Slug() string {
 	return tok.I
 }
 func (tok *AuthToken) Expires() int64 {
@@ -67,24 +84,24 @@ func (tok *AuthToken) Expires() int64 {
 // 	return tok.R
 // }
 
-func issueAuthTokenForId(userId int64) (string, string, error) {
-	hashId, hashIdError := hashids.NewWithData(HashIDData)
-	userInternalSlug, encodeError := hashId.EncodeInt64([]int64{userId})
-	if hashIdError != nil || encodeError != nil {
-		return "", "", encodeError
-	}
+// func issueAuthTokenForId(userId int64) (string, string, error) {
+// 	hashId, hashIdError := hashids.NewWithData(HashIDData)
+// 	userSlug, encodeError := hashId.EncodeInt64([]int64{userId})
+// 	if hashIdError != nil || encodeError != nil {
+// 		return "", "", encodeError
+// 	}
 
-	token, issueError := issueAuthToken(userInternalSlug)
-	return userInternalSlug, token, issueError
-}
+// 	token, issueError := issueAuthToken(userSlug)
+// 	return userSlug, token, issueError
+// }
 
-func issueAuthToken(userInternalSlug string) (string, error) {
+func issueAuthToken(userSlug string) (string, error) {
 	// get tomorrow unix time
 	tomorrow := time.Now().Add(time.Duration(24) * time.Hour).Unix()
 
 
 	// create an authtoken
-	token := AuthToken{ userInternalSlug, tomorrow }
+	token := AuthToken{ userSlug, tomorrow }
 
 	// json serialize it and base64 encode it
 	serializedToken, serializationError := jsoniter.Marshal(token)
@@ -151,15 +168,13 @@ func verifyAuthToken(token string) (int64, string, error) {
 		return 0, "", ExpiredTokenError
 	}
 
-	internalSlug := successfulToken.InternalSlug()
-
-	hashId, hashIdError := hashids.NewWithData(HashIDData)
-	userIdArray, decodeError := hashId.DecodeInt64WithError(internalSlug)
-	if hashIdError != nil || decodeError != nil || len(userIdArray) != 1 {
+	userSlug := successfulToken.Slug()
+	userId, decodeError := decodeSlug(userSlug)
+	if decodeError != nil {
 		return 0, "", InvalidTokenError
 	}
 
-	return userIdArray[0], internalSlug, nil
+	return userId, userSlug, nil
 }
 
 

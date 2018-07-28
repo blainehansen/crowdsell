@@ -2,12 +2,6 @@
 
 
 [[projects]]
-  name = "github.com/Masterminds/squirrel"
-  packages = ["."]
-  revision = "a6b93000bd219143c56c16e6cb1c4b91da3f224b"
-  version = "v1.0"
-
-[[projects]]
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -57,12 +51,6 @@
   version = "v1.1.0"
 
 [[projects]]
-  name = "github.com/fatih/structs"
-  packages = ["."]
-  revision = "a720dfa8df582c51dee1b36feabb906bde1588bd"
-  version = "v1.0"
-
-[[projects]]
   name = "github.com/gin-contrib/cors"
   packages = ["."]
   revision = "cf4846e6a636a76237a28d9286f163c132e841bc"
@@ -104,12 +92,6 @@
   revision = "53e6ce116135b80d037921a7fdd5138cf32d7a8a"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/iancoleman/strcase"
-  packages = ["."]
-  revision = "90d371a664d668ca3e61d3ddddf1916662959f11"
-
-[[projects]]
   name = "github.com/jmespath/go-jmespath"
   packages = ["."]
   revision = "0b12d6b5"
@@ -128,18 +110,6 @@
   ]
   revision = "ca39e5af3ece67bbcda3d0f4f56a8e24d9f2dad4"
   version = "1.1.3"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/lann/builder"
-  packages = ["."]
-  revision = "1b87b36280d04fe7882d1512bf038ea2967ad534"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/lann/ps"
-  packages = ["."]
-  revision = "62de8c46ede02a7675c4c79c84883eb164cb71e3"
 
 [[projects]]
   branch = "master"
@@ -175,22 +145,10 @@
   version = "1.0.0"
 
 [[projects]]
-  name = "github.com/oklog/ulid"
-  packages = ["."]
-  revision = "d311cb43c92434ec4072dfbbda3400741d0a6337"
-  version = "v0.3.0"
-
-[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
-
-[[projects]]
-  name = "github.com/satori/go.uuid"
-  packages = ["."]
-  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
-  version = "v1.2.0"
 
 [[projects]]
   name = "github.com/speps/go-hashids"
@@ -211,6 +169,15 @@
   revision = "7138fd3d9dc8335c567ca206f4333fb75eb05d56"
 
 [[projects]]
+  name = "gopkg.in/doug-martin/goqu.v4"
+  packages = [
+    ".",
+    "adapters/postgres"
+  ]
+  revision = "cd495d70a4ff280202e22a09de9502a3fe0b66cb"
+  version = "v4.2.0"
+
+[[projects]]
   name = "gopkg.in/go-playground/validator.v8"
   packages = ["."]
   revision = "5f1438d3fca68893a817e4a66806cea46a9e4ebf"
@@ -223,15 +190,6 @@
   version = "v1.1.0"
 
 [[projects]]
-  name = "gopkg.in/src-d/go-kallax.v1"
-  packages = [
-    ".",
-    "types"
-  ]
-  revision = "54324d6a2cb11186536d8f30e409742fa0c26272"
-  version = "v1.3.5"
-
-[[projects]]
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
@@ -240,6 +198,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e9cc4b5f70bfa1260c5e5c67f43746be800997f6c2bf882c502456d048efd1ec"
+  inputs-digest = "7f7d9afa8f1d1923969615002a29434a1886b823d643f27ebed472173cf5055e"
   solver-name = "gps-cdcl"
   solver-version = 1

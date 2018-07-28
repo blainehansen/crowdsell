@@ -8,6 +8,8 @@ import (
 
 	"database/sql"
 	_ "github.com/lib/pq"
+	"gopkg.in/doug-martin/goqu.v4"
+	_ "gopkg.in/doug-martin/goqu.v4/adapters/postgres"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
@@ -21,7 +23,8 @@ import (
 var environment map[string]string = func() map[string]string {
 	env, err := godotenv.Read()
 	if err != nil {
-		panic("error reading .env file")
+		fmt.Println("error reading .env file")
+		panic(err)
 	}
 	return env
 }()
@@ -82,12 +85,9 @@ func addRoutesToGroup(router gin.IRouter, routesArray []Route) {
 	}
 }
 
-var dbUserStore *UserStore
-var dbProjectStore *ProjectStore
-
-func main() {
+var db *goqu.Database = func() *goqu.Database {
 	// CONNECTING TO DATABASE
-	db, connectionError := sql.Open(
+	pgDb, connectionError := sql.Open(
 		"postgres",
 		fmt.Sprintf(
 			"host=%s port=%s dbname=%s user=%s password=%s sslmode=%s",
@@ -100,15 +100,23 @@ func main() {
 		),
 	)
 	if connectionError != nil {
-		fmt.Println(connectionError)
-		panic("failed to connect to database")
+		fmt.Println("failed to connect to database")
+		panic(connectionError.Error())
 	}
-	defer db.Close()
 
-	// INSTANTIATING STORES
-	dbUserStore = NewUserStore(db)
-	dbProjectStore = NewProjectStore(db)
+	finalDb := goqu.New("postgres", pgDb)
 
+	_, err := finalDb.Exec("SELECT * FROM pg_catalog.pg_tables")
+	if err != nil {
+		fmt.Println("failed to connect to database")
+		panic(err.Error())
+	}
+
+	return finalDb
+}()
+
+
+func main() {
 	// CHANGING JSON NAMING CONVENTION
 	extra.SetNamingStrategy(extra.LowerCaseWithUnderscores)
 

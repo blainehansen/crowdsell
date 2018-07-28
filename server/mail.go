@@ -1,8 +1,19 @@
 package main
 
 import (
+	"fmt"
+	"strconv"
 	"gopkg.in/mailgun/mailgun-go.v1"
 )
+
+var shouldMail bool = func() bool {
+	innerBool, parseError := strconv.ParseBool(environment["SHOULD_MAIL"])
+	if parseError != nil {
+		panic(parseError)
+	}
+
+	return innerBool
+}()
 
 var domain string = environment["SERVER_DOMAIN"]
 var privateAPIKey string = environment["MAIL_PRIVATE_API_KEY"]
@@ -12,11 +23,14 @@ var mailgunClient mailgun.Mailgun = mailgun.NewMailgun(domain, privateAPIKey, pu
 
 func sendMessage(sender string, subject string, body string, recipient string) error {
 	message := mailgunClient.NewMessage(sender, subject, body, recipient)
-	// resp, id, err := mailgunClient.Send(message)
-	_, _, err := mailgunClient.Send(message)
-
-	if err != nil {
-		return err
+	if shouldMail {
+		_, _, err := mailgunClient.Send(message)
+		if err != nil {
+			return err
+		}
+	} else {
+		fmt.Println("fake emailed message: ")
+		fmt.Println(message)
 	}
 
 	return nil
