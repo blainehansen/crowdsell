@@ -6,7 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/badoux/checkmail"
-	"gopkg.in/doug-martin/goqu.v4"
+	// "gopkg.in/doug-martin/goqu.v4"
+	"github.com/blainehansen/goqu"
 )
 
 type SignedUser struct {

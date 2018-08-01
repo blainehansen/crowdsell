@@ -1,0 +1,69 @@
+# CREATE OR REPLACE FUNCTION trigger_set_created()
+# RETURNS TRIGGER AS $$
+# BEGIN
+#   NEW.date_created = NOW();
+#   RETURN NEW;
+# END;
+# $$ LANGUAGE plpgsql;
+
+# CREATE OR REPLACE FUNCTION trigger_set_updated()
+# RETURNS TRIGGER AS $$
+# BEGIN
+#   NEW.date_updated = NOW();
+#   RETURN NEW;
+# END;
+# $$ LANGUAGE plpgsql;
+
+
+# CREATE TRIGGER set_created
+# BEFORE INSERT ON users
+# FOR EACH ROW
+# EXECUTE PROCEDURE trigger_set_created();
+
+# CREATE TRIGGER set_updated
+# BEFORE UPDATE ON users
+# FOR EACH ROW
+# EXECUTE PROCEDURE trigger_set_updated();
+
+users:
+  name: text
+  email:
+    type: text
+    unique: true
+    required: true
+    private: true
+  password:
+    type: bytea
+    required: true
+    server_private: true
+  profile_photo_slug: text
+  forgot_password_token:
+    type: text
+    server_private: true
+
+projects:
+  name: text
+  description: text
+  user_id:
+    type: bigint
+    required: true
+    references: users(id)
+    server_private: true
+
+
+universal:
+  id:
+    type: primary
+    server_private: true
+  date_created:
+    type: timestamptz
+    server_private: true
+  date_updated:
+    type: timestamptz
+    server_private: true
+  slug:
+    type: text
+    read_only: true
+  url_slug:
+    type: text
+    read_only: true

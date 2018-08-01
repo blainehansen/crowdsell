@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/doug-martin/goqu.v4"
+	"github.com/blainehansen/goqu"
 )
 
 var _ r = route(GET, "/projects", func(c *gin.Context) {

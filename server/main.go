@@ -8,13 +8,14 @@ import (
 
 	"database/sql"
 	_ "github.com/lib/pq"
-	"gopkg.in/doug-martin/goqu.v4"
-	_ "gopkg.in/doug-martin/goqu.v4/adapters/postgres"
+	"github.com/blainehansen/goqu"
+	_ "github.com/blainehansen/goqu/adapters/postgres"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
 
 	"github.com/joho/godotenv"
+	"github.com/iancoleman/strcase"
 
 	"github.com/json-iterator/go/extra"
 )
@@ -91,7 +92,7 @@ var db *goqu.Database = func() *goqu.Database {
 		"postgres",
 		fmt.Sprintf(
 			"host=%s port=%s dbname=%s user=%s password=%s sslmode=%s",
-			environment["DATABASE_HOST"],
+			environment["DOCKER_DATABASE_HOST"],
 			environment["DATABASE_PORT"],
 			environment["DATABASE_DB_NAME"],
 			environment["DATABASE_USER"],
@@ -119,6 +120,8 @@ var db *goqu.Database = func() *goqu.Database {
 func main() {
 	// CHANGING JSON NAMING CONVENTION
 	extra.SetNamingStrategy(extra.LowerCaseWithUnderscores)
+
+	goqu.SetColumnRenameFunction(strcase.ToSnake)
 
 	// SETTING UP ROUTER
 	router := gin.Default()

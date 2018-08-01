@@ -8,9 +8,3 @@ RUN apk update \
 	&& cd .. \
 	&& rm -rf pg_hashids \
 	&& apk del alpine-sdk postgresql-dev
-
-# RUN echo "CREATE extension pg_hashids;" >> sudo -u postgres postgres postgres
-
-# COPY ../base-migration.sql /tmp
-# RUN cat /tmp/base-migration.sql >> sudo -u postgres postgres --single postgres
-# RUN rm -rf /tmp/base-migration.sql

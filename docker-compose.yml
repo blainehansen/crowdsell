@@ -10,7 +10,6 @@ services:
     tty: true
     volumes:
       - ./server:/go/src/main
-      - ./server-bin:/go/bin
     working_dir: /go/src/main
     command: reflex -g '*.go' -G '*_test.go' --start-service=true -- sh -c "go run -tags=jsoniter *.go"
   go-database:

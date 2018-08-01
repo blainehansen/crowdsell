@@ -11,7 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 
-	"gopkg.in/doug-martin/goqu.v4"
+	"github.com/blainehansen/goqu"
 )
 
 
