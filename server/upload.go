@@ -10,8 +10,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-
-	"github.com/blainehansen/goqu"
 )
 
 
@@ -104,10 +102,10 @@ var _ r = authRoute(POST, "/profile-image/:imageHash/:imageType", func(c *gin.Co
 		c.AbortWithError(500, uploadErr); return
 	}
 
-	result, err := db.From("users").Where(
-		goqu.Ex{ "id": userId },
+	result, err := UsersTable.Where(
+		Users.Id.Eq(userId),
 	).Update(
-		goqu.Record{ "profile_photo_slug": objectName },
+		Users.ProfilePhotoSlug.Set(objectName),
 	).Exec()
 	if err != nil {
 		c.AbortWithError(500, err); return

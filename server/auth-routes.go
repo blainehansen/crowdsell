@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 	"bytes"
+	"regexp"
 
 	"github.com/gin-gonic/gin"
 	"github.com/badoux/checkmail"
 	// "gopkg.in/doug-martin/goqu.v4"
-	"github.com/blainehansen/goqu"
+	// "github.com/blainehansen/goqu"
 )
 
 type SignedUser struct {
@@ -21,7 +22,7 @@ var _ r = route(POST, "/create-user", func(c *gin.Context) {
 	newUser := struct {
 		Name string `binding:"required"`
 		Email string `binding:"required"`
-		Password []byte `binding:"required"`
+		Password string `binding:"required"`
 	}{}
 	if err := c.ShouldBindJSON(&newUser); err != nil {
 		c.AbortWithError(422, err); return
@@ -31,17 +32,21 @@ var _ r = route(POST, "/create-user", func(c *gin.Context) {
 		c.AbortWithError(400, err); return
 	}
 
-	hashedPassword, hashError := hashPassword(&newUser.Password)
+	newUserPassword := []byte(newUser.Password)
+	hashedPassword, hashError := hashPassword(&newUserPassword)
 	if hashError != nil {
 		c.AbortWithError(500, hashError); return
 	}
 
 	var userSlug string
-	found, err := db.From("users").Returning(goqu.I("url_slug")).Insert(
-		goqu.Record{ "name": newUser.Name, "email": newUser.Email, "password": hashedPassword },
+	found, err := UsersTable.Returning(Users.Slug).Insert(
+		Users.Name.Set(newUser.Name), Users.Email.Set(newUser.Email), Users.Password.Set(hashedPassword),
 	).ScanVal(&userSlug)
-	if err != nil || !found {
+	if err != nil {
 		c.AbortWithError(500, err); return
+	}
+	if !found {
+		c.AbortWithError(500, fmt.Errorf("userSlug not found? %s", userSlug)); return
 	}
 
 	authTokenString, issueError := issueAuthToken(userSlug)
@@ -57,11 +62,12 @@ var _ r = route(POST, "/create-user", func(c *gin.Context) {
 var _ r = route(POST, "/login", func(c *gin.Context) {
 	loginAttempt := struct {
 		Email string `binding:"required"`
-		Password []byte `binding:"required"`
+		Password string `binding:"required"`
 	}{}
 	if err := c.ShouldBindJSON(&loginAttempt); err != nil {
 		c.AbortWithError(422, err); return
 	}
+	loginAttemptPassword := []byte(loginAttempt.Password)
 
 	databaseUser := struct {
 		Slug string
@@ -70,7 +76,7 @@ var _ r = route(POST, "/login", func(c *gin.Context) {
 		Email string
 		Password []byte
 	}{}
-	userFound, queryError := db.From("users").Where(goqu.Ex{ "email": loginAttempt.Email }).ScanStruct(&databaseUser)
+	userFound, queryError := UsersTable.Where(Users.Email.Eq(loginAttempt.Email)).ScanStruct(&databaseUser)
 	if queryError != nil {
 		c.AbortWithError(500, queryError); return
 	}
@@ -78,7 +84,7 @@ var _ r = route(POST, "/login", func(c *gin.Context) {
 		c.AbortWithStatus(403); return
 	}
 
-	if !verifyPassword(&databaseUser.Password, &loginAttempt.Password) {
+	if !verifyPassword(&databaseUser.Password, &loginAttemptPassword) {
 		c.AbortWithStatus(403); return
 	}
 
@@ -88,6 +94,9 @@ var _ r = route(POST, "/login", func(c *gin.Context) {
 	}
 	c.JSON(200, SignedUser { Name: databaseUser.Name, UrlSlug: databaseUser.UrlSlug, Email: loginAttempt.Email, Token: authTokenString })
 })
+
+
+var urlSlugInvalidCharactersRegex = regexp.MustCompile("[^[:alnum:]-]")
 
 var _ r = authRoute(POST, "/users/change-slug", func(c *gin.Context) {
 	userId := c.MustGet("userId").(int64)
@@ -99,10 +108,14 @@ var _ r = authRoute(POST, "/users/change-slug", func(c *gin.Context) {
 		c.AbortWithError(422, err); return
 	}
 
-	result, err := db.From("users").Where(
-		goqu.Ex{ "id": userId },
+	if urlSlugInvalidCharactersRegex.MatchString(slugPayload.UrlSlug) {
+		c.AbortWithError(400, fmt.Errorf("url_slug doesn't match the required format: %s", slugPayload.UrlSlug)); return
+	}
+
+	result, err := UsersTable.Where(
+		Users.Id.Eq(userId),
 	).Update(
-		goqu.Record{ "url_slug": slugPayload.UrlSlug },
+		Users.UrlSlug.Set(slugPayload.UrlSlug),
 	).Exec()
 	if err != nil {
 		c.AbortWithError(500, err); return
@@ -133,10 +146,10 @@ var _ r = route(POST, "/users/forgot-password", func(c *gin.Context) {
 		c.AbortWithError(500, generationError)
 	}
 
-	result, err := db.From("users").Where(
-		goqu.Ex{ "email": forgottenEmail },
+	result, err := UsersTable.Where(
+		Users.Email.Eq(forgottenEmail),
 	).Update(
-		goqu.Record{ "forgot_password_token": forgotPasswordToken },
+		Users.ForgotPasswordToken.Set(forgotPasswordToken),
 	).Exec()
 	if err != nil {
 		c.AbortWithError(500, err); return
@@ -158,14 +171,14 @@ var _ r = route(POST, "/users/forgot-password", func(c *gin.Context) {
 
 var _ r = route(POST, "/users/recover-password", func(c *gin.Context) {
 	recoveryTokenPayload := struct {
-		RecoveryToken []byte `binding:"required"`
-		NewPassword []byte `binding:"required"`
+		RecoveryToken string `binding:"required"`
+		NewPassword string `binding:"required"`
 	}{}
 	if err := c.ShouldBindJSON(&recoveryTokenPayload); err != nil {
 		c.AbortWithError(422, err); return
 	}
 
-	recoveryToken, err := decodeBase64(recoveryTokenPayload.RecoveryToken)
+	recoveryToken, err := decodeBase64([]byte(recoveryTokenPayload.RecoveryToken))
 	if err != nil {
 		c.AbortWithStatus(400); return
 	}
@@ -178,12 +191,11 @@ var _ r = route(POST, "/users/recover-password", func(c *gin.Context) {
 	forgottenEmail := string(recoveryToken[:lastIndex])
 	forgotPasswordToken := recoveryToken[lastIndex + 1 :]
 
-
-	hashedPassword, hashError := hashPassword(&recoveryTokenPayload.NewPassword)
+	recoveryNewPassword := []byte(recoveryTokenPayload.NewPassword)
+	hashedPassword, hashError := hashPassword(&recoveryNewPassword)
 	if hashError != nil {
 		c.AbortWithError(500, hashError); return
 	}
-
 
 	databaseUser := struct {
 		Slug string
@@ -191,10 +203,10 @@ var _ r = route(POST, "/users/recover-password", func(c *gin.Context) {
 		Name string
 		Email string
 	}{}
-	found, err := db.From("users").Where(
-		goqu.Ex{ "email": forgottenEmail, "forgot_password_token": forgotPasswordToken },
-	).Returning("slug", "url_slug", "name", "email").Update(
-		goqu.Record{ "forgot_password_token": nil, "password": hashedPassword },
+	found, err := UsersTable.Where(
+		Users.Email.Eq(forgottenEmail), Users.ForgotPasswordToken.Eq(forgotPasswordToken),
+	).Returning(Users.Slug, Users.UrlSlug, Users.Name, Users.Email).Update(
+		Users.ForgotPasswordToken.Set(nil), Users.Password.Set(hashedPassword),
 	).ScanStruct(&databaseUser)
 	if err != nil {
 		c.AbortWithError(500, err); return

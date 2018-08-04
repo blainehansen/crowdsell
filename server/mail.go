@@ -29,8 +29,8 @@ func sendMessage(sender string, subject string, body string, recipient string) e
 			return err
 		}
 	} else {
-		fmt.Println("fake emailed message: ")
-		fmt.Println(message)
+		fmt.Println("fake emailed message:")
+		fmt.Println(sender, subject, body, recipient)
 	}
 
 	return nil

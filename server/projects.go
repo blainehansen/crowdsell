@@ -33,32 +33,30 @@ var _ r = route(GET, "/projects", func(c *gin.Context) {
 var _ r = authRoute(POST, "/projects", func(c *gin.Context) {
 	userId := c.MustGet("userId").(int64)
 
-	type EditableProject struct {
-		Slug string
+	project := struct {
 		Name string
 		Description string
 		UrlSlug string
-		UserId int64
-	}
-	var project EditableProject
+	}{}
 	if err := c.ShouldBindJSON(&project); err != nil {
 		c.AbortWithError(422, err); return
 	}
-	if project.Slug != "" {
-		c.AbortWithError(422, errors.New("bad field: slug")); return
-	}
-	if project.UserId != 0 {
-		c.AbortWithError(422, errors.New("bad field: user_id")); return
-	}
-	project.UserId = userId
 
-	var slug string
-	if found, err := db.From("projects").Returning("slug").Insert(&project).ScanVal(&slug); err != nil || !found {
+	var projectSlug string
+	found, err := ProjectsTable.Returning(Projects.Slug).Insert(
+		Projects.Name.Set(project.Name),
+		Projects.Description.Set(project.Description),
+		Projects.UrlSlug.Set(project.UrlSlug),
+		Projects.UserId.Set(userId),
+	).ScanVal(&projectSlug)
+	if err != nil {
 		c.AbortWithError(500, err); return
 	}
-	project.Slug = slug
+	if !found {
+		c.AbortWithError(500, fmt.Errorf("projectSlug not found? %s", projectSlug)); return
+	}
 
-	c.JSON(200, &project)
+	c.JSON(200, &projectSlug)
 })
 
 var _ r = authRoute(PATCH, "/projects/:projectSlug", func(c *gin.Context) {
