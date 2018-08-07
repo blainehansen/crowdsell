@@ -80,10 +80,12 @@ universal:
 
   slug:
     type: text
+    required: true
     no_patch: true
     private: true
   url_slug:
     type: text
+    required: true
     no_patch: true
     functions: |
       CREATE OR REPLACE FUNCTION default_slug() RETURNS trigger

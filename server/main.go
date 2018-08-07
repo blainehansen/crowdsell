@@ -120,6 +120,8 @@ var db *goqu.Database = func() *goqu.Database {
 func main() {
 	// CHANGING JSON NAMING CONVENTION
 	extra.SetNamingStrategy(extra.LowerCaseWithUnderscores)
+	// TODO if we change this to simply lowercase the first letter then we don't have to have a different server/client naming strategy
+	// the different naming strategy in the database makes sense.
 
 	goqu.SetColumnRenameFunction(strcase.ToSnake)
 

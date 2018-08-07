@@ -5,6 +5,29 @@ import (
 	"github.com/blainehansen/goqu"
 )
 
+type column struct {
+	i goqu.IdentifierExpression
+}
+
+func (c column) Identifier() goqu.IdentifierExpression {
+	return c.i
+}
+func (c *column) As(val string) goqu.AliasedExpression {
+	return c.i.As(val)
+}
+func (c *column) Asc() goqu.OrderedExpression {
+	return c.i.Asc()
+}
+func (c *column) Desc() goqu.OrderedExpression {
+	return c.i.Desc()
+}
+func (c *column) Distinct() goqu.SqlFunctionExpression {
+	return c.i.Distinct()
+}
+
+
+
+
 type DbColumn interface {
 	Identifier() goqu.IdentifierExpression
 }
@@ -78,24 +101,18 @@ func (d *SafeDataset) Insert(expressions ...SetExpression) *goqu.CrudExec {
 // }
 
 
-func (d *usersDataset) Patch(values map[string]interface{}) (*goqu.CrudExec, bool) {
+func (d *usersSchema) Patch(values map[string]interface{}) (*goqu.CrudExec, bool) {
 	if !validatePatch(values, usersSchemaFields) {
 		return nil, false
 	}
 
-	return d.Dataset.Update(values), true
+	return d.SafeDataset.Dataset.Update(values), true
 }
 
 update := Users.Patch()
 
 
 
-
-package main
-
-import (
-	"fmt"
-)
 
 type NestedKind struct {
 	Outer reflect.Kind
@@ -149,6 +166,11 @@ func validatePatch(values *map[string]interface{}, schema *map[string]NestedKind
 
 		baseValueType := reflect.TypeOf(value)
 		valueKind := baseValueType.Kind()
+
+
+		// reflect.TypeOf(t) == reflect.TypeOf((*Test)(nil)).Elem()
+
+		if schemaKind.Outer == reflect.Invalid
 
 		valueIterable := valueKind == reflect.Array || valueKind == reflect.Slice
 		schemaIterable := schemaKind.Outer == reflect.Array || schemaKind.Outer == reflect.Slice
