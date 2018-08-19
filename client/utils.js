@@ -15,11 +15,14 @@ export async function sampleHashFile(file) {
 		]
 
 		reader.onloadend = (event) => {
-			if ( event.target.readyState !== FileReader.DONE ) return
+			if ( event.target.readyState !== FileReader.DONE )
+				return
 			hasher.update(event.target.result)
 
-			if (slices.length > 0) nextSlice()
-			else resolve(hasher.digest().toString(36))
+			if (slices.length > 0)
+				nextSlice()
+			else
+				resolve(hasher.digest().toString(36))
 		}
 
 		function nextSlice() {
@@ -30,6 +33,8 @@ export async function sampleHashFile(file) {
 	})
 }
 
+import config from '@/config'
+
 export function formatSpacesUrl(inputUrl) {
-	return `https://blaine-final-spaces-test.nyc3.cdn.digitaloceanspaces.com/${inputUrl}`
+	return `https://${config.SPACES_BUCKET_NAME}.${config.CDN_BASENAME}/${inputUrl}`
 }

@@ -34,4 +34,4 @@ yarn-error.log*
 server/vendor
 server-bin
 
-*.env.sh
+.env.*.sh

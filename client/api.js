@@ -6,8 +6,8 @@ axios.defaults.responseType = 'json'
 // 	return Promise.reject(error)
 // })
 
-export const publicHttp = axios.create({ baseURL: config.SERVER_URL })
-export const privateHttp = axios.create({ baseURL: config.SERVER_URL + '/secure' })
+export const publicHttp = axios.create({ baseURL: config.API_URL })
+export const privateHttp = axios.create({ baseURL: config.API_URL + '/secure' })
 
 export const privateApi = {
 	uploadFile(url, file) {
