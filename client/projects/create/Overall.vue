@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { sync } from '@/packages/vuex-pathify'
+import { sync } from 'vuex-pathify'
 
 export default {
 	name: 'Overall',

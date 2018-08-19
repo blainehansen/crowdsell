@@ -1,10 +1,14 @@
 users:
   name: text
+  bio: text
+  location: text
+  links: text
   email:
     type: text
     unique: true
     required: true
     private: true
+    no_patch: true
   password:
     type: bytea
     required: true
@@ -16,6 +20,12 @@ users:
     type: bytea
     server_private: true
 
+  general_search_vector:
+    type: tsvector
+    includes:
+      - name
+      - bio
+
 projects:
   name: text
   description: text
@@ -24,6 +34,12 @@ projects:
     required: true
     references: users(id)
     server_private: true
+
+  general_search_vector:
+    type: tsvector
+    includes:
+      - name
+      - description
 
 
 functions: |
@@ -43,15 +59,19 @@ functions: |
 universal:
   id:
     type: primary
+    read_only: true
     server_private: true
   date_created:
     type: timestamptz
+    required: true
+    read_only: true
     server_private: true
     functions: |
       CREATE OR REPLACE FUNCTION trigger_set_created() RETURNS TRIGGER
       AS \$$
       BEGIN
         NEW.date_created = NOW();
+        NEW.date_updated = NOW();
         RETURN NEW;
       END;
       \$$ LANGUAGE plpgsql;
@@ -63,6 +83,8 @@ universal:
 
   date_updated:
     type: timestamptz
+    required: true
+    read_only: true
     server_private: true
     functions: |
       CREATE OR REPLACE FUNCTION trigger_set_updated() RETURNS TRIGGER
@@ -81,7 +103,7 @@ universal:
   slug:
     type: text
     required: true
-    no_patch: true
+    read_only: true
     private: true
   url_slug:
     type: text

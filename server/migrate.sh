@@ -1,5 +1,7 @@
-source ./.env
+source ../.env.sh
+
 PGPASSWORD=$DATABASE_PASSWORD psql -U $DATABASE_USER -h $SYSTEM_DATABASE_HOST $DATABASE_DB_NAME << EOF
+
 CREATE extension IF NOT EXISTS pg_hashids;
 
 CREATE OR REPLACE FUNCTION hashid(BIGINT) RETURNS TEXT
@@ -16,6 +18,7 @@ CREATE OR REPLACE FUNCTION trigger_set_created() RETURNS TRIGGER
 AS \$$
 BEGIN
   NEW.date_created = NOW();
+  NEW.date_updated = NOW();
   RETURN NEW;
 END;
 \$$ LANGUAGE plpgsql;
@@ -42,15 +45,19 @@ BEGIN;
 
 CREATE TABLE users (
 	id serial NOT NULL PRIMARY KEY,
-	date_created timestamptz,
-	date_updated timestamptz,
-	slug text,
-	url_slug text,
+	date_created timestamptz NOT NULL,
+	date_updated timestamptz NOT NULL,
+	slug text NOT NULL,
+	url_slug text NOT NULL,
 	name text,
+	bio text,
+	location text,
+	links text,
 	email text NOT NULL UNIQUE,
 	password bytea NOT NULL,
 	profile_photo_slug text,
-	forgot_password_token bytea
+	forgot_password_token bytea,
+	general_search_vector tsvector
 );
 
 CREATE TRIGGER set_created_for_users
@@ -68,16 +75,23 @@ BEFORE INSERT ON users
 FOR EACH ROW
 EXECUTE PROCEDURE default_slug();
 
+CREATE TRIGGER search_update_users_general_search_vector
+BEFORE INSERT OR UPDATE OF name, bio ON users
+FOR EACH ROW
+EXECUTE PROCEDURE tsvector_update_trigger(general_search_vector, 'pg_catalog.english', name, bio);
+
+CREATE INDEX users_general_search_vector_idx ON users USING gin (general_search_vector);
 
 CREATE TABLE projects (
 	id serial NOT NULL PRIMARY KEY,
-	date_created timestamptz,
-	date_updated timestamptz,
-	slug text,
-	url_slug text,
+	date_created timestamptz NOT NULL,
+	date_updated timestamptz NOT NULL,
+	slug text NOT NULL,
+	url_slug text NOT NULL,
 	name text,
 	description text,
-	user_id bigint NOT NULL REFERENCES users(id)
+	user_id bigint NOT NULL REFERENCES users(id),
+	general_search_vector tsvector
 );
 
 CREATE TRIGGER set_created_for_projects
@@ -95,6 +109,12 @@ BEFORE INSERT ON projects
 FOR EACH ROW
 EXECUTE PROCEDURE default_slug();
 
+CREATE TRIGGER search_update_projects_general_search_vector
+BEFORE INSERT OR UPDATE OF name, description ON projects
+FOR EACH ROW
+EXECUTE PROCEDURE tsvector_update_trigger(general_search_vector, 'pg_catalog.english', name, description);
+
+CREATE INDEX projects_general_search_vector_idx ON projects USING gin (general_search_vector);
 
 COMMIT;
 

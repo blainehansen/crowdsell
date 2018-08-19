@@ -1,9 +1,12 @@
+import { makeMutations, makeGetters, genericSaveAction} from '@/vuexUtils'
 import { privateApi } from '@/api'
+
+const touchedKeyManifest = []
 
 const userState = {
 	name: '',
 	bio: '',
-	links: [],
+	links: '',
 	location: '',
 }
 
@@ -24,7 +27,11 @@ export default {
 			state.$fetched = true
 		},
 
-		...makeMutations(state, Object.keys(projectState)),
+		...makeMutations(state, Object.keys(userState), touchedKeyManifest),
+	},
+
+	getters: {
+		...makeGetters(touchedKeyManifest),
 	},
 
 	actions: {
@@ -35,6 +42,10 @@ export default {
 			const { data: fullUser } = await privateApi.fetchFullUser(getters['auth/userSlug'])
 
 			commit('SET_FULL_USER', fullUser)
-		}
+		},
+
+		saveUser: genericSaveAction(touchedKeyManifest, async function({ state, getters, commit }, userPatches) {
+			await privateApi.saveUser(userPatches)
+		}),
 	}
 }

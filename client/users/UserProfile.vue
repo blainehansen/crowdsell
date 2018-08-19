@@ -9,23 +9,27 @@
 		img(v-if="finalUrl", :src="finalUrl | formatSpacesUrl")
 		img(v-else-if="previewUrl", :src="previewUrl")
 
-	.name
-		input(v-model="name")
-	.location
-		input(v-model="locationSearch")
-	.description
-		input(v-model="bio")
-	.links
-		.link(v-for="link in user.links")
-			input(v-model="link")
-			//- a delete button
-		//- an add link button
-		.link(v-if="addingLink")
-			input(v-model="newLink")
+	p
+		button(v-if="user$anyTouched", @click="saveUser") save changes
+		button(v-else, disabled) saved
 
-	.custom-slug
-		//- changing this should directly call a mutation
-		input(v-model="customSlug")
+	.name
+		input(v-model="name", placeholder="name")
+	.location
+		input(v-model="location", placeholder="location")
+	.description
+		input(v-model="bio", placeholder="bio")
+	.links
+		input(v-model="links", placeholder="links")
+		//- .link(v-for="link in links")
+		//- 	input(v-model="link")
+		//- 	//- a delete button
+		//- //- an add link button
+		//- .link(v-if="addingLink")
+		//- 	input(v-model="newLink")
+
+	//- .custom-slug
+	//- 	input(v-model="customSlug")
 
 	//- .projects
 	//- 	.project(v-for="project in projects")
@@ -39,7 +43,7 @@
 <script>
 import { privateApi } from '@/api'
 import { sampleHashFile } from '@/utils'
-import { call, get, sync } from '@/packages/vuex-pathify'
+import { call, get, sync } from 'vuex-pathify'
 
 export default {
 	name: 'userProfile',
@@ -56,12 +60,13 @@ export default {
 
 	computed: {
 		slug: get('auth/userSlug'),
-		...sync('user@', ['name', 'bio', 'links', 'location']),
+		...sync('user/', ['name', 'bio', 'links', 'location']),
+		user$anyTouched: get('user/$anyTouched'),
 	},
 
 	methods: {
 		async changeSlug(newSlug) {
-			const { data: signedUser }= await privateApi.changeSlug(this.slug, newSlug)
+			const { data: signedUser }= await privateApi.changeSlug(newSlug)
 			this.$store.commit('auth/login', signedUser)
 		},
 
@@ -73,16 +78,10 @@ export default {
 			const hash = await sampleHashFile(file)
 			const { data: urlSlug } = await privateApi.uploadProfilePicture(hash, type, file)
 			this.finalUrl = urlSlug
-		}
-	},
+		},
 
-	asyncData: {
-		// projects() {
-		// 	const userSlug = this.userSlug
-		// 	if (!userSlug) return privateApi.getCurrentUserProjects()
-		// 	return api.getUserProjects(userSlug)
-		// }
-	}
+		saveUser: call('user/saveUser'),
+	},
 }
 
 </script>

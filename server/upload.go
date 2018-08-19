@@ -3,8 +3,7 @@ package main
 import (
 	"io"
 	"fmt"
-
-	"github.com/gin-gonic/gin"
+	"strconv"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -35,6 +34,15 @@ type UploadParams struct {
 }
 
 var bucketName string = environment["SPACES_BUCKET_NAME"]
+var shouldUpload bool = func() bool {
+	innerBool, parseError := strconv.ParseBool(environment["SHOULD_UPLOAD"])
+	if parseError != nil {
+		panic(parseError)
+	}
+
+	return innerBool
+}()
+
 func UploadToSpace(fileObject io.ReadSeeker, objectKey string, contentType string, params UploadParams) error {
 	var aclString string
 	if params.Private {
@@ -67,52 +75,10 @@ func UploadToSpace(fileObject io.ReadSeeker, objectKey string, contentType strin
 		ContentDisposition: aws.String(dispositionString),
 		ContentType: aws.String(contentType),
 	}
-	_, err := S3Client.PutObject(&object)
-	return err
+
+	if shouldUpload {
+		_, err := S3Client.PutObject(&object)
+		return err
+	}
+	return nil
 }
-
-var _ r = authRoute(POST, "/profile-image/:imageHash/:imageType", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
-	userSlug := c.MustGet("userSlug")
-
-	file, parseErr := c.FormFile("file")
-	if parseErr != nil {
-		c.AbortWithStatus(400); return
-	}
-
-	fileInternal, openErr := file.Open()
-	if openErr != nil {
-		c.AbortWithError(500, openErr); return
-	}
-
-	imageType := c.Param("imageType")
-	switch imageType {
-		case "png", "jpeg":
-			break
-		default:
-			c.AbortWithStatus(400); return
-	}
-	imageHash := c.Param("imageHash")
-
-	objectName := fmt.Sprintf("profile-images/%s/%s.%s", userSlug, imageHash, imageType)
-	mimeType := fmt.Sprintf("image/%s", imageType)
-	uploadErr := UploadToSpace(fileInternal, objectName, mimeType, UploadParams{})
-
-	if uploadErr != nil {
-		c.AbortWithError(500, uploadErr); return
-	}
-
-	result, err := UsersTable.Where(
-		Users.Id.Eq(userId),
-	).Update(
-		Users.ProfilePhotoSlug.Set(objectName),
-	).Exec()
-	if err != nil {
-		c.AbortWithError(500, err); return
-	}
-	if rowsAffected, err := result.RowsAffected(); rowsAffected == 0 || err != nil {
-		c.AbortWithStatus(404); return
-	}
-
-	c.JSON(200, objectName)
-})

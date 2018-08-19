@@ -24,7 +24,7 @@
 
 
 <script>
-import api from '@/api'
+import { publicApi } from '@/api'
 
 export default {
 	name: 'login',
@@ -45,19 +45,25 @@ export default {
 		async submit() {
 			const { inLoginMode, name, email, password } = this
 
-			const apiFunction = inLoginMode ? api.login : api.createUser
+			const apiFunction = inLoginMode ? publicApi.login : publicApi.createUser
 			const args = inLoginMode ? [email, password] : [name, email, password]
-			try {
-				const { data: signedUser } = await apiFunction(...args)
-				this.$store.commit('auth/login', signedUser)
 
-				const goingTo = this.$store.state.auth.goingTo
-				const routeObj = !!goingTo ? { path: goingTo } : { name: 'home' }
-				this.$router.replace(routeObj)
+			let signedUser = null
+			try {
+				const { data } = await apiFunction(...args)
+				signedUser = data
 			}
 			catch (e) {
 				this.apiError = e
 				this.$store.commit('auth/logout')
+			}
+
+			if (signedUser !== null) {
+				this.$store.commit('auth/login', signedUser)
+
+				const goingTo = await this.$store.dispatch('auth/grabGoingTo')
+				const routeObj = !!goingTo ? { path: goingTo } : { name: 'home' }
+				this.$router.replace(routeObj)
 			}
 		},
 	}

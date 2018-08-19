@@ -5,6 +5,7 @@ import (
 	// "log"
 	"fmt"
 	"time"
+	"unicode"
 
 	"database/sql"
 	_ "github.com/lib/pq"
@@ -117,9 +118,16 @@ var db *goqu.Database = func() *goqu.Database {
 }()
 
 
+func lowercaseFirstLetter(name string) string {
+	out := []rune(name)
+	out[0] = unicode.ToLower(out[0])
+	return string(out)
+}
+
 func main() {
 	// CHANGING JSON NAMING CONVENTION
-	extra.SetNamingStrategy(extra.LowerCaseWithUnderscores)
+	// extra.SetNamingStrategy(extra.LowerCaseWithUnderscores)
+	extra.SetNamingStrategy(lowercaseFirstLetter)
 	// TODO if we change this to simply lowercase the first letter then we don't have to have a different server/client naming strategy
 	// the different naming strategy in the database makes sense.
 

@@ -23,6 +23,26 @@ const globalFunctions = [functions]
 const universalFields = Object.entries(rawUniversal).map(processFields)
 const tables = []
 
+
+// 0: tableName
+// 1: list of column names
+// 2: name of vector
+const searchTriggerBoilerplate = `CREATE TRIGGER search_update_{0}_{2}
+BEFORE INSERT OR UPDATE OF {1} ON {0}
+FOR EACH ROW
+EXECUTE PROCEDURE tsvector_update_trigger({2}, 'pg_catalog.english', {1});
+`
+
+// `CREATE FUNCTION film_weighted_tsv_trigger() RETURNS trigger AS $$
+// begin
+//   new.weighted_tsv :=
+//      setweight(to_tsvector('english', COALESCE(new.title,'')), 'A') ||
+//      setweight(to_tsvector('english', COALESCE(new.description,'')), 'B');
+//   return new;
+// end
+// $$ LANGUAGE plpgsql;`
+
+
 for (const [tableName, fields] of Object.entries(rawTables)) {
 	const processed = Object.entries(fields).map(processFields)
 
@@ -32,14 +52,29 @@ for (const [tableName, fields] of Object.entries(rawTables)) {
 	})
 }
 
-function processFields([name, rawField]) {
-	const field = { name }
+
+function processFields([fieldName, rawField]) {
+	const field = { name: fieldName }
 
 	if (typeof rawField == 'string') {
 		field.type = rawField
 		rawField = {}
 	}
 	else field.type = rawField.type
+
+	if (rawField.type == 'tsvector') {
+		rawField.triggers = String.format(
+			searchTriggerBoilerplate,
+			// pull a trick here to preserve the tableName one
+			'{0}',
+			rawField.includes.join(', '),
+			fieldName,
+		)
+
+		rawField.triggers += `\nCREATE INDEX {0}_${fieldName}_idx ON {0} USING gin (${fieldName});`
+
+		rawField.server_private = true
+	}
 
 	if (rawField.functions) globalFunctions.push(rawField.functions)
 	field.triggers = rawField.triggers
@@ -49,13 +84,16 @@ function processFields([name, rawField]) {
 	field.unique = !!rawField.unique
 	field.required = !!rawField.required
 
+	const read_only = !!rawField.read_only
+	field.read_only = read_only
+
 	const server_private = !!rawField.server_private
 	const private = !!rawField.private
 	const no_patch = !!rawField.no_patch
 
 	field.owner_read = !server_private
 	field.public_read = !server_private && !private
-	field.owner_patch = !server_private && !no_patch
+	field.owner_patch = !server_private && !no_patch && !read_only
 
 	return field
 }
@@ -73,19 +111,17 @@ const NO_ARGS = Symbol()
 const ARRAY_ARGS = Symbol()
 const RANGE_ARGS = Symbol()
 
-// // method array: [outer name, args type, goqu name, return type]
-// const allMethods = [
-// 	['As', 'string', undefined, 'AliasedExpression'],
-// 	['Asc', NO_ARGS, undefined, 'OrderedExpression'],
-// 	['Desc', NO_ARGS, undefined, 'OrderedExpression'],
-// 	['Distinct', NO_ARGS, undefined, 'SqlFunctionExpression'],
-// ]
+// method array: [outer name, args type, goqu name, return type]
+const allGoTypeMethods = [
+	['As', 'string', undefined, 'AliasedExpression'],
+	['Asc', NO_ARGS, undefined, 'OrderedExpression'],
+	['Desc', NO_ARGS, undefined, 'OrderedExpression'],
+	['Distinct', NO_ARGS, undefined, 'SqlFunctionExpression'],
+]
 const postgresGoTypeMap = {
 	'primary': {
 		goType: 'int64',
-		readOnly: true,
 		methods: [
-			['Get', undefined, 'Eq'],
 			['Eq'],
 			['Neq'],
 			['In', ARRAY_ARGS],
@@ -98,9 +134,9 @@ const postgresGoTypeMap = {
 			['Eq'],
 			['Neq'],
 			['Gt'],
-	    ['Gte'],
-	    ['Lt'],
-	    ['Lte'],
+			['Gte'],
+			['Lt'],
+			['Lte'],
 			['In', ARRAY_ARGS],
 			['NotIn', ARRAY_ARGS],
 			['Like'],
@@ -121,7 +157,7 @@ const postgresGoTypeMap = {
 		goType: '[]byte',
 		reflect: {
 			outer: 'Slice',
-			inner: 'Int8',
+			inner: 'Uint8',
 		},
 		methods: [
 			['Eq'],
@@ -134,27 +170,29 @@ const postgresGoTypeMap = {
 			['Eq'],
 			['Neq'],
 			['Gt'],
-	    ['Gte'],
-	    ['Lt'],
-	    ['Lte'],
-	    ['Between', RANGE_ARGS, undefined, 'RangeExpression'],
-	    ['NotBetween', RANGE_ARGS, undefined, 'RangeExpression'],
+			['Gte'],
+			['Lt'],
+			['Lte'],
+			['Between', RANGE_ARGS, undefined, 'RangeExpression'],
+			['NotBetween', RANGE_ARGS, undefined, 'RangeExpression'],
 			['In', ARRAY_ARGS],
 			['NotIn', ARRAY_ARGS],
 		]
 	},
 	'timestamptz': {
 		goType: 'time.Time',
-		readOnly: true,
+		reflect: {
+			outer: 'Struct',
+		},
 		methods: [
 			['Eq'],
 			['Neq'],
 			['Gt'],
-	    ['Gte'],
-	    ['Lt'],
-	    ['Lte'],
-	    ['Between', RANGE_ARGS, undefined, 'RangeExpression'],
-	    ['NotBetween', RANGE_ARGS, undefined, 'RangeExpression'],
+			['Gte'],
+			['Lt'],
+			['Lte'],
+			['Between', RANGE_ARGS, undefined, 'RangeExpression'],
+			['NotBetween', RANGE_ARGS, undefined, 'RangeExpression'],
 			['In', ARRAY_ARGS],
 			['NotIn', ARRAY_ARGS],
 		]
@@ -163,32 +201,40 @@ const postgresGoTypeMap = {
 
 
 
-const boilerPlateTemplate = `func (d *{0}) Where(expressions ...goqu.Expression) *{0} {
-	return &{0}{ d.dataset.Where(expressions...) }
+const boilerPlateTemplate = `
+func (d *{0}Dataset) Where(expressions ...goqu.Expression) *{0}Dataset {
+	return &{0}Dataset{ d.Dataset.Where(expressions...) }
 }
 
-func (d *{0}) Select(columns ...DbColumn) *{0} {
-	return &{0}{ d.dataset.Select(makeColumns(columns)...) }
+func (d *{0}Dataset) Select(columns ...DbColumn) *{0}Dataset {
+	return &{0}Dataset{ d.Dataset.Select(makeColumns(columns)...) }
 }
 
-func (d *{0}) Returning(columns ...DbColumn) *{0} {
-	return &{0}{ d.dataset.Returning(makeColumns(columns)...) }
+func (d *{0}Dataset) Returning(columns ...DbColumn) *{0}Dataset {
+	return &{0}Dataset{ d.Dataset.Returning(makeColumns(columns)...) }
 }
 
-func (d *{0}) Update(expressions ...SetExpression) *goqu.CrudExec {
-	return d.dataset.Update(makeRecord(expressions))
+func (d *{0}Dataset) Update(expressions ...SetExpression) *goqu.CrudExec {
+	return d.Dataset.Update(makeRecord(expressions))
 }
 
-func (d *{0}) Insert(expressions ...SetExpression) *goqu.CrudExec {
-	return d.dataset.Insert(makeRecord(expressions))
+func (d *{0}Dataset) Insert(expressions ...SetExpression) *goqu.CrudExec {
+	return d.Dataset.Insert(makeRecord(expressions))
 }
 
-func (d *{0}) Patch(values map[string]interface{}) (*goqu.CrudExec, bool) {
-	if !validatePatch(values, &{1}) {
-		return nil, false
+func (d *{0}Dataset) Patch(values map[string]interface{}) *patchExec {
+	var realValues = make(map[string]interface{})
+	for key, value := range values {
+		realValues[strcase.ToSnake(key)] = value
 	}
 
-	return d.dataset.Update(values), true
+	p := patchExec{
+		d.Dataset.Update(realValues),
+		validatePatch(&realValues, &{1}),
+		realValues,
+	}
+
+	return &p
 }`
 
 const go = {
@@ -202,16 +248,29 @@ const go = {
 	makeGoquTypeName: (tableName, fieldName) => tableName + changeCase.pascal(fieldName) + 'Column',
 
 	makeGoquTypeForField(tableName, field) {
-		const { required: fieldRequired, name: fieldName, type: fieldPostgresType } = field
+		const { required: fieldRequired, name: fieldName, type: fieldPostgresType, read_only: fieldReadOnly } = field
 
-		const { goType: fieldGoType, readOnly: typeReadOnly, methods: typeMethods } = postgresGoTypeMap[fieldPostgresType]
+		if (fieldPostgresType == 'tsvector') {
+			const goquTypeEntries = []
+			const goquTypeName = this.makeGoquTypeName(tableName, fieldName)
+
+			goquTypeEntries.push(`type ${goquTypeName} struct {\n\tcolumn\n}`)
+			const searchLiteral = `goqu.L(\`${tableName}.${fieldName} @@ to_tsquery('pg_catalog.english', ?)\`, val)`
+			goquTypeEntries.push(`func (c *${goquTypeName}) Search(val string) goqu.LiteralExpression {\n\treturn ${searchLiteral}\n}`)
+
+			// TODO add a "rank" function that can be used to create an order by
+
+			return goquTypeEntries.join('\n')
+		}
+
+		const { goType: fieldGoType, methods: typeMethods } = postgresGoTypeMap[fieldPostgresType]
 
 		const goquTypeEntries = []
 		const goquTypeName = this.makeGoquTypeName(tableName, fieldName)
-
 		goquTypeEntries.push(`type ${goquTypeName} struct {\n\tcolumn\n}`)
 
-		if (!typeReadOnly) {
+
+		if (!fieldReadOnly) {
 			goquTypeEntries.push(`func (c *${goquTypeName}) Set(val ${fieldGoType}) SetExpression {\n\treturn SetExpression{ Name: "${fieldName}", Value: val }\n}`)
 
 			if (!fieldRequired) {
@@ -223,11 +282,11 @@ const go = {
 			// ['IsNull', NO_ARGS, undefined, undefined],
 			goquTypeEntries.push(`func (c *${goquTypeName}) IsNull() goqu.BooleanExpression {\n\treturn c.column.i.IsNull()\n}`)
 
-		  // ['IsNotNull', NO_ARGS, undefined, undefined],
+			// ['IsNotNull', NO_ARGS, undefined, undefined],
 			goquTypeEntries.push(`func (c *${goquTypeName}) IsNotNull() goqu.BooleanExpression {\n\treturn c.column.i.IsNotNull()\n}`)
 		}
 
-		for (const method of typeMethods) {
+		for (const method of allGoTypeMethods.concat(typeMethods)) {
 			const [
 				outerName,
 				argType = fieldGoType,
@@ -248,8 +307,6 @@ const go = {
 		const tableName = table.name
 		const pascalTableName = changeCase.pascal(tableName)
 
-		// ModelTable will be a raw dataset, not safe, to do special stuff with
-		returnStrings.push(`var ${pascalTableName}Table = db.From("${tableName}")`)
 
 		// then its schema
 		// modelSchema
@@ -273,43 +330,53 @@ const go = {
 			schemaInstanceFields.push(`${pascalFieldName}: ${goquTypeName}{ column { i: goqu.I(${fieldNameString}) } },`)
 
 			const currentFieldType = postgresGoTypeMap[field.type]
-			if (!currentFieldType.readOnly) {
+			if (field.owner_patch) {
 				const {
-					inner: reflectOuter = changeCase.upperCaseFirst(currentFieldType.goType),
-					outer: reflectInner = 'Invalid'
+					outer: reflectOuter = changeCase.upperCaseFirst(currentFieldType.goType),
+					inner: reflectInner = 'Invalid',
 				} = currentFieldType.reflect || {}
-				modelKinds.push(`"${fieldName}": NestedKind { reflect.${reflectOuter}, reflect.${reflectInner} },`)
+
+				if (reflectOuter == 'Struct')
+					modelKinds.push(`"${fieldName}": NestedKind { Outer: reflect.Struct, Instance: ${currentFieldType.goType}{} },`)
+				else
+					modelKinds.push(`"${fieldName}": NestedKind { Outer: reflect.${reflectOuter}, Inner: reflect.${reflectInner} },`)
 			}
 		}
-
 		returnStrings.push(fieldTypes.join('\n'))
-		returnStrings.push(`type ${schemaName} struct {\n\tdataset *goqu.Dataset\n\t${schemaStructFields.join('\n\t')}\n}`)
+
+		const datasetName = `${tableName}Dataset`
+		returnStrings.push(`type ${datasetName} struct {\n\t*goqu.Dataset\n}`)
+
+		returnStrings.push(`type ${schemaName} struct {\n\tTable *goqu.Dataset\n\tQuery *${datasetName}\n\t${schemaStructFields.join('\n\t')}\n}`)
+
+		const tableCreateString = `db.From("${tableName}")`
 		// Model (the schema instance) will have (and act as) a model specific safe dataset
-		returnStrings.push(`var ${pascalTableName} = &${schemaName}{\n\t${schemaInstanceFields.join('\n\t')}\n}`)
+		returnStrings.push(`var ${pascalTableName} = &${schemaName}{\n\tTable: ${tableCreateString},\n\tQuery: &${datasetName}{ ${tableCreateString} },\n\t${schemaInstanceFields.join('\n\t')}\n}`)
+
 		const modelKindsName = tableName + 'Kinds'
 		returnStrings.push(`var ${modelKindsName} = map[string]NestedKind {\n\t${modelKinds.join('\n\t')}\n}`)
 
 		// the specific boiler plate methods that were previously in models-enhancements
-		returnStrings.push(String.format(boilerPlateTemplate, schemaName, modelKindsName))
+		returnStrings.push(String.format(boilerPlateTemplate, tableName, modelKindsName))
 
 
 
-		// const structTypes = []
+		const structTypes = []
 
-		// structTypes.push(['server', table.fields.slice()])
-		// for (const permissionLevel of ['owner_patch', 'owner_read', 'public_read']) {
-		// 	structTypes.push([permissionLevel, table.fields.filter(field => !!field[permissionLevel])])
-		// }
+		structTypes.push(['server', table.fields.filter(field => field.type != 'tsvector')])
+		for (const permissionLevel of ['owner_patch', 'owner_read', 'public_read']) {
+			structTypes.push([permissionLevel, table.fields.filter(field => !!field[permissionLevel])])
+		}
 
-		// for (const [permissionLevel, fields] of structTypes) {
-		// 	const structName = changeCase.pascal(permissionLevel) + changeCase.pascal(pluralize.singular(tableName))
+		for (const [permissionLevel, fields] of structTypes) {
+			const structName = changeCase.pascal(permissionLevel) + changeCase.pascal(pluralize.singular(tableName))
 
-		// 	const fieldsString = fields.map((field) => {
-		// 		return changeCase.pascal(field.name) + ' ' + postgresGoTypeMap[field.type].goType
-		// 	}).join('\n\t')
+			const fieldsString = fields.map((field) => {
+				return changeCase.pascal(field.name) + ' ' + postgresGoTypeMap[field.type].goType
+			}).join('\n\t')
 
-		// 	returnStrings.push(`type ${structName} struct {\n\t${fieldsString}\n}`)
-		// }
+			returnStrings.push(`type ${structName} struct {\n\t${fieldsString}\n}`)
+		}
 
 		return returnStrings.join('\n\n')
 	},
@@ -321,7 +388,9 @@ const go = {
 			"package main",
 			"import (",
 			`\t"time"`,
+			`\t"reflect"`,
 			`\t"github.com/blainehansen/goqu"`,
+			`\t"github.com/iancoleman/strcase"`,
 			")",
 			"",
 			this.stringify(tables),
@@ -372,7 +441,7 @@ const postgres = {
 
 	create(tables) {
 		const migrateFileString = [
-			"source ./.env",
+			"source ../.env.sh",
 			"",
 			"PGPASSWORD=$DATABASE_PASSWORD psql -U $DATABASE_USER -h $SYSTEM_DATABASE_HOST $DATABASE_DB_NAME << EOF",
 			"",
@@ -385,4 +454,4 @@ const postgres = {
 }
 
 go.create(tables)
-// postgres.create(tables)
+postgres.create(tables)

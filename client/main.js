@@ -12,7 +12,7 @@ Vue.use(AsyncProperties, {
 	debounce: 1000
 })
 
-import store from '@/vuex'
+import store from './vuex'
 import router from './router'
 
 import Cookies from 'js-cookie'

@@ -15,8 +15,6 @@
 	//- portal-target(name="createProjectDescription")
 	router-view
 
-	h2(v-else) Choose a step
-
 
 //- title
 //- blurb
@@ -38,8 +36,8 @@
 </template>
 
 <script>
-import api from '@/api'
-import { call, get } from '@/packages/vuex-pathify'
+// import { privateApi } from '@/api'
+import { call, get } from 'vuex-pathify'
 
 import componentManifest from './create'
 

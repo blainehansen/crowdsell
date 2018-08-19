@@ -8,12 +8,12 @@
 </template>
 
 <script>
-import api from '@/api'
+import { publicApi } from '@/api'
 
 export default {
 	name: 'ProjectsIndex',
 	asyncData: {
-		projects: () => api.getProjects()
+		projects: () => publicApi.getProjects()
 	}
 }
 </script>

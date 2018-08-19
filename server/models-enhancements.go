@@ -1,7 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"reflect"
+	"database/sql"
+
+	"github.com/gin-gonic/gin"
 	"github.com/blainehansen/goqu"
 )
 
@@ -10,6 +14,9 @@ type column struct {
 }
 
 func (c column) Identifier() goqu.IdentifierExpression {
+	return c.i
+}
+func (c column) I() goqu.IdentifierExpression {
 	return c.i
 }
 func (c *column) As(val string) goqu.AliasedExpression {
@@ -59,34 +66,6 @@ func makeColumns(columns []DbColumn) []interface{} {
 
 
 
-type SafeDataset struct {
-	*goqu.Dataset
-}
-
-func CreateTable(tableName string) *SafeDataset {
-	return &SafeDataset{ db.From(tableName) }
-}
-
-func (d *SafeDataset) Where(expressions ...goqu.Expression) *SafeDataset {
-	return &SafeDataset{ d.Dataset.Where(expressions...) }
-}
-
-func (d *SafeDataset) Select(columns ...DbColumn) *SafeDataset {
-	return &SafeDataset{ d.Dataset.Select(makeColumns(columns)...) }
-}
-
-func (d *SafeDataset) Returning(columns ...DbColumn) *SafeDataset {
-	return &SafeDataset{ d.Dataset.Returning(makeColumns(columns)...) }
-}
-
-func (d *SafeDataset) Update(expressions ...SetExpression) *goqu.CrudExec {
-	return d.Dataset.Update(makeRecord(expressions))
-}
-
-func (d *SafeDataset) Insert(expressions ...SetExpression) *goqu.CrudExec {
-	return d.Dataset.Insert(makeRecord(expressions))
-}
-
 // func (d *SafeDataset) InsertStruct(insert interface{}) *goqu.CrudExec {
 // 	if !structs.IsStruct(insert) {
 // 		panic("InsertStruct was not passed a struct: %T", insert)
@@ -101,22 +80,11 @@ func (d *SafeDataset) Insert(expressions ...SetExpression) *goqu.CrudExec {
 // }
 
 
-func (d *usersSchema) Patch(values map[string]interface{}) (*goqu.CrudExec, bool) {
-	if !validatePatch(values, usersSchemaFields) {
-		return nil, false
-	}
-
-	return d.SafeDataset.Dataset.Update(values), true
-}
-
-update := Users.Patch()
-
-
-
 
 type NestedKind struct {
 	Outer reflect.Kind
 	Inner reflect.Kind
+	Instance interface{}
 }
 
 func typesMatch(valueKind reflect.Kind, schemaKind reflect.Kind) bool {
@@ -156,6 +124,7 @@ func typesMatch(valueKind reflect.Kind, schemaKind reflect.Kind) bool {
 	}
 }
 
+
 func validatePatch(values *map[string]interface{}, schema *map[string]NestedKind) bool {
 	schemaAccess := *schema
 	for key, value := range *values {
@@ -168,9 +137,12 @@ func validatePatch(values *map[string]interface{}, schema *map[string]NestedKind
 		valueKind := baseValueType.Kind()
 
 
-		// reflect.TypeOf(t) == reflect.TypeOf((*Test)(nil)).Elem()
-
-		if schemaKind.Outer == reflect.Invalid
+		if schemaKind.Outer == reflect.Struct {
+			// reflect.TypeOf(schemaKind.Instance) == reflect.TypeOf((*Test)(nil)).Elem()
+			if reflect.TypeOf(schemaKind.Instance) != baseValueType {
+				return false
+			}
+		}
 
 		valueIterable := valueKind == reflect.Array || valueKind == reflect.Slice
 		schemaIterable := schemaKind.Outer == reflect.Array || schemaKind.Outer == reflect.Slice
@@ -189,18 +161,54 @@ func validatePatch(values *map[string]interface{}, schema *map[string]NestedKind
 	return true
 }
 
-// func main() {
-// 	projectSchema := map[string]NestedKind {
-// 		"id": NestedKind { reflect.Int64, reflect.Invalid },
-// 		"name": NestedKind { reflect.String, reflect.Invalid },
-// 		"password": NestedKind { reflect.Array, reflect.Uint8 },
-// 	}
 
-// 	values := map[string]interface{} {
-// 		"id": 4,
-// 		"name": "stuff",
-// 		"password": []byte("hello"),
-// 	}
 
-// 	fmt.Println(validatePatch(&values, &projectSchema))
-// }
+
+type patchExec struct {
+	*goqu.CrudExec
+	patchValid bool
+	PatchMap map[string]interface{}
+}
+
+func (e *patchExec) Exec() (bool, sql.Result, error) {
+	if !e.patchValid {
+		return false, nil, nil
+	}
+
+	result, err := e.CrudExec.Exec()
+	return true, result, err
+}
+
+func doPatch(c *gin.Context, p *patchExec) bool {
+	patchValid, result, updateError := p.Exec()
+
+	if !patchValid {
+		c.AbortWithError(422, fmt.Errorf("invalid patch arguments: %s", p.PatchMap))
+		return false
+	}
+
+	if updateError != nil {
+		c.AbortWithError(500, updateError)
+		return false
+	}
+	if rowsAffected, err := result.RowsAffected(); rowsAffected == 0 || err != nil {
+		c.AbortWithStatus(404)
+		return false
+	}
+
+	return true
+}
+
+func doExec(c *gin.Context, e *goqu.CrudExec) bool {
+	result, updateError := e.Exec()
+	if updateError != nil {
+		c.AbortWithError(500, updateError)
+		return false
+	}
+	if rowsAffected, err := result.RowsAffected(); rowsAffected == 0 || err != nil {
+		c.AbortWithStatus(404)
+		return false
+	}
+
+	return true
+}

@@ -246,6 +246,14 @@
   version = "v8.18.2"
 
 [[projects]]
+  digest = "1:a4b04b5314d49a67ad022fa7693453ee2b823ab99314f52fa3930ed31085dfef"
+  name = "gopkg.in/guregu/null.v3"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "80515d440932108546bcade467bb7d6968e812e2"
+  version = "v3.4.0"
+
+[[projects]]
   digest = "1:c30b57e29c4382537286c27e1e4e9b3fb7aa6a4313d0d80b638884c2c3e75d2d"
   name = "gopkg.in/mailgun/mailgun-go.v1"
   packages = ["."]
@@ -282,6 +290,7 @@
     "github.com/lhecker/argon2",
     "github.com/lib/pq",
     "github.com/speps/go-hashids",
+    "gopkg.in/guregu/null.v3",
     "gopkg.in/mailgun/mailgun-go.v1",
   ]
   solver-name = "gps-cdcl"

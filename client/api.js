@@ -1,28 +1,29 @@
 import axios from 'axios'
-import config from './config'
+import config from '@/config'
 
-axios.defaults.baseURL = config.baseURL
 axios.defaults.responseType = 'json'
 // axios.interceptors.response.use(null, function (error) {
 // 	return Promise.reject(error)
 // })
 
-export const publicHttp = axios.create()
-export const privateHttp = axios.create({ baseURL: config.baseURL + '/secure' })
+export const publicHttp = axios.create({ baseURL: config.SERVER_URL })
+export const privateHttp = axios.create({ baseURL: config.SERVER_URL + '/secure' })
 
 export const privateApi = {
 	uploadFile(url, file) {
 		const formData = new FormData()
 		formData.append('file', file)
-		return privateHttp.post(url, formData, { headers: {'Content-Type': 'multipart/form-data'} })
+		return privateHttp.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
 	},
 
 	uploadProfilePicture(hash, type, file) {
-		return this.uploadFile(`/profile-image/${hash}/${type}`, file)
+		return this.uploadFile(`/user/profile-image/${hash}/${type}`, file)
 	},
 
-	fetchFullUser: (userSlug) => privateHttp.get(`/users/${userSlug}`),
-	changeSlug(currentSlug, newSlug) => privateHttp.put(`/users/${currentSlug}/slug`, { slug: newSlug }),
+	fetchFullUser: () => privateHttp.get('/user'),
+	changeSlug: (newSlug) => privateHttp.put('/user/slug', { slug: newSlug }),
+	changePassword: (oldPassword, newPassword) => privateHttp.put('/user/password', { oldPassword, newPassword }),
+	saveUser: (userPatches) => privateHttp.patch('/user', userPatches),
 
 	saveProject(projectId, projectPatches) {
 		return projectId === null
@@ -31,11 +32,11 @@ export const privateApi = {
 	}
 }
 
-export default {
+export const publicApi = {
 	login: (email, password) => publicHttp.post('/login', { email, password }),
 	createUser: (name, email, password) => publicHttp.post('/create-user', { name, email, password }),
 	getProjects: () => publicHttp.get('/projects'),
 
-	getProjectById: (projectId) => publicHttp.get(`/projects/${projectId}`)
-	getProjectBySlug: (projectSlug) => publicHttp.get(`/projects/${projectId}`)
+	// getProjectById: (projectId) => publicHttp.get(`/projects/${projectId}`)
+	// getProjectBySlug: (projectSlug) => publicHttp.get(`/projects/${projectId}`)
 }

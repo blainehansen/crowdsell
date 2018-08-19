@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import api from '@/api'
+import { publicApi } from '@/api'
 
 export default {
 	name: 'Project',
@@ -25,7 +25,7 @@ export default {
 	},
 
 	asyncData: {
-		projects: () => api.getProject()
+		projects: () => publicApi.getProject()
 	}
 }
 </script>

@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import api, { privateHttp } from '@/api'
+import { privateHttp } from '@/api'
 
 function decodeToken(token) {
 	const segments = token.split('.')
@@ -7,7 +7,7 @@ function decodeToken(token) {
 	return JSON.parse(atob(segments[0]))
 }
 
-export const authModule = {
+export default {
 	namespaced: true,
 
 	state: {
@@ -29,7 +29,7 @@ export const authModule = {
 			return state.user ? state.user.name : null
 		},
 		userId(state, getters) {
-			return getters.decodedToken ? getters.decodedToken.I : null
+			return getters.decodedToken ? getters.decodedToken.i : null
 		},
 		userSlug(state) {
 			return state.user ? state.user.slug : null
@@ -38,10 +38,10 @@ export const authModule = {
 
 	mutations: {
 		login(state, signedUser) {
-			const { token, name, email } = signedUser
+			const { token, name, email, slug } = signedUser
 			state.token = token
 			// TODO perhaps this should store some of this in the user module?
-			state.user = { name, email }
+			state.user = { name, email, slug }
 			privateHttp.defaults.headers.common['Authorization'] = token
 			Cookies.set('signedUser', signedUser)
 		},
@@ -75,7 +75,7 @@ export function authPluginMaker(router) {
 	return function(store) {
 		store.watch((state, getters) => getters['auth/userLoggedIn'], (isLoggedIn) => {
 			if (!isLoggedIn && router.currentRoute.matched.some((route) => route.meta.private)) {
-				router.push({ name: 'login' })
+				router.replace({ name: 'login' })
 			}
 		})
 

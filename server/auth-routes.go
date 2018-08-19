@@ -3,12 +3,11 @@ package main
 import (
 	"fmt"
 	"bytes"
-	"regexp"
 
 	"github.com/gin-gonic/gin"
 	"github.com/badoux/checkmail"
 	// "gopkg.in/doug-martin/goqu.v4"
-	// "github.com/blainehansen/goqu"
+	"github.com/blainehansen/goqu"
 )
 
 type SignedUser struct {
@@ -39,7 +38,7 @@ var _ r = route(POST, "/create-user", func(c *gin.Context) {
 	}
 
 	var userSlug string
-	found, err := UsersTable.Returning(Users.Slug).Insert(
+	found, err := Users.Query.Returning(Users.Slug).Insert(
 		Users.Name.Set(newUser.Name), Users.Email.Set(newUser.Email), Users.Password.Set(hashedPassword),
 	).ScanVal(&userSlug)
 	if err != nil {
@@ -58,7 +57,6 @@ var _ r = route(POST, "/create-user", func(c *gin.Context) {
 })
 
 
-
 var _ r = route(POST, "/login", func(c *gin.Context) {
 	loginAttempt := struct {
 		Email string `binding:"required"`
@@ -67,68 +65,93 @@ var _ r = route(POST, "/login", func(c *gin.Context) {
 	if err := c.ShouldBindJSON(&loginAttempt); err != nil {
 		c.AbortWithError(422, err); return
 	}
+
 	loginAttemptPassword := []byte(loginAttempt.Password)
-
-	databaseUser := struct {
-		Slug string
-		UrlSlug string
-		Name string
-		Email string
-		Password []byte
-	}{}
-	userFound, queryError := UsersTable.Where(Users.Email.Eq(loginAttempt.Email)).ScanStruct(&databaseUser)
-	if queryError != nil {
-		c.AbortWithError(500, queryError); return
-	}
-	if !userFound {
-		c.AbortWithStatus(403); return
-	}
-
-	if !verifyPassword(&databaseUser.Password, &loginAttemptPassword) {
-		c.AbortWithStatus(403); return
-	}
+	valid, databaseUser := checkUserPassword(c, Users.Email.Eq(loginAttempt.Email), &loginAttemptPassword)
+	if !valid { return }
 
 	authTokenString, issueError := issueAuthToken(databaseUser.Slug)
 	if issueError != nil {
 		c.AbortWithError(500, issueError); return
 	}
+
 	c.JSON(200, SignedUser { Name: databaseUser.Name, UrlSlug: databaseUser.UrlSlug, Email: loginAttempt.Email, Token: authTokenString })
 })
 
 
-var urlSlugInvalidCharactersRegex = regexp.MustCompile("[^[:alnum:]-]")
-
-var _ r = authRoute(POST, "/users/change-slug", func(c *gin.Context) {
+var _ r = authRoute(PUT, "/user/password", func(c *gin.Context) {
 	userId := c.MustGet("userId").(int64)
 
-	slugPayload := struct {
-		UrlSlug string `binding:"required"`
+	passwordPayload := struct {
+		OldPassword string `binding:"required"`
+		NewPassword string `binding:"required"`
 	}{}
-	if err := c.ShouldBindJSON(&slugPayload); err != nil {
+	if err := c.ShouldBindJSON(&passwordPayload); err != nil {
 		c.AbortWithError(422, err); return
 	}
 
-	if urlSlugInvalidCharactersRegex.MatchString(slugPayload.UrlSlug) {
-		c.AbortWithError(400, fmt.Errorf("url_slug doesn't match the required format: %s", slugPayload.UrlSlug)); return
+
+	oldPassword := []byte(passwordPayload.OldPassword)
+	valid, databaseUser := checkUserPassword(c, Users.Id.Eq(userId), &oldPassword)
+	if !valid { return }
+
+	// hash the new password
+	newPassword := []byte(passwordPayload.NewPassword)
+	hashedPassword, hashError := hashPassword(&newPassword)
+	if hashError != nil {
+		c.AbortWithError(500, hashError); return
 	}
 
-	result, err := UsersTable.Where(
+	// update the user
+	updateQuery := Users.Query.Where(
 		Users.Id.Eq(userId),
 	).Update(
-		Users.UrlSlug.Set(slugPayload.UrlSlug),
-	).Exec()
-	if err != nil {
-		c.AbortWithError(500, err); return
-	}
-	if rowsAffected, err := result.RowsAffected(); rowsAffected == 0 || err != nil {
-		c.AbortWithStatus(403); return
+		Users.Password.Set(hashedPassword),
+	)
+
+	if !doExec(c, updateQuery) { return }
+
+	// give them a new signed user
+	authTokenString, issueError := issueAuthToken(databaseUser.Slug)
+	if issueError != nil {
+		c.AbortWithError(500, issueError); return
 	}
 
-	c.Status(204)
+	c.JSON(200, SignedUser { Name: databaseUser.Name, UrlSlug: databaseUser.UrlSlug, Email: databaseUser.Email, Token: authTokenString })
 })
 
 
-var _ r = route(POST, "/users/forgot-password", func(c *gin.Context) {
+type readyToSignUser struct {
+	Slug string
+	UrlSlug string
+	Name string
+	Email string
+	Password []byte
+}
+
+func checkUserPassword(c *gin.Context, condition goqu.BooleanExpression, attemptPassword *[]byte) (bool, readyToSignUser) {
+	databaseUser := readyToSignUser{}
+	userFound, queryError := Users.Query.Where(condition).ScanStruct(&databaseUser)
+	if queryError != nil {
+		c.AbortWithError(500, queryError);
+		return false, databaseUser
+	}
+	if !userFound {
+		c.AbortWithStatus(403);
+		return false, databaseUser
+	}
+
+	if !verifyPassword(&databaseUser.Password, attemptPassword) {
+		c.AbortWithStatus(403);
+		return false, databaseUser
+	}
+
+	return true, databaseUser
+}
+
+
+
+var _ r = route(POST, "/user/password/forgot", func(c *gin.Context) {
 	forgottenEmailPayload := struct {
 		Email string `binding:"required"`
 	}{}
@@ -146,7 +169,7 @@ var _ r = route(POST, "/users/forgot-password", func(c *gin.Context) {
 		c.AbortWithError(500, generationError)
 	}
 
-	result, err := UsersTable.Where(
+	result, err := Users.Query.Where(
 		Users.Email.Eq(forgottenEmail),
 	).Update(
 		Users.ForgotPasswordToken.Set(forgotPasswordToken),
@@ -169,7 +192,7 @@ var _ r = route(POST, "/users/forgot-password", func(c *gin.Context) {
 	c.Status(204)
 })
 
-var _ r = route(POST, "/users/recover-password", func(c *gin.Context) {
+var _ r = route(POST, "/user/password/recover", func(c *gin.Context) {
 	recoveryTokenPayload := struct {
 		RecoveryToken string `binding:"required"`
 		NewPassword string `binding:"required"`
@@ -203,7 +226,7 @@ var _ r = route(POST, "/users/recover-password", func(c *gin.Context) {
 		Name string
 		Email string
 	}{}
-	found, err := UsersTable.Where(
+	found, err := Users.Query.Where(
 		Users.Email.Eq(forgottenEmail), Users.ForgotPasswordToken.Eq(forgotPasswordToken),
 	).Returning(Users.Slug, Users.UrlSlug, Users.Name, Users.Email).Update(
 		Users.ForgotPasswordToken.Set(nil), Users.Password.Set(hashedPassword),
@@ -222,6 +245,7 @@ var _ r = route(POST, "/users/recover-password", func(c *gin.Context) {
 
 	c.JSON(200, SignedUser { Name: databaseUser.Name, UrlSlug: databaseUser.UrlSlug, Email: databaseUser.Email, Token: authTokenString })
 })
+
 
 func VerifyTokenMiddleWare(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")

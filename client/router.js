@@ -28,19 +28,24 @@ const router = new Router({
 
 		// { path: '/projects', name: 'projects', component: ProjectsIndex },
 
+		// {
+		// 	path: '/projects/create', component: CreateProject,
+		// 	meta: { private: true },
+		// },
+
 		{
-			path: '/projects/create', name: 'projectCreate', component: CreateProject,
+			path: '/projects/create', component: CreateProject,
 			props: { projectId: null },
 			meta: { private: true },
 			children: CreateProjectManifest,
 		},
 
-		{
-			path: '/projects/create/:projectId', name: 'projectEdit', component: CreateProject,
-			props: true,
-			meta: { private: true },
-			children: CreateProjectManifest,
-		}
+		// {
+		// 	path: '/projects/create/:projectId', component: EditProject,
+		// 	props: true,
+		// 	meta: { private: true },
+		// 	children: CreateProjectManifest,
+		// },
 		// { path: '/projects/:userSlug/:projectSlug', name: 'project', component: Project, props: true },
 
 		{ path: '/you', name: 'userProfile', component: UserProfile, meta: { private: true } },

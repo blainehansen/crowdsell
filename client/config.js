@@ -1,3 +1,3 @@
-export default {
-	baseURL: 'http://localhost:5050'
-}
+import config from '../dev.env.sh'
+
+export default config
