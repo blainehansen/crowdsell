@@ -42,6 +42,32 @@ projects:
       - description
 
 
+# enums:
+
+
+project_pledges:
+  url_slug: false
+
+  project_id:
+    type: bigint
+    required: true
+    references: projects(id)
+    server_private: true
+  user_id:
+    type: bigint
+    required: true
+    references: users(id)
+    server_private: true
+
+  amount:
+    type: money
+    required: true
+    server_private: true
+
+  constraints: |
+    unique (project_id, user_id)
+
+
 functions: |
   CREATE extension IF NOT EXISTS pg_hashids;
 

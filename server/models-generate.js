@@ -20,9 +20,22 @@ const {
 } = modelsManifest
 
 const globalFunctions = [functions]
-const universalFields = Object.entries(rawUniversal).map(processFields)
-const tables = []
 
+function reduceFields(fields) {
+	const fieldsReducer = ([finalFields, rejectedNames], [field, rejectedName]) => {
+		if (field)
+			finalFields.push(field)
+		else if (rejectedName)
+			rejectedNames.push(rejectedName)
+
+		return [finalFields, rejectedNames]
+	}
+
+	return fields.reduce(fieldsReducer, [[], []])
+}
+
+const [universalFields,] = reduceFields(Object.entries(rawUniversal).map(processFields))
+const tables = []
 
 // 0: tableName
 // 1: list of column names
@@ -43,12 +56,15 @@ EXECUTE PROCEDURE tsvector_update_trigger({2}, 'pg_catalog.english', {1});
 // $$ LANGUAGE plpgsql;`
 
 
-for (const [tableName, fields] of Object.entries(rawTables)) {
-	const processed = Object.entries(fields).map(processFields)
+for (const [tableName, rawFields] of Object.entries(rawTables)) {
+	const { constraints, ...fields } = rawFields
+
+	const [processed, rejectedUniversals] = reduceFields(Object.entries(fields).map(processFields))
 
 	tables.push({
 		name: tableName,
-		fields: universalFields.concat(processed),
+		fields: universalFields.filter((f) => !rejectedUniversals.includes(f.name)).concat(processed),
+		constraints,
 	})
 }
 
@@ -56,9 +72,14 @@ for (const [tableName, fields] of Object.entries(rawTables)) {
 function processFields([fieldName, rawField]) {
 	const field = { name: fieldName }
 
-	if (typeof rawField == 'string') {
+	const typeofRawField = typeof rawField
+	if (typeofRawField == 'string') {
 		field.type = rawField
 		rawField = {}
+	}
+	if (typeofRawField == 'boolean') {
+		if (rawField) throw new Error(`what blaine?: ${fieldName}, ${rawField}`)
+		return [null, fieldName]
 	}
 	else field.type = rawField.type
 
@@ -95,7 +116,7 @@ function processFields([fieldName, rawField]) {
 	field.public_read = !server_private && !private
 	field.owner_patch = !server_private && !no_patch && !read_only
 
-	return field
+	return [field, null]
 }
 
 function genericStringifyField(field) {
@@ -118,27 +139,50 @@ const allGoTypeMethods = [
 	['Desc', NO_ARGS, undefined, 'OrderedExpression'],
 	['Distinct', NO_ARGS, undefined, 'SqlFunctionExpression'],
 ]
+
+const equalityMethods = [
+	['Eq'],
+	['Neq'],
+]
+const comparisonMethods = [
+	['Gt'],
+	['Gte'],
+	['Lt'],
+	['Lte'],
+]
+const membershipMethods = [
+	['In', ARRAY_ARGS],
+	['NotIn', ARRAY_ARGS],
+]
+const rangeMethods = [
+	['Between', RANGE_ARGS, undefined, 'RangeExpression'],
+	['NotBetween', RANGE_ARGS, undefined, 'RangeExpression'],
+]
+const discreteDomainMethods = [
+	...equalityMethods,
+	...comparisonMethods,
+	...rangeMethods,
+	...membershipMethods,
+]
+// const continuousDomainMethods = [
+// 	...comparisonMethods,
+// 	...rangeMethods,
+// ]
+
 const postgresGoTypeMap = {
 	'primary': {
 		goType: 'int64',
 		methods: [
-			['Eq'],
-			['Neq'],
-			['In', ARRAY_ARGS],
-			['NotIn', ARRAY_ARGS],
+			...equalityMethods,
+			...membershipMethods
 		]
 	},
 	'text': {
 		goType: 'string',
 		methods: [
-			['Eq'],
-			['Neq'],
-			['Gt'],
-			['Gte'],
-			['Lt'],
-			['Lte'],
-			['In', ARRAY_ARGS],
-			['NotIn', ARRAY_ARGS],
+			...equalityMethods,
+			...comparisonMethods,
+			...membershipMethods,
 			['Like'],
 			['NotLike'],
 			['ILike'],
@@ -160,23 +204,19 @@ const postgresGoTypeMap = {
 			inner: 'Uint8',
 		},
 		methods: [
-			['Eq'],
-			['Neq'],
+			...equalityMethods
+		]
+	},
+	'money': {
+		goType: 'float64',
+		methods: [
+			...discreteDomainMethods
 		]
 	},
 	'bigint': {
 		goType: 'int64',
 		methods: [
-			['Eq'],
-			['Neq'],
-			['Gt'],
-			['Gte'],
-			['Lt'],
-			['Lte'],
-			['Between', RANGE_ARGS, undefined, 'RangeExpression'],
-			['NotBetween', RANGE_ARGS, undefined, 'RangeExpression'],
-			['In', ARRAY_ARGS],
-			['NotIn', ARRAY_ARGS],
+			...discreteDomainMethods
 		]
 	},
 	'timestamptz': {
@@ -185,16 +225,7 @@ const postgresGoTypeMap = {
 			outer: 'Struct',
 		},
 		methods: [
-			['Eq'],
-			['Neq'],
-			['Gt'],
-			['Gte'],
-			['Lt'],
-			['Lte'],
-			['Between', RANGE_ARGS, undefined, 'RangeExpression'],
-			['NotBetween', RANGE_ARGS, undefined, 'RangeExpression'],
-			['In', ARRAY_ARGS],
-			['NotIn', ARRAY_ARGS],
+			...discreteDomainMethods
 		]
 	},
 }
@@ -264,7 +295,7 @@ const go = {
 		}
 
 		const { goType: fieldGoType, methods: typeMethods } = postgresGoTypeMap[fieldPostgresType]
-
+//
 		const goquTypeEntries = []
 		const goquTypeName = this.makeGoquTypeName(tableName, fieldName)
 		goquTypeEntries.push(`type ${goquTypeName} struct {\n\tcolumn\n}`)
@@ -401,16 +432,19 @@ const go = {
 }
 
 
+function genericStringifyPostgresField(field) {
+	let fieldString = `${field.name} ${field.type}`
+	if (field.required) fieldString += ' NOT NULL'
+	if (field.unique) fieldString += ' UNIQUE'
+	if (field.references) fieldString += ` REFERENCES ${field.references}`
+	return fieldString
+}
+
 const postgres = {
 	fieldFunctions: {
 		primary: (field) => `${field.name} serial NOT NULL PRIMARY KEY`,
-		_default(field) {
-			let fieldString = `${field.name} ${field.type}`
-			if (field.required) fieldString += ' NOT NULL'
-			if (field.unique) fieldString += ' UNIQUE'
-			if (field.references) fieldString += ` REFERENCES ${field.references}`
-			return fieldString
-		},
+		money: (field) => genericStringifyPostgresField({ ...field, type: 'numeric(50, 4)' }),
+		_default: genericStringifyPostgresField,
 	},
 
 	stringifyField: genericStringifyField,
@@ -428,6 +462,9 @@ const postgres = {
 				triggerStrings.push(String.format(triggers, tableName))
 			}
 		}
+
+		if (table.constraints)
+			fieldStrings.push(table.constraints)
 
 		const stringifiedFields = fieldStrings.join(',\n\t')
 		const stringifiedTriggers = triggerStrings.join('\n')
