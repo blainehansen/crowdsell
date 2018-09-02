@@ -13,11 +13,13 @@
 import Header from '@/layout/Header'
 import Footer from '@/layout/Footer'
 
+import promisepay from 'promisepay'
+
 export default {
 	name: 'App',
 	components: {
 		Header, Footer
-	}
+	},
 }
 </script>
 

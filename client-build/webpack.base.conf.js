@@ -29,6 +29,11 @@ module.exports = {
 			'@': resolve('client'),
 		}
 	},
+
+	externals: {
+		promisepay: 'promisepay',
+	},
+
 	module: {
 		rules: [
 			{

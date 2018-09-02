@@ -6,8 +6,10 @@ axios.defaults.responseType = 'json'
 // 	return Promise.reject(error)
 // })
 
+config.API_URL = 'http://localhost:5050/'
 export const publicHttp = axios.create({ baseURL: config.API_URL })
-export const privateHttp = axios.create({ baseURL: config.API_URL + '/secure' })
+export const privateHttp = axios.create({ baseURL: config.API_URL })
+// export const privateHttp = axios.create({ baseURL: config.API_URL + '/secure' })
 
 export const privateApi = {
 	uploadFile(url, file) {
@@ -29,7 +31,10 @@ export const privateApi = {
 		return projectId === null
 			? privateHttp.post(`/projects`, projectPatches)
 			: privateHttp.patch(`/projects/${projectId}`, projectPatches)
-	}
+	},
+
+	generateCardToken: () => privateHttp.post('/user/card-token'),
+	generateBankToken: () => privateHttp.post('/user/bank-token'),
 }
 
 export const publicApi = {

@@ -1,4 +1,4 @@
-source ../.env.sh
+source ../.env.dev.sh
 
 PGPASSWORD=$DATABASE_PASSWORD psql -U $DATABASE_USER -h $SYSTEM_DATABASE_HOST $DATABASE_DB_NAME << EOF
 
@@ -35,11 +35,23 @@ CREATE OR REPLACE FUNCTION default_slug() RETURNS trigger
 AS \$$
 BEGIN
   NEW.slug := hashid(NEW.id);
+  RETURN NEW;
+END;
+\$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION default_url_slug() RETURNS trigger
+AS \$$
+BEGIN
   NEW.url_slug := NEW.slug;
   RETURN NEW;
 END;
 \$$ LANGUAGE plpgsql;
 
+CREATE TYPE project_pledges_state_enum AS ENUM (
+	'UNPAID',
+	'PAID',
+	'RELEASED'
+);
 
 BEGIN;
 
@@ -49,11 +61,12 @@ CREATE TABLE users (
 	date_updated timestamptz NOT NULL,
 	slug text NOT NULL,
 	url_slug text NOT NULL,
-	name undefined,
-	bio undefined,
-	location undefined,
-	links undefined,
+	name text,
+	bio text,
+	location text,
+	links text,
 	email text NOT NULL UNIQUE,
+	has_payment_user boolean NOT NULL,
 	password bytea NOT NULL,
 	profile_photo_slug text,
 	forgot_password_token bytea,
@@ -70,10 +83,15 @@ BEFORE UPDATE ON users
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_updated();
 
-CREATE TRIGGER default_slug_for_users
+CREATE TRIGGER _1_default_slug_for_users
 BEFORE INSERT ON users
 FOR EACH ROW
 EXECUTE PROCEDURE default_slug();
+
+CREATE TRIGGER _2_default_url_slug_for_users
+BEFORE INSERT ON users
+FOR EACH ROW
+EXECUTE PROCEDURE default_url_slug();
 
 CREATE TRIGGER search_update_users_general_search_vector
 BEFORE INSERT OR UPDATE OF name, bio ON users
@@ -88,8 +106,8 @@ CREATE TABLE projects (
 	date_updated timestamptz NOT NULL,
 	slug text NOT NULL,
 	url_slug text NOT NULL,
-	name undefined,
-	description undefined,
+	name text,
+	description text,
 	user_id bigint NOT NULL REFERENCES users(id),
 	general_search_vector tsvector
 );
@@ -104,10 +122,15 @@ BEFORE UPDATE ON projects
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_updated();
 
-CREATE TRIGGER default_slug_for_projects
+CREATE TRIGGER _1_default_slug_for_projects
 BEFORE INSERT ON projects
 FOR EACH ROW
 EXECUTE PROCEDURE default_slug();
+
+CREATE TRIGGER _2_default_url_slug_for_projects
+BEFORE INSERT ON projects
+FOR EACH ROW
+EXECUTE PROCEDURE default_url_slug();
 
 CREATE TRIGGER search_update_projects_general_search_vector
 BEFORE INSERT OR UPDATE OF name, description ON projects
@@ -123,9 +146,8 @@ CREATE TABLE project_pledges (
 	slug text NOT NULL,
 	project_id bigint NOT NULL REFERENCES projects(id),
 	user_id bigint NOT NULL REFERENCES users(id),
-	amount numeric(50, 4) NOT NULL,
-	unique (project_id, user_id)
-
+	amount bigint NOT NULL,
+	state project_pledges_state_enum DEFAULT UNPAID NOT NULL
 );
 
 CREATE TRIGGER set_created_for_project_pledges
@@ -137,6 +159,11 @@ CREATE TRIGGER set_updated_for_project_pledges
 BEFORE UPDATE ON project_pledges
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_updated();
+
+CREATE TRIGGER _1_default_slug_for_project_pledges
+BEFORE INSERT ON project_pledges
+FOR EACH ROW
+EXECUTE PROCEDURE default_slug();
 
 
 COMMIT;

@@ -9,7 +9,7 @@ services:
       - "5050:5050"
     tty: true
     volumes:
-      - .env.sh:/go/src/main/.env
+      - .env.dev.sh:/go/src/main/.env
       - ./server:/go/src/main
     working_dir: /go/src/main
     command: reflex -g '*.go' -G '*_test.go' --start-service=true -- sh -c "go run -tags=jsoniter *.go"

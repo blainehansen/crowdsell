@@ -9,136 +9,17 @@ String.format = function(format) {
 	return format.replace(/{(\d+)}/g, (match, number) => args[number] != 'undefined' ? args[number] : match)
 }
 
-
-
-const modelsManifest = yaml.load(fs.readFileSync('./models.yml'))
-
-const {
-	functions = "",
-	universal: rawUniversal = {},
-	...rawTables
-} = modelsManifest
-
-const globalFunctions = [functions]
-
-function reduceFields(fields) {
-	const fieldsReducer = ([finalFields, rejectedNames], [field, rejectedName]) => {
-		if (field)
-			finalFields.push(field)
-		else if (rejectedName)
-			rejectedNames.push(rejectedName)
-
-		return [finalFields, rejectedNames]
-	}
-
-	return fields.reduce(fieldsReducer, [[], []])
-}
-
-const [universalFields,] = reduceFields(Object.entries(rawUniversal).map(processFields))
-const tables = []
-
-// 0: tableName
-// 1: list of column names
-// 2: name of vector
-const searchTriggerBoilerplate = `CREATE TRIGGER search_update_{0}_{2}
-BEFORE INSERT OR UPDATE OF {1} ON {0}
-FOR EACH ROW
-EXECUTE PROCEDURE tsvector_update_trigger({2}, 'pg_catalog.english', {1});
-`
-
-// `CREATE FUNCTION film_weighted_tsv_trigger() RETURNS trigger AS $$
-// begin
-//   new.weighted_tsv :=
-//      setweight(to_tsvector('english', COALESCE(new.title,'')), 'A') ||
-//      setweight(to_tsvector('english', COALESCE(new.description,'')), 'B');
-//   return new;
-// end
-// $$ LANGUAGE plpgsql;`
-
-
-for (const [tableName, rawFields] of Object.entries(rawTables)) {
-	const { constraints, ...fields } = rawFields
-
-	const [processed, rejectedUniversals] = reduceFields(Object.entries(fields).map(processFields))
-
-	tables.push({
-		name: tableName,
-		fields: universalFields.filter((f) => !rejectedUniversals.includes(f.name)).concat(processed),
-		constraints,
-	})
-}
-
-
-function processFields([fieldName, rawField]) {
-	const field = { name: fieldName }
-
-	const typeofRawField = typeof rawField
-	if (typeofRawField == 'string') {
-		field.type = rawField
-		rawField = {}
-	}
-	if (typeofRawField == 'boolean') {
-		if (rawField) throw new Error(`what blaine?: ${fieldName}, ${rawField}`)
-		return [null, fieldName]
-	}
-	else field.type = rawField.type
-
-	if (rawField.type == 'tsvector') {
-		rawField.triggers = String.format(
-			searchTriggerBoilerplate,
-			// pull a trick here to preserve the tableName one
-			'{0}',
-			rawField.includes.join(', '),
-			fieldName,
-		)
-
-		rawField.triggers += `\nCREATE INDEX {0}_${fieldName}_idx ON {0} USING gin (${fieldName});`
-
-		rawField.server_private = true
-	}
-
-	if (rawField.functions) globalFunctions.push(rawField.functions)
-	field.triggers = rawField.triggers
-
-	field.references = rawField.references
-
-	field.unique = !!rawField.unique
-	field.required = !!rawField.required
-
-	const read_only = !!rawField.read_only
-	field.read_only = read_only
-
-	const server_private = !!rawField.server_private
-	const private = !!rawField.private
-	const no_patch = !!rawField.no_patch
-
-	field.owner_read = !server_private
-	field.public_read = !server_private && !private
-	field.owner_patch = !server_private && !no_patch && !read_only
-
-	return [field, null]
-}
-
-function genericStringifyField(field) {
-	const fieldFunction = this.fieldFunctions[field.type] || this.fieldFunctions._default
-	return fieldFunction.call(this, field)
-}
-
-function genericStringify(tables) {
-	return tables.map(this.stringifyTable.bind(this)).join('\n\n')
-}
-
 const NO_ARGS = Symbol()
 const ARRAY_ARGS = Symbol()
 const RANGE_ARGS = Symbol()
 
 // method array: [outer name, args type, goqu name, return type]
-const allGoTypeMethods = [
-	['As', 'string', undefined, 'AliasedExpression'],
-	['Asc', NO_ARGS, undefined, 'OrderedExpression'],
-	['Desc', NO_ARGS, undefined, 'OrderedExpression'],
-	['Distinct', NO_ARGS, undefined, 'SqlFunctionExpression'],
-]
+// const allGoTypeMethods = [
+// 	['As', 'string', undefined, 'AliasedExpression'],
+// 	['Asc', NO_ARGS, undefined, 'OrderedExpression'],
+// 	['Desc', NO_ARGS, undefined, 'OrderedExpression'],
+// 	['Distinct', NO_ARGS, undefined, 'SqlFunctionExpression'],
+// ]
 
 const equalityMethods = [
 	['Eq'],
@@ -230,6 +111,147 @@ const postgresGoTypeMap = {
 	},
 }
 
+const originalGoTypes = new Set(Object.values(postgresGoTypeMap).map(v => v.goType))
+
+
+
+const modelsManifest = yaml.load(fs.readFileSync('./models.yml'))
+
+const {
+	functions = "",
+	universal: rawUniversal = {},
+	...rawTables
+} = modelsManifest
+
+const globalFunctions = [functions]
+
+function reduceFields(fields) {
+	function fieldsReducer([finalFields, rejectedNames], [field, rejectedName]) {
+		if (field)
+			finalFields.push(field)
+		else if (rejectedName)
+			rejectedNames.push(rejectedName)
+
+		return [finalFields, rejectedNames]
+	}
+
+	return fields.reduce(fieldsReducer, [[], []])
+}
+
+const [universalFields,] = reduceFields(Object.entries(rawUniversal).map(e => processFields(null, e)))
+const tables = []
+
+// 0: tableName
+// 1: list of column names
+// 2: name of vector
+const searchTriggerBoilerplate = `CREATE TRIGGER search_update_{0}_{2}
+BEFORE INSERT OR UPDATE OF {1} ON {0}
+FOR EACH ROW
+EXECUTE PROCEDURE tsvector_update_trigger({2}, 'pg_catalog.english', {1});
+`
+
+// `CREATE FUNCTION film_weighted_tsv_trigger() RETURNS trigger AS $$
+// begin
+//   new.weighted_tsv :=
+//      setweight(to_tsvector('english', COALESCE(new.title,'')), 'A') ||
+//      setweight(to_tsvector('english', COALESCE(new.description,'')), 'B');
+//   return new;
+// end
+// $$ LANGUAGE plpgsql;`
+
+
+for (const [tableName, rawFields] of Object.entries(rawTables)) {
+	const { constraints, ...fields } = rawFields
+
+	const [processed, rejectedUniversals] = reduceFields(Object.entries(fields).map(e => processFields(tableName, e)))
+
+	tables.push({
+		name: tableName,
+		fields: universalFields.filter((f) => !rejectedUniversals.includes(f.name)).concat(processed),
+		constraints,
+	})
+}
+
+
+function processFields(tableName, [fieldName, rawField]) {
+	const field = { name: fieldName }
+
+	const typeofRawField = typeof rawField
+	if (typeofRawField == 'string') {
+		field.type = rawField
+		rawField = {}
+	}
+	else if (typeofRawField == 'boolean') {
+		if (rawField) throw new Error(`what blaine?: ${fieldName}, ${rawField}`)
+		return [null, fieldName]
+	}
+	else field.type = rawField.type
+
+	if (field.type == 'tsvector') {
+		rawField.triggers = String.format(
+			searchTriggerBoilerplate,
+			// pull a trick here to preserve the tableName one
+			'{0}',
+			rawField.includes.join(', '),
+			fieldName,
+		)
+
+		rawField.triggers += `\nCREATE INDEX {0}_${fieldName}_idx ON {0} USING gin (${fieldName});`
+
+		rawField.server_private = true
+	}
+	else if (field.type.startsWith('enum')) {
+		// this cuts out the enum() portion and just gives us the internal values
+		const enumValues = field.type.slice(5, -1).split(', ')
+
+		const enumName = `${tableName}_${changeCase.snake(fieldName)}_enum`
+		const pascalEnumName = changeCase.pascal(enumName)
+		postgresGoTypeMap[enumName] = {
+			goType: pascalEnumName,
+			enumValues,
+			methods: [
+				...equalityMethods,
+				...membershipMethods,
+			]
+		}
+		field.type = enumName
+
+		rawField.functions = `CREATE TYPE ${enumName} AS ENUM (\n\t${enumValues.map(s => `'${s}'`).join(',\n\t')}\n);`
+	}
+
+	if (rawField.functions) globalFunctions.push(rawField.functions)
+	field.triggers = rawField.triggers
+
+	field.references = rawField.references
+
+	field.unique = !!rawField.unique
+	field.required = !!rawField.required
+
+	field.default = rawField.default
+
+	const read_only = !!rawField.read_only
+	field.read_only = read_only
+
+	const server_private = !!rawField.server_private
+	const private = !!rawField.private
+	const no_patch = !!rawField.no_patch
+
+	field.owner_read = !server_private
+	field.public_read = !server_private && !private
+	field.owner_patch = !server_private && !no_patch && !read_only
+
+	return [field, null]
+}
+
+function genericStringifyField(field) {
+	const fieldFunction = this.fieldFunctions[field.type] || this.fieldFunctions._default
+	return fieldFunction.call(this, field)
+}
+
+function genericStringify(tables) {
+	return tables.map(this.stringifyTable.bind(this)).join('\n\n')
+}
+
 
 
 const boilerPlateTemplate = `
@@ -276,7 +298,7 @@ const go = {
 		return [`val ${argType}`, 'val']
 	},
 
-	makeGoquTypeName: (tableName, fieldName) => tableName + changeCase.pascal(fieldName) + 'Column',
+	makeGoquTypeName: (tableName, fieldName) => changeCase.camelCase(tableName) + changeCase.pascal(fieldName) + 'Column',
 
 	makeGoquTypeForField(tableName, field) {
 		const { required: fieldRequired, name: fieldName, type: fieldPostgresType, read_only: fieldReadOnly } = field
@@ -295,7 +317,7 @@ const go = {
 		}
 
 		const { goType: fieldGoType, methods: typeMethods } = postgresGoTypeMap[fieldPostgresType]
-//
+
 		const goquTypeEntries = []
 		const goquTypeName = this.makeGoquTypeName(tableName, fieldName)
 		goquTypeEntries.push(`type ${goquTypeName} struct {\n\tcolumn\n}`)
@@ -317,7 +339,8 @@ const go = {
 			goquTypeEntries.push(`func (c *${goquTypeName}) IsNotNull() goqu.BooleanExpression {\n\treturn c.column.i.IsNotNull()\n}`)
 		}
 
-		for (const method of allGoTypeMethods.concat(typeMethods)) {
+		// for (const method of allGoTypeMethods.concat(typeMethods)) {
+		for (const method of typeMethods) {
 			const [
 				outerName,
 				argType = fieldGoType,
@@ -337,11 +360,12 @@ const go = {
 		const returnStrings = []
 		const tableName = table.name
 		const pascalTableName = changeCase.pascal(tableName)
+		const camelTableName = changeCase.camelCase(tableName)
 
 
 		// then its schema
 		// modelSchema
-		const schemaName = tableName + 'Schema'
+		const schemaName = camelTableName + 'Schema'
 
 		const fieldTypes = []
 		const schemaStructFields = []
@@ -361,6 +385,15 @@ const go = {
 			schemaInstanceFields.push(`${pascalFieldName}: ${goquTypeName}{ column { i: goqu.I(${fieldNameString}) } },`)
 
 			const currentFieldType = postgresGoTypeMap[field.type]
+
+			// if it wasn't one of the original declared types, it's an enum
+			// we have to create it
+			if (field.type != 'tsvector' && !originalGoTypes.has(currentFieldType.goType)) {
+				const { enumValues, goType } = currentFieldType
+				const constEnumValues = enumValues.map(v => `${v} ${goType} = "${v}"`)
+				returnStrings.push(`type ${goType} string\nconst (\n\t${constEnumValues.join('\n\t')}\n)`)
+			}
+
 			if (field.owner_patch) {
 				const {
 					outer: reflectOuter = changeCase.upperCaseFirst(currentFieldType.goType),
@@ -375,7 +408,8 @@ const go = {
 		}
 		returnStrings.push(fieldTypes.join('\n'))
 
-		const datasetName = `${tableName}Dataset`
+
+		const datasetName = `${camelTableName}Dataset`
 		returnStrings.push(`type ${datasetName} struct {\n\t*goqu.Dataset\n}`)
 
 		returnStrings.push(`type ${schemaName} struct {\n\tTable *goqu.Dataset\n\tQuery *${datasetName}\n\t${schemaStructFields.join('\n\t')}\n}`)
@@ -384,12 +418,11 @@ const go = {
 		// Model (the schema instance) will have (and act as) a model specific safe dataset
 		returnStrings.push(`var ${pascalTableName} = &${schemaName}{\n\tTable: ${tableCreateString},\n\tQuery: &${datasetName}{ ${tableCreateString} },\n\t${schemaInstanceFields.join('\n\t')}\n}`)
 
-		const modelKindsName = tableName + 'Kinds'
+		const modelKindsName = camelTableName + 'Kinds'
 		returnStrings.push(`var ${modelKindsName} = map[string]NestedKind {\n\t${modelKinds.join('\n\t')}\n}`)
 
 		// the specific boiler plate methods that were previously in models-enhancements
-		returnStrings.push(String.format(boilerPlateTemplate, tableName, modelKindsName))
-
+		returnStrings.push(String.format(boilerPlateTemplate, camelTableName, modelKindsName))
 
 
 		const structTypes = []
@@ -434,6 +467,7 @@ const go = {
 
 function genericStringifyPostgresField(field) {
 	let fieldString = `${field.name} ${field.type}`
+	if (field.default) fieldString += ` DEFAULT ${field.default}`
 	if (field.required) fieldString += ' NOT NULL'
 	if (field.unique) fieldString += ' UNIQUE'
 	if (field.references) fieldString += ` REFERENCES ${field.references}`
@@ -478,7 +512,7 @@ const postgres = {
 
 	create(tables) {
 		const migrateFileString = [
-			"source ../.env.sh",
+			"source ../.env.dev.sh",
 			"",
 			"PGPASSWORD=$DATABASE_PASSWORD psql -U $DATABASE_USER -h $SYSTEM_DATABASE_HOST $DATABASE_DB_NAME << EOF",
 			"",

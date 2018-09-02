@@ -15,18 +15,6 @@ func (c *usersIdColumn) IsNull() goqu.BooleanExpression {
 func (c *usersIdColumn) IsNotNull() goqu.BooleanExpression {
 	return c.column.i.IsNotNull()
 }
-func (c *usersIdColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *usersIdColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *usersIdColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *usersIdColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
-}
 func (c *usersIdColumn) Eq(val int64) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
 }
@@ -42,18 +30,6 @@ func (c *usersIdColumn) NotIn(val []int64) goqu.BooleanExpression {
 
 type usersDateCreatedColumn struct {
 	column
-}
-func (c *usersDateCreatedColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *usersDateCreatedColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *usersDateCreatedColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *usersDateCreatedColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
 }
 func (c *usersDateCreatedColumn) Eq(val time.Time) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
@@ -89,18 +65,6 @@ func (c *usersDateCreatedColumn) NotIn(val []time.Time) goqu.BooleanExpression {
 type usersDateUpdatedColumn struct {
 	column
 }
-func (c *usersDateUpdatedColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *usersDateUpdatedColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *usersDateUpdatedColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *usersDateUpdatedColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
-}
 func (c *usersDateUpdatedColumn) Eq(val time.Time) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
 }
@@ -134,18 +98,6 @@ func (c *usersDateUpdatedColumn) NotIn(val []time.Time) goqu.BooleanExpression {
 
 type usersSlugColumn struct {
 	column
-}
-func (c *usersSlugColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *usersSlugColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *usersSlugColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *usersSlugColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
 }
 func (c *usersSlugColumn) Eq(val string) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
@@ -189,18 +141,6 @@ type usersUrlSlugColumn struct {
 }
 func (c *usersUrlSlugColumn) Set(val string) SetExpression {
 	return SetExpression{ Name: "url_slug", Value: val }
-}
-func (c *usersUrlSlugColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *usersUrlSlugColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *usersUrlSlugColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *usersUrlSlugColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
 }
 func (c *usersUrlSlugColumn) Eq(val string) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
@@ -254,18 +194,6 @@ func (c *usersNameColumn) IsNull() goqu.BooleanExpression {
 func (c *usersNameColumn) IsNotNull() goqu.BooleanExpression {
 	return c.column.i.IsNotNull()
 }
-func (c *usersNameColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *usersNameColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *usersNameColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *usersNameColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
-}
 func (c *usersNameColumn) Eq(val string) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
 }
@@ -317,18 +245,6 @@ func (c *usersBioColumn) IsNull() goqu.BooleanExpression {
 }
 func (c *usersBioColumn) IsNotNull() goqu.BooleanExpression {
 	return c.column.i.IsNotNull()
-}
-func (c *usersBioColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *usersBioColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *usersBioColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *usersBioColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
 }
 func (c *usersBioColumn) Eq(val string) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
@@ -382,18 +298,6 @@ func (c *usersLocationColumn) IsNull() goqu.BooleanExpression {
 func (c *usersLocationColumn) IsNotNull() goqu.BooleanExpression {
 	return c.column.i.IsNotNull()
 }
-func (c *usersLocationColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *usersLocationColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *usersLocationColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *usersLocationColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
-}
 func (c *usersLocationColumn) Eq(val string) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
 }
@@ -446,18 +350,6 @@ func (c *usersLinksColumn) IsNull() goqu.BooleanExpression {
 func (c *usersLinksColumn) IsNotNull() goqu.BooleanExpression {
 	return c.column.i.IsNotNull()
 }
-func (c *usersLinksColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *usersLinksColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *usersLinksColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *usersLinksColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
-}
 func (c *usersLinksColumn) Eq(val string) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
 }
@@ -501,18 +393,6 @@ type usersEmailColumn struct {
 func (c *usersEmailColumn) Set(val string) SetExpression {
 	return SetExpression{ Name: "email", Value: val }
 }
-func (c *usersEmailColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *usersEmailColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *usersEmailColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *usersEmailColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
-}
 func (c *usersEmailColumn) Eq(val string) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
 }
@@ -550,23 +430,27 @@ func (c *usersEmailColumn) NotILike(val string) goqu.BooleanExpression {
 	return c.column.i.NotILike(val)
 }
 
+type usersHasPaymentUserColumn struct {
+	column
+}
+func (c *usersHasPaymentUserColumn) Set(val bool) SetExpression {
+	return SetExpression{ Name: "has_payment_user", Value: val }
+}
+func (c *usersHasPaymentUserColumn) Is(val bool) goqu.BooleanExpression {
+	return c.column.i.Is(val)
+}
+func (c *usersHasPaymentUserColumn) True() goqu.BooleanExpression {
+	return c.column.i.IsTrue()
+}
+func (c *usersHasPaymentUserColumn) False() goqu.BooleanExpression {
+	return c.column.i.IsFalse()
+}
+
 type usersPasswordColumn struct {
 	column
 }
 func (c *usersPasswordColumn) Set(val []byte) SetExpression {
 	return SetExpression{ Name: "password", Value: val }
-}
-func (c *usersPasswordColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *usersPasswordColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *usersPasswordColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *usersPasswordColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
 }
 func (c *usersPasswordColumn) Eq(val []byte) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
@@ -589,18 +473,6 @@ func (c *usersProfilePhotoSlugColumn) IsNull() goqu.BooleanExpression {
 }
 func (c *usersProfilePhotoSlugColumn) IsNotNull() goqu.BooleanExpression {
 	return c.column.i.IsNotNull()
-}
-func (c *usersProfilePhotoSlugColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *usersProfilePhotoSlugColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *usersProfilePhotoSlugColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *usersProfilePhotoSlugColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
 }
 func (c *usersProfilePhotoSlugColumn) Eq(val string) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
@@ -654,18 +526,6 @@ func (c *usersForgotPasswordTokenColumn) IsNull() goqu.BooleanExpression {
 func (c *usersForgotPasswordTokenColumn) IsNotNull() goqu.BooleanExpression {
 	return c.column.i.IsNotNull()
 }
-func (c *usersForgotPasswordTokenColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *usersForgotPasswordTokenColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *usersForgotPasswordTokenColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *usersForgotPasswordTokenColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
-}
 func (c *usersForgotPasswordTokenColumn) Eq(val []byte) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
 }
@@ -698,6 +558,7 @@ type usersSchema struct {
 	Location usersLocationColumn
 	Links usersLinksColumn
 	Email usersEmailColumn
+	HasPaymentUser usersHasPaymentUserColumn
 	Password usersPasswordColumn
 	ProfilePhotoSlug usersProfilePhotoSlugColumn
 	ForgotPasswordToken usersForgotPasswordTokenColumn
@@ -717,6 +578,7 @@ var Users = &usersSchema{
 	Location: usersLocationColumn{ column { i: goqu.I("users.location") } },
 	Links: usersLinksColumn{ column { i: goqu.I("users.links") } },
 	Email: usersEmailColumn{ column { i: goqu.I("users.email") } },
+	HasPaymentUser: usersHasPaymentUserColumn{ column { i: goqu.I("users.has_payment_user") } },
 	Password: usersPasswordColumn{ column { i: goqu.I("users.password") } },
 	ProfilePhotoSlug: usersProfilePhotoSlugColumn{ column { i: goqu.I("users.profile_photo_slug") } },
 	ForgotPasswordToken: usersForgotPasswordTokenColumn{ column { i: goqu.I("users.forgot_password_token") } },
@@ -728,6 +590,7 @@ var usersKinds = map[string]NestedKind {
 	"bio": NestedKind { Outer: reflect.String, Inner: reflect.Invalid },
 	"location": NestedKind { Outer: reflect.String, Inner: reflect.Invalid },
 	"links": NestedKind { Outer: reflect.String, Inner: reflect.Invalid },
+	"has_payment_user": NestedKind { Outer: reflect.Bool, Inner: reflect.Invalid },
 }
 
 
@@ -777,6 +640,7 @@ type ServerUser struct {
 	Location string
 	Links string
 	Email string
+	HasPaymentUser bool
 	Password []byte
 	ProfilePhotoSlug string
 	ForgotPasswordToken []byte
@@ -787,6 +651,7 @@ type OwnerPatchUser struct {
 	Bio string
 	Location string
 	Links string
+	HasPaymentUser bool
 }
 
 type OwnerReadUser struct {
@@ -797,6 +662,7 @@ type OwnerReadUser struct {
 	Location string
 	Links string
 	Email string
+	HasPaymentUser bool
 	ProfilePhotoSlug string
 }
 
@@ -806,6 +672,7 @@ type PublicReadUser struct {
 	Bio string
 	Location string
 	Links string
+	HasPaymentUser bool
 	ProfilePhotoSlug string
 }
 
@@ -817,18 +684,6 @@ func (c *projectsIdColumn) IsNull() goqu.BooleanExpression {
 }
 func (c *projectsIdColumn) IsNotNull() goqu.BooleanExpression {
 	return c.column.i.IsNotNull()
-}
-func (c *projectsIdColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *projectsIdColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *projectsIdColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *projectsIdColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
 }
 func (c *projectsIdColumn) Eq(val int64) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
@@ -845,18 +700,6 @@ func (c *projectsIdColumn) NotIn(val []int64) goqu.BooleanExpression {
 
 type projectsDateCreatedColumn struct {
 	column
-}
-func (c *projectsDateCreatedColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *projectsDateCreatedColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *projectsDateCreatedColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *projectsDateCreatedColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
 }
 func (c *projectsDateCreatedColumn) Eq(val time.Time) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
@@ -892,18 +735,6 @@ func (c *projectsDateCreatedColumn) NotIn(val []time.Time) goqu.BooleanExpressio
 type projectsDateUpdatedColumn struct {
 	column
 }
-func (c *projectsDateUpdatedColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *projectsDateUpdatedColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *projectsDateUpdatedColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *projectsDateUpdatedColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
-}
 func (c *projectsDateUpdatedColumn) Eq(val time.Time) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
 }
@@ -937,18 +768,6 @@ func (c *projectsDateUpdatedColumn) NotIn(val []time.Time) goqu.BooleanExpressio
 
 type projectsSlugColumn struct {
 	column
-}
-func (c *projectsSlugColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *projectsSlugColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *projectsSlugColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *projectsSlugColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
 }
 func (c *projectsSlugColumn) Eq(val string) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
@@ -992,18 +811,6 @@ type projectsUrlSlugColumn struct {
 }
 func (c *projectsUrlSlugColumn) Set(val string) SetExpression {
 	return SetExpression{ Name: "url_slug", Value: val }
-}
-func (c *projectsUrlSlugColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *projectsUrlSlugColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *projectsUrlSlugColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *projectsUrlSlugColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
 }
 func (c *projectsUrlSlugColumn) Eq(val string) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
@@ -1057,18 +864,6 @@ func (c *projectsNameColumn) IsNull() goqu.BooleanExpression {
 func (c *projectsNameColumn) IsNotNull() goqu.BooleanExpression {
 	return c.column.i.IsNotNull()
 }
-func (c *projectsNameColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *projectsNameColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *projectsNameColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *projectsNameColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
-}
 func (c *projectsNameColumn) Eq(val string) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
 }
@@ -1121,18 +916,6 @@ func (c *projectsDescriptionColumn) IsNull() goqu.BooleanExpression {
 func (c *projectsDescriptionColumn) IsNotNull() goqu.BooleanExpression {
 	return c.column.i.IsNotNull()
 }
-func (c *projectsDescriptionColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *projectsDescriptionColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *projectsDescriptionColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *projectsDescriptionColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
-}
 func (c *projectsDescriptionColumn) Eq(val string) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
 }
@@ -1175,18 +958,6 @@ type projectsUserIdColumn struct {
 }
 func (c *projectsUserIdColumn) Set(val int64) SetExpression {
 	return SetExpression{ Name: "user_id", Value: val }
-}
-func (c *projectsUserIdColumn) As(val string) goqu.AliasedExpression {
-	return c.column.i.As(val)
-}
-func (c *projectsUserIdColumn) Asc() goqu.OrderedExpression {
-	return c.column.i.Asc()
-}
-func (c *projectsUserIdColumn) Desc() goqu.OrderedExpression {
-	return c.column.i.Desc()
-}
-func (c *projectsUserIdColumn) Distinct() goqu.SqlFunctionExpression {
-	return c.column.i.Distinct()
 }
 func (c *projectsUserIdColumn) Eq(val int64) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
@@ -1327,4 +1098,365 @@ type PublicReadProject struct {
 	UrlSlug string
 	Name string
 	Description string
+}
+
+type ProjectPledgesStateEnum string
+const (
+	UNPAID ProjectPledgesStateEnum = "UNPAID"
+	PAID ProjectPledgesStateEnum = "PAID"
+	RELEASED ProjectPledgesStateEnum = "RELEASED"
+)
+
+type projectPledgesIdColumn struct {
+	column
+}
+func (c *projectPledgesIdColumn) IsNull() goqu.BooleanExpression {
+	return c.column.i.IsNull()
+}
+func (c *projectPledgesIdColumn) IsNotNull() goqu.BooleanExpression {
+	return c.column.i.IsNotNull()
+}
+func (c *projectPledgesIdColumn) Eq(val int64) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectPledgesIdColumn) Neq(val int64) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectPledgesIdColumn) In(val []int64) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectPledgesIdColumn) NotIn(val []int64) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectPledgesDateCreatedColumn struct {
+	column
+}
+func (c *projectPledgesDateCreatedColumn) Eq(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectPledgesDateCreatedColumn) Neq(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectPledgesDateCreatedColumn) Gt(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectPledgesDateCreatedColumn) Gte(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectPledgesDateCreatedColumn) Lt(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectPledgesDateCreatedColumn) Lte(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectPledgesDateCreatedColumn) Between(startVal time.Time, endVal time.Time) goqu.RangeExpression {
+	return c.column.i.Between(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectPledgesDateCreatedColumn) NotBetween(startVal time.Time, endVal time.Time) goqu.RangeExpression {
+	return c.column.i.NotBetween(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectPledgesDateCreatedColumn) In(val []time.Time) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectPledgesDateCreatedColumn) NotIn(val []time.Time) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectPledgesDateUpdatedColumn struct {
+	column
+}
+func (c *projectPledgesDateUpdatedColumn) Eq(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectPledgesDateUpdatedColumn) Neq(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectPledgesDateUpdatedColumn) Gt(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectPledgesDateUpdatedColumn) Gte(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectPledgesDateUpdatedColumn) Lt(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectPledgesDateUpdatedColumn) Lte(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectPledgesDateUpdatedColumn) Between(startVal time.Time, endVal time.Time) goqu.RangeExpression {
+	return c.column.i.Between(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectPledgesDateUpdatedColumn) NotBetween(startVal time.Time, endVal time.Time) goqu.RangeExpression {
+	return c.column.i.NotBetween(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectPledgesDateUpdatedColumn) In(val []time.Time) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectPledgesDateUpdatedColumn) NotIn(val []time.Time) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectPledgesSlugColumn struct {
+	column
+}
+func (c *projectPledgesSlugColumn) Eq(val string) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectPledgesSlugColumn) Neq(val string) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectPledgesSlugColumn) Gt(val string) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectPledgesSlugColumn) Gte(val string) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectPledgesSlugColumn) Lt(val string) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectPledgesSlugColumn) Lte(val string) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectPledgesSlugColumn) In(val []string) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectPledgesSlugColumn) NotIn(val []string) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+func (c *projectPledgesSlugColumn) Like(val string) goqu.BooleanExpression {
+	return c.column.i.Like(val)
+}
+func (c *projectPledgesSlugColumn) NotLike(val string) goqu.BooleanExpression {
+	return c.column.i.NotLike(val)
+}
+func (c *projectPledgesSlugColumn) ILike(val string) goqu.BooleanExpression {
+	return c.column.i.ILike(val)
+}
+func (c *projectPledgesSlugColumn) NotILike(val string) goqu.BooleanExpression {
+	return c.column.i.NotILike(val)
+}
+
+type projectPledgesProjectIdColumn struct {
+	column
+}
+func (c *projectPledgesProjectIdColumn) Set(val int64) SetExpression {
+	return SetExpression{ Name: "project_id", Value: val }
+}
+func (c *projectPledgesProjectIdColumn) Eq(val int64) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectPledgesProjectIdColumn) Neq(val int64) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectPledgesProjectIdColumn) Gt(val int64) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectPledgesProjectIdColumn) Gte(val int64) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectPledgesProjectIdColumn) Lt(val int64) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectPledgesProjectIdColumn) Lte(val int64) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectPledgesProjectIdColumn) Between(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.Between(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectPledgesProjectIdColumn) NotBetween(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.NotBetween(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectPledgesProjectIdColumn) In(val []int64) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectPledgesProjectIdColumn) NotIn(val []int64) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectPledgesUserIdColumn struct {
+	column
+}
+func (c *projectPledgesUserIdColumn) Set(val int64) SetExpression {
+	return SetExpression{ Name: "user_id", Value: val }
+}
+func (c *projectPledgesUserIdColumn) Eq(val int64) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectPledgesUserIdColumn) Neq(val int64) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectPledgesUserIdColumn) Gt(val int64) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectPledgesUserIdColumn) Gte(val int64) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectPledgesUserIdColumn) Lt(val int64) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectPledgesUserIdColumn) Lte(val int64) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectPledgesUserIdColumn) Between(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.Between(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectPledgesUserIdColumn) NotBetween(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.NotBetween(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectPledgesUserIdColumn) In(val []int64) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectPledgesUserIdColumn) NotIn(val []int64) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectPledgesAmountColumn struct {
+	column
+}
+func (c *projectPledgesAmountColumn) Set(val int64) SetExpression {
+	return SetExpression{ Name: "amount", Value: val }
+}
+func (c *projectPledgesAmountColumn) Eq(val int64) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectPledgesAmountColumn) Neq(val int64) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectPledgesAmountColumn) Gt(val int64) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectPledgesAmountColumn) Gte(val int64) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectPledgesAmountColumn) Lt(val int64) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectPledgesAmountColumn) Lte(val int64) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectPledgesAmountColumn) Between(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.Between(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectPledgesAmountColumn) NotBetween(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.NotBetween(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectPledgesAmountColumn) In(val []int64) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectPledgesAmountColumn) NotIn(val []int64) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectPledgesStateColumn struct {
+	column
+}
+func (c *projectPledgesStateColumn) Set(val ProjectPledgesStateEnum) SetExpression {
+	return SetExpression{ Name: "state", Value: val }
+}
+func (c *projectPledgesStateColumn) Eq(val ProjectPledgesStateEnum) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectPledgesStateColumn) Neq(val ProjectPledgesStateEnum) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectPledgesStateColumn) In(val []ProjectPledgesStateEnum) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectPledgesStateColumn) NotIn(val []ProjectPledgesStateEnum) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+
+type projectPledgesDataset struct {
+	*goqu.Dataset
+}
+
+type projectPledgesSchema struct {
+	Table *goqu.Dataset
+	Query *projectPledgesDataset
+	Id projectPledgesIdColumn
+	DateCreated projectPledgesDateCreatedColumn
+	DateUpdated projectPledgesDateUpdatedColumn
+	Slug projectPledgesSlugColumn
+	ProjectId projectPledgesProjectIdColumn
+	UserId projectPledgesUserIdColumn
+	Amount projectPledgesAmountColumn
+	State projectPledgesStateColumn
+}
+
+var ProjectPledges = &projectPledgesSchema{
+	Table: db.From("project_pledges"),
+	Query: &projectPledgesDataset{ db.From("project_pledges") },
+	Id: projectPledgesIdColumn{ column { i: goqu.I("project_pledges.id") } },
+	DateCreated: projectPledgesDateCreatedColumn{ column { i: goqu.I("project_pledges.date_created") } },
+	DateUpdated: projectPledgesDateUpdatedColumn{ column { i: goqu.I("project_pledges.date_updated") } },
+	Slug: projectPledgesSlugColumn{ column { i: goqu.I("project_pledges.slug") } },
+	ProjectId: projectPledgesProjectIdColumn{ column { i: goqu.I("project_pledges.project_id") } },
+	UserId: projectPledgesUserIdColumn{ column { i: goqu.I("project_pledges.user_id") } },
+	Amount: projectPledgesAmountColumn{ column { i: goqu.I("project_pledges.amount") } },
+	State: projectPledgesStateColumn{ column { i: goqu.I("project_pledges.state") } },
+}
+
+var projectPledgesKinds = map[string]NestedKind {
+	
+}
+
+
+func (d *projectPledgesDataset) Where(expressions ...goqu.Expression) *projectPledgesDataset {
+	return &projectPledgesDataset{ d.Dataset.Where(expressions...) }
+}
+
+func (d *projectPledgesDataset) Select(columns ...DbColumn) *projectPledgesDataset {
+	return &projectPledgesDataset{ d.Dataset.Select(makeColumns(columns)...) }
+}
+
+func (d *projectPledgesDataset) Returning(columns ...DbColumn) *projectPledgesDataset {
+	return &projectPledgesDataset{ d.Dataset.Returning(makeColumns(columns)...) }
+}
+
+func (d *projectPledgesDataset) Update(expressions ...SetExpression) *goqu.CrudExec {
+	return d.Dataset.Update(makeRecord(expressions))
+}
+
+func (d *projectPledgesDataset) Insert(expressions ...SetExpression) *goqu.CrudExec {
+	return d.Dataset.Insert(makeRecord(expressions))
+}
+
+func (d *projectPledgesDataset) Patch(values map[string]interface{}) *patchExec {
+	var realValues = make(map[string]interface{})
+	for key, value := range values {
+		realValues[strcase.ToSnake(key)] = value
+	}
+
+	p := patchExec{
+		d.Dataset.Update(realValues),
+		validatePatch(&realValues, &projectPledgesKinds),
+		realValues,
+	}
+
+	return &p
+}
+
+type ServerProjectPledge struct {
+	Id int64
+	DateCreated time.Time
+	DateUpdated time.Time
+	Slug string
+	ProjectId int64
+	UserId int64
+	Amount int64
+	State ProjectPledgesStateEnum
+}
+
+type OwnerPatchProjectPledge struct {
+	
+}
+
+type OwnerReadProjectPledge struct {
+	Slug string
+}
+
+type PublicReadProjectPledge struct {
+	
 }

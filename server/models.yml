@@ -9,6 +9,12 @@ users:
     required: true
     private: true
     no_patch: true
+
+  has_payment_user:
+    type: boolean
+    required: true
+    default: false
+
   password:
     type: bytea
     required: true
@@ -42,9 +48,6 @@ projects:
       - description
 
 
-# enums:
-
-
 project_pledges:
   url_slug: false
 
@@ -60,12 +63,18 @@ project_pledges:
     server_private: true
 
   amount:
-    type: money
+    type: bigint
     required: true
     server_private: true
 
-  constraints: |
-    unique (project_id, user_id)
+  state:
+    type: enum(UNPAID, PAID, RELEASED)
+    default: 'UNPAID'
+    required: true
+    server_private: true
+
+  # constraints: |
+  #   unique (project_id, user_id)
 
 
 functions: |
@@ -131,21 +140,34 @@ universal:
     required: true
     read_only: true
     private: true
-  url_slug:
-    type: text
-    required: true
-    no_patch: true
     functions: |
       CREATE OR REPLACE FUNCTION default_slug() RETURNS trigger
       AS \$$
       BEGIN
         NEW.slug := hashid(NEW.id);
+        RETURN NEW;
+      END;
+      \$$ LANGUAGE plpgsql;
+    triggers: |
+      CREATE TRIGGER _1_default_slug_for_{0}
+      BEFORE INSERT ON {0}
+      FOR EACH ROW
+      EXECUTE PROCEDURE default_slug();
+
+  url_slug:
+    type: text
+    required: true
+    no_patch: true
+    functions: |
+      CREATE OR REPLACE FUNCTION default_url_slug() RETURNS trigger
+      AS \$$
+      BEGIN
         NEW.url_slug := NEW.slug;
         RETURN NEW;
       END;
       \$$ LANGUAGE plpgsql;
     triggers: |
-      CREATE TRIGGER default_slug_for_{0}
+      CREATE TRIGGER _2_default_url_slug_for_{0}
       BEFORE INSERT ON {0}
       FOR EACH ROW
-      EXECUTE PROCEDURE default_slug();
+      EXECUTE PROCEDURE default_url_slug();
