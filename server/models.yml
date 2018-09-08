@@ -19,7 +19,7 @@ users:
     type: bytea
     required: true
     server_private: true
-  profile_photo_slug:
+  profile_photo_version:
     type: text
     no_patch: true
   forgot_password_token:
@@ -69,7 +69,7 @@ project_pledges:
 
   state:
     type: enum(UNPAID, PAID, RELEASED)
-    default: 'UNPAID'
+    default: UNPAID
     required: true
     server_private: true
 

@@ -3,7 +3,10 @@ package main
 import (
 	"io"
 	"fmt"
+	"time"
 	"strconv"
+	"crypto/sha1"
+	// "encoding/hex"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -81,4 +84,28 @@ func UploadToSpace(fileObject io.ReadSeeker, objectKey string, contentType strin
 		return err
 	}
 	return nil
+}
+
+
+var imagesApiKey string = environment["CDN_API_KEY"]
+var imagesApiSecret string = environment["CDN_API_SECRET"]
+
+
+func makeUploadParams(objectName string, timestamp int64, preset string) []byte {
+	return []byte(fmt.Sprintf("public_id=%s&timestamp=%d&upload_preset=%s%s", objectName, timestamp, preset, imagesApiSecret))
+}
+
+func SignUploadParams(objectName string, preset string) (string, int64) {
+	timestamp := time.Now().Unix()
+	data := makeUploadParams(objectName, timestamp, preset)
+
+	signature := fmt.Sprintf("%x", sha1.Sum(data))
+	return signature, timestamp
+}
+
+
+func VerifyUploadParamsSignature(proposedSignature string, objectName string, preset string, timestamp int64) bool {
+	data := makeUploadParams(objectName, timestamp, preset)
+
+	return fmt.Sprintf("%x", sha1.Sum(data)) == proposedSignature
 }

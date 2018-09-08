@@ -66,9 +66,9 @@ CREATE TABLE users (
 	location text,
 	links text,
 	email text NOT NULL UNIQUE,
-	has_payment_user boolean NOT NULL,
+	has_payment_user boolean DEFAULT 'false' NOT NULL,
 	password bytea NOT NULL,
-	profile_photo_slug text,
+	profile_photo_version text,
 	forgot_password_token bytea,
 	general_search_vector tsvector
 );
@@ -147,7 +147,7 @@ CREATE TABLE project_pledges (
 	project_id bigint NOT NULL REFERENCES projects(id),
 	user_id bigint NOT NULL REFERENCES users(id),
 	amount bigint NOT NULL,
-	state project_pledges_state_enum DEFAULT UNPAID NOT NULL
+	state project_pledges_state_enum DEFAULT 'UNPAID' NOT NULL
 );
 
 CREATE TRIGGER set_created_for_project_pledges

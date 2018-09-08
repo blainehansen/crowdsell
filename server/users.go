@@ -12,6 +12,7 @@ import (
 )
 
 var urlSlugInvalidCharactersRegex = regexp.MustCompile("[^[:alnum:]-]")
+var hashInvalidCharactersRegex = regexp.MustCompile("[^[:alnum:]]")
 
 var _ r = authRoute(PUT, "/user/slug", func(c *gin.Context) {
 	userId := c.MustGet("userId").(int64)
@@ -47,6 +48,7 @@ var _ r = authRoute(GET, "/user", func(c *gin.Context) {
 		Bio null.String
 		Links null.String
 		Location null.String
+		ProfilePhotoVersion null.String
 	}{}
 	found, err := Users.Query.Where(
 		Users.Id.Eq(userId),
@@ -81,49 +83,54 @@ var _ r = authRoute(PATCH, "/user", func(c *gin.Context) {
 })
 
 
-var _ r = authRoute(POST, "/user/profile-image/:imageHash/:imageType", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
-	userSlug := c.MustGet("userSlug")
 
-	file, parseErr := c.FormFile("file")
-	if parseErr != nil {
-		c.AbortWithError(400, parseErr); return
+// func makeProfileObjectName(userSlug string) string {
+// 	return fmt.Sprintf("%s.png", userSlug)
+// }
+
+var imagesProfilePreset string = environment["CDN_API_PROFILE_IMAGES_PRESET"]
+
+var _ r = authRoute(POST, "/user/profile-image/sign", func(c *gin.Context) {
+	userSlug := c.MustGet("userSlug").(string)
+
+	signature, timestamp := SignUploadParams(userSlug, imagesProfilePreset)
+
+	response := struct {
+		ObjectName string
+		Signature string
+		Timestamp int64
+	} {
+		ObjectName: userSlug,
+		Signature: signature,
+		Timestamp: timestamp,
 	}
-
-	fileInternal, openErr := file.Open()
-	if openErr != nil {
-		c.AbortWithError(500, openErr); return
-	}
-
-	imageType := c.Param("imageType")
-	switch imageType {
-		case "png", "jpeg":
-			break
-		default:
-			c.AbortWithStatus(400); return
-	}
-	imageHash := c.Param("imageHash")
-
-	objectName := fmt.Sprintf("profile-images/%s/%s.%s", userSlug, imageHash, imageType)
-	mimeType := fmt.Sprintf("image/%s", imageType)
-	uploadErr := UploadToSpace(fileInternal, objectName, mimeType, UploadParams{})
-
-	if uploadErr != nil {
-		c.AbortWithError(500, uploadErr); return
-	}
-
-	result, err := Users.Query.Where(
-		Users.Id.Eq(userId),
-	).Update(
-		Users.ProfilePhotoSlug.Set(objectName),
-	).Exec()
-	if err != nil {
-		c.AbortWithError(500, err); return
-	}
-	if rowsAffected, err := result.RowsAffected(); rowsAffected == 0 || err != nil {
-		c.AbortWithStatus(404); return
-	}
-
-	c.JSON(200, objectName)
+	c.JSON(200, response)
 })
 
+
+var _ r = authRoute(POST, "/user/profile-image/confirm", func(c *gin.Context) {
+	userId := c.MustGet("userId").(int64)
+	userSlug := c.MustGet("userSlug").(string)
+
+	confirmationPayload := struct {
+		Signature string `binding:"required"`
+		Timestamp int64 `binding:"required"`
+		Version string `binding:"required"`
+	}{}
+	if err := c.ShouldBindJSON(&confirmationPayload); err != nil {
+		c.AbortWithError(422, err); return
+	}
+
+	if !VerifyUploadParamsSignature(confirmationPayload.Signature, userSlug, imagesProfilePreset, confirmationPayload.Timestamp) {
+		c.AbortWithError(403, fmt.Errorf("invalid signature")); return
+	}
+
+	updateQuery := Users.Query.Where(
+		Users.Id.Eq(userId),
+	).Update(
+		Users.ProfilePhotoVersion.Set(confirmationPayload.Version),
+	)
+	if !doExec(c, updateQuery) { return }
+
+	c.Status(204)
+})

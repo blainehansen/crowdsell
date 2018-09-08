@@ -21,8 +21,8 @@ if (signedUser) {
 	store.commit('auth/login', signedUser)
 }
 
-import { formatSpacesUrl } from './utils'
-Vue.filter('formatSpacesUrl', formatSpacesUrl)
+import { formatProfileImageUrl } from './utils'
+Vue.filter('formatProfileImageUrl', formatProfileImageUrl)
 
 new Vue({
 	el: '#app',

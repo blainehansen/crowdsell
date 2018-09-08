@@ -49,7 +49,7 @@ export default {
 		logout(state) {
 			state.token = null
 			state.user = null
-			delete privateHttp.defaults.headers.common['Authorization']
+			delete privateHttp.defaults.headers['Authorization']
 			Cookies.remove('signedUser')
 		},
 

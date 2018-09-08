@@ -6,7 +6,7 @@
 	.picture
 		input(type="file", accept="image/png, image/jpeg", @change="acceptFile")
 
-		img(v-if="finalUrl", :src="finalUrl | formatSpacesUrl")
+		img(v-if="finalVersion", :src="finalVersion | formatProfileImageUrl")
 		img(v-else-if="previewUrl", :src="previewUrl")
 
 	p
@@ -41,7 +41,7 @@
 
 
 <script>
-import { privateApi } from '@/api'
+import { privateApi, imagesApi } from '@/api'
 import { sampleHashFile } from '@/utils'
 import { call, get, sync } from 'vuex-pathify'
 
@@ -49,7 +49,7 @@ export default {
 	name: 'userProfile',
 	data() {
 		return {
-			finalUrl: null,
+			finalVersion: null,
 			previewUrl: null,
 		}
 	},
@@ -73,11 +73,10 @@ export default {
 		async acceptFile(event) {
 			const file = event.target.files[0]
 			this.previewUrl = URL.createObjectURL(file)
-			const type = file.type.replace(/^image\//, '')
 
-			const hash = await sampleHashFile(file)
-			const { data: urlSlug } = await privateApi.uploadProfilePicture(hash, type, file)
-			this.finalUrl = urlSlug
+			const version = await imagesApi.uploadProfileImage(file)
+
+			this.finalVersion = version
 		},
 
 		saveUser: call('user/saveUser'),

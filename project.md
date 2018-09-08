@@ -6,7 +6,7 @@ People can contribute.
 It's reasonably fluid to use.
 There's no errors.
 
-Things to skimp on:
+## Things to skimp on
 - torrent system
 - full profiles
 - teams
@@ -14,14 +14,14 @@ Things to skimp on:
 - side products
 
 
-[Full Auth Flow]
+## Full Auth Flow
 - X login form
 - X create account form
 - X token on all authenticated requests
 - redirect on token expiration
 - "remember me"
 
-[Home Page]
+## Home Page
 - algorithm for shown
 -- consider not having any, for fairness, instead have exploration and "subscription" systems where people can set notifications for things they're interested in. home page would focus on mission stuff and news
 - header
@@ -30,7 +30,7 @@ Things to skimp on:
 -- start new
 -- explore
 
-[Creation]
+## Creation
 - media
 -- title
 -- description
@@ -45,7 +45,7 @@ Things to skimp on:
 - finalize your account necessaries
 - advice
 
-[Creation Pages]
+## Creation Pages
 - all media
 -- video
 -- demo materials
@@ -54,7 +54,7 @@ Things to skimp on:
 - tickers
 - websocket system for nearly complete?
 
-[Profile Management]
+## Profile Management
 - create a profile
 -- emails
 -- display name
@@ -68,7 +68,7 @@ Things to skimp on:
 -- change password
 -- payment methods
 
-[Creation Discovery]
+## Creation Discovery
 - easy to search and explore
 -- date started/funded/etc
 -- current status
@@ -80,7 +80,7 @@ Things to skimp on:
 -- curated?
 - easy to register specific notifications for *types* of things they're interested in hearing about
 
-[Deployment]
+## Deployment
 - netlify setup for client
 - docker multistage build for server
 - deployment script
@@ -88,7 +88,7 @@ Things to skimp on:
 - cd/ci system for server?
 - nginx?
 
-[Scaling]
+## Scaling
 - cdn cache policies
 - caching load balancer
 - cache headers middleware
@@ -96,18 +96,18 @@ Things to skimp on:
 - prerendering of client
 - regularly prerendering certain pages with actual api results
 
-[File Upload and CDN]
+## File Upload and CDN
 - X get files from client
 - X upload to digital ocean space
 - use keys for renders
 
-[Full Security]
+## Full Security
 - secure login and create account pages and forms
 - secure card storage
 - secure card page and form
 - tls
 
-[Payments and Escrow]
+## Payments and Escrow
 - find provider
 - secure credit card entry form
 - remembering credit cards for accounts
@@ -116,26 +116,26 @@ Things to skimp on:
 -- charge
 -- release to creator
 
-[Static Content]
+## Static Content
 - mission
 - explanation of mechanics
 - beliefs
 
-[Aesthetics and Skin]
+## Aesthetics and Skin
 - great theme
 - unified ux thinking
 
-[Torrent Seeding System (future)]
+## Torrent Seeding System (future)
 - create torrent files based on project
 - gittorrent or other git system
 - search engine for existing fulfilled thought work
 - servers to act as guaranteed seeders
 -- program that will actually do the seeding
 
-[Teams (future)]
+## Teams (future)
 - create a team
 - add other people
 - manage permissions
 
-[Publicity Partnership (future)]
+## Publicity Partnership (future)
 - reach out to truly excellent and offer help getting the word out

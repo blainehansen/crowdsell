@@ -155,5 +155,5 @@ func main() {
 	authRoutes = nil
 
 	// router.MaxMultipartMemory = 8 << 20  // 8 MiB
-	router.Run(":5050")
+	router.Run(fmt.Sprintf(":%s", environment["API_PORT"]))
 }

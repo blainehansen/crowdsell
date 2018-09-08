@@ -33,6 +33,16 @@ export default {
 					this.$emit('input', editor.getMarkdown())
 				}
 			},
+
+			hooks: {
+				// previewBeforeHook(...args) {
+				// 	console.log(args)
+				// },
+				addImageBlobHook(blob, callback) {
+					console.log(blob)
+					callback(URL.createObjectURL(blob), 'stuff')
+				}
+			}
 		})
 
 		this.$editor = editor

@@ -459,55 +459,55 @@ func (c *usersPasswordColumn) Neq(val []byte) goqu.BooleanExpression {
 	return c.column.i.Neq(val)
 }
 
-type usersProfilePhotoSlugColumn struct {
+type usersProfilePhotoVersionColumn struct {
 	column
 }
-func (c *usersProfilePhotoSlugColumn) Set(val string) SetExpression {
-	return SetExpression{ Name: "profile_photo_slug", Value: val }
+func (c *usersProfilePhotoVersionColumn) Set(val string) SetExpression {
+	return SetExpression{ Name: "profile_photo_version", Value: val }
 }
-func (c *usersProfilePhotoSlugColumn) Clear() SetExpression {
-	return SetExpression{ Name: "profile_photo_slug", Value: nil }
+func (c *usersProfilePhotoVersionColumn) Clear() SetExpression {
+	return SetExpression{ Name: "profile_photo_version", Value: nil }
 }
-func (c *usersProfilePhotoSlugColumn) IsNull() goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) IsNull() goqu.BooleanExpression {
 	return c.column.i.IsNull()
 }
-func (c *usersProfilePhotoSlugColumn) IsNotNull() goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) IsNotNull() goqu.BooleanExpression {
 	return c.column.i.IsNotNull()
 }
-func (c *usersProfilePhotoSlugColumn) Eq(val string) goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) Eq(val string) goqu.BooleanExpression {
 	return c.column.i.Eq(val)
 }
-func (c *usersProfilePhotoSlugColumn) Neq(val string) goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) Neq(val string) goqu.BooleanExpression {
 	return c.column.i.Neq(val)
 }
-func (c *usersProfilePhotoSlugColumn) Gt(val string) goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) Gt(val string) goqu.BooleanExpression {
 	return c.column.i.Gt(val)
 }
-func (c *usersProfilePhotoSlugColumn) Gte(val string) goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) Gte(val string) goqu.BooleanExpression {
 	return c.column.i.Gte(val)
 }
-func (c *usersProfilePhotoSlugColumn) Lt(val string) goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) Lt(val string) goqu.BooleanExpression {
 	return c.column.i.Lt(val)
 }
-func (c *usersProfilePhotoSlugColumn) Lte(val string) goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) Lte(val string) goqu.BooleanExpression {
 	return c.column.i.Lte(val)
 }
-func (c *usersProfilePhotoSlugColumn) In(val []string) goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) In(val []string) goqu.BooleanExpression {
 	return c.column.i.In(val)
 }
-func (c *usersProfilePhotoSlugColumn) NotIn(val []string) goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) NotIn(val []string) goqu.BooleanExpression {
 	return c.column.i.NotIn(val)
 }
-func (c *usersProfilePhotoSlugColumn) Like(val string) goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) Like(val string) goqu.BooleanExpression {
 	return c.column.i.Like(val)
 }
-func (c *usersProfilePhotoSlugColumn) NotLike(val string) goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) NotLike(val string) goqu.BooleanExpression {
 	return c.column.i.NotLike(val)
 }
-func (c *usersProfilePhotoSlugColumn) ILike(val string) goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) ILike(val string) goqu.BooleanExpression {
 	return c.column.i.ILike(val)
 }
-func (c *usersProfilePhotoSlugColumn) NotILike(val string) goqu.BooleanExpression {
+func (c *usersProfilePhotoVersionColumn) NotILike(val string) goqu.BooleanExpression {
 	return c.column.i.NotILike(val)
 }
 
@@ -560,7 +560,7 @@ type usersSchema struct {
 	Email usersEmailColumn
 	HasPaymentUser usersHasPaymentUserColumn
 	Password usersPasswordColumn
-	ProfilePhotoSlug usersProfilePhotoSlugColumn
+	ProfilePhotoVersion usersProfilePhotoVersionColumn
 	ForgotPasswordToken usersForgotPasswordTokenColumn
 	GeneralSearchVector usersGeneralSearchVectorColumn
 }
@@ -580,7 +580,7 @@ var Users = &usersSchema{
 	Email: usersEmailColumn{ column { i: goqu.I("users.email") } },
 	HasPaymentUser: usersHasPaymentUserColumn{ column { i: goqu.I("users.has_payment_user") } },
 	Password: usersPasswordColumn{ column { i: goqu.I("users.password") } },
-	ProfilePhotoSlug: usersProfilePhotoSlugColumn{ column { i: goqu.I("users.profile_photo_slug") } },
+	ProfilePhotoVersion: usersProfilePhotoVersionColumn{ column { i: goqu.I("users.profile_photo_version") } },
 	ForgotPasswordToken: usersForgotPasswordTokenColumn{ column { i: goqu.I("users.forgot_password_token") } },
 	GeneralSearchVector: usersGeneralSearchVectorColumn{ column { i: goqu.I("users.general_search_vector") } },
 }
@@ -642,7 +642,7 @@ type ServerUser struct {
 	Email string
 	HasPaymentUser bool
 	Password []byte
-	ProfilePhotoSlug string
+	ProfilePhotoVersion string
 	ForgotPasswordToken []byte
 }
 
@@ -663,7 +663,7 @@ type OwnerReadUser struct {
 	Links string
 	Email string
 	HasPaymentUser bool
-	ProfilePhotoSlug string
+	ProfilePhotoVersion string
 }
 
 type PublicReadUser struct {
@@ -673,7 +673,7 @@ type PublicReadUser struct {
 	Location string
 	Links string
 	HasPaymentUser bool
-	ProfilePhotoSlug string
+	ProfilePhotoVersion string
 }
 
 type projectsIdColumn struct {

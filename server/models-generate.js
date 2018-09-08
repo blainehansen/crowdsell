@@ -467,7 +467,7 @@ const go = {
 
 function genericStringifyPostgresField(field) {
 	let fieldString = `${field.name} ${field.type}`
-	if (field.default) fieldString += ` DEFAULT ${field.default}`
+	if (field.default !== undefined) fieldString += ` DEFAULT '${field.default}'`
 	if (field.required) fieldString += ' NOT NULL'
 	if (field.unique) fieldString += ' UNIQUE'
 	if (field.references) fieldString += ` REFERENCES ${field.references}`

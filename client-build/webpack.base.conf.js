@@ -10,7 +10,6 @@ function resolve (dir) {
 	return path.join(__dirname, '..', dir)
 }
 
-
 module.exports = {
 	context: path.resolve(__dirname, '../'),
 	entry: {
@@ -75,8 +74,8 @@ module.exports = {
 	plugins: [
 		new Dotenv({
 			path: process.env.NODE_ENV === 'production'
-				? resolve('./.env.prod.sh')
-				: resolve('./.env.dev.sh'),
+				? resolve('.env.prod.sh')
+				: resolve('.env.dev.sh'),
 			systemvars: true,
 		})
 	],
