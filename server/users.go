@@ -6,6 +6,8 @@ import (
 
 	"gopkg.in/guregu/null.v3"
 	"github.com/gin-gonic/gin"
+	"github.com/blainehansen/goqu"
+
 	// "github.com/badoux/checkmail"
 	// "gopkg.in/doug-martin/goqu.v4"
 	// "github.com/blainehansen/goqu"
@@ -88,6 +90,20 @@ var _ r = authRoute(PATCH, "/user", func(c *gin.Context) {
 // 	return fmt.Sprintf("%s.png", userSlug)
 // }
 
+
+type uploadResponse struct {
+	ObjectName string
+	Signature string
+	Timestamp int64
+}
+
+type uploadConfirmation struct {
+	Signature string `binding:"required"`
+	Timestamp int64 `binding:"required"`
+	Hash string `binding:"required"`
+	Version string `binding:"required"`
+}
+
 var imagesProfilePreset string = environment["CDN_API_PROFILE_IMAGES_PRESET"]
 
 var _ r = authRoute(POST, "/user/profile-image/sign", func(c *gin.Context) {
@@ -95,11 +111,7 @@ var _ r = authRoute(POST, "/user/profile-image/sign", func(c *gin.Context) {
 
 	signature, timestamp := SignUploadParams(userSlug, imagesProfilePreset)
 
-	response := struct {
-		ObjectName string
-		Signature string
-		Timestamp int64
-	} {
+	response := uploadResponse {
 		ObjectName: userSlug,
 		Signature: signature,
 		Timestamp: timestamp,
@@ -130,6 +142,126 @@ var _ r = authRoute(POST, "/user/profile-image/confirm", func(c *gin.Context) {
 	).Update(
 		Users.ProfilePhotoVersion.Set(confirmationPayload.Version),
 	)
+	if !doExec(c, updateQuery) { return }
+
+	c.Status(204)
+})
+
+
+var imagesProjectPreset string = environment["CDN_API_PROJECT_IMAGES_PRESET"]
+
+func checkUserOwnsProject(c *gin.Context, userId int64, projectId int64) bool {
+	var count int64
+	found, err := Projects.Table.Where(
+		Projects.Id.Eq(projectId), Projects.UserId.Eq(userId),
+	).Select(
+		goqu.COUNT("*"),
+	).ScanVal(&count)
+	if err != nil {
+		c.AbortWithError(500, err)
+		return false
+	}
+	if !found {
+		c.AbortWithError(500, fmt.Errorf("count not found? %s", count))
+		return false
+	}
+
+	switch count {
+		case 0:
+			// obscure the fact that there's even a project here
+			c.AbortWithStatus(404)
+			return false
+		case 1:
+			return true
+		default:
+			c.AbortWithError(500, fmt.Errorf("count didn't make any sense: %s for projectId %s and userId %s", count, projectId, userId))
+			return false
+	}
+}
+
+
+func makeProjectUploadName(projectSlug string, hash string, version string) string {
+	if version == "" {
+		return fmt.Sprintf("%s/%s", projectSlug, hash)
+	}
+	return fmt.Sprintf("v%s/%s/%s", version, projectSlug, hash)
+}
+
+var _ r = authRoute(POST, "/project/:projectSlug/uploads/sign", func(c *gin.Context) {
+	userId := c.MustGet("userId").(int64)
+
+	projectSlug := c.Param("projectSlug")
+	projectId, decodeError := decodeSlug(projectSlug)
+	if decodeError != nil {
+		c.AbortWithStatus(400); return
+	}
+
+	hashes := struct {
+		Hashes []string `binding:"required"`
+	} {}
+	if err := c.ShouldBindJSON(&hashes); err != nil {
+		c.AbortWithError(422, err); return
+	}
+
+	if !checkUserOwnsProject(c, userId, projectId) { return }
+
+	response := []uploadResponse{}
+
+	for _, hash := range hashes.Hashes {
+		// TODO also there should probably be a length requirement
+		if hashInvalidCharactersRegex.MatchString(hash) {
+			c.AbortWithError(400, fmt.Errorf("hash doesn't match the required format: %s", hash)); return
+		}
+
+		objectName := makeProjectUploadName(projectSlug, hash, "")
+		signature, timestamp := SignUploadParams(objectName, imagesProjectPreset)
+
+		newResponse := uploadResponse {
+			ObjectName: objectName,
+			Signature: signature,
+			Timestamp: timestamp,
+		}
+		response = append(response, newResponse)
+	}
+
+	c.JSON(200, response)
+})
+
+var _ r = authRoute(POST, "/project/:projectSlug/uploads/confirm", func(c *gin.Context) {
+	userId := c.MustGet("userId").(int64)
+
+	projectSlug := c.Param("projectSlug")
+	projectId, decodeError := decodeSlug(projectSlug)
+	if decodeError != nil {
+		c.AbortWithStatus(400); return
+	}
+
+	confirmations := struct {
+		Confirmations []uploadConfirmation `binding:"required"`
+	} {}
+	if err := c.ShouldBindJSON(&confirmations); err != nil {
+		c.AbortWithError(422, err); return
+	}
+
+	finalUploads := []string{}
+
+	for _, confirmation := range confirmations.Confirmations {
+		signedObjectName := makeProjectUploadName(projectSlug, confirmation.Hash, "")
+		if !VerifyUploadParamsSignature(confirmation.Signature, signedObjectName, imagesProjectPreset, confirmation.Timestamp) {
+			c.AbortWithError(403, fmt.Errorf("invalid signature")); return
+		}
+		objectName := makeProjectUploadName(projectSlug, confirmation.Hash, confirmation.Version)
+
+		finalUploads = append(finalUploads, objectName)
+	}
+
+	fmt.Println(finalUploads)
+	updateQuery := Projects.Query.Where(
+		Projects.Id.Eq(projectId), Projects.UserId.Eq(userId),
+	).Update(
+		Projects.UploadImages.Set(finalUploads),
+	)
+
 	if !doExec(c, updateQuery) { return }
 
 	c.Status(204)

@@ -13,13 +13,33 @@ const NO_ARGS = Symbol()
 const ARRAY_ARGS = Symbol()
 const RANGE_ARGS = Symbol()
 
-// method array: [outer name, args type, goqu name, return type]
+// method array: [outer name, args type, goqu name, return type, makeArray]
 // const allGoTypeMethods = [
 // 	['As', 'string', undefined, 'AliasedExpression'],
 // 	['Asc', NO_ARGS, undefined, 'OrderedExpression'],
 // 	['Desc', NO_ARGS, undefined, 'OrderedExpression'],
 // 	['Distinct', NO_ARGS, undefined, 'SqlFunctionExpression'],
 // ]
+
+const goquPostgresMethodMap = {
+	'Eq': '=',
+	'Neq': '!=',
+	'Gt': '>',
+	'Gte': '>=',
+	'Lt': '<',
+	'Lte': '<=',
+	'In': 'IN',
+	'NotIn': 'NOT IN',
+	'Between': 'BETWEEN',
+	'NotBetween': 'NOT BETWEEN',
+	'Like': 'LIKE',
+	'NotLike': 'NOT LIKE',
+	'ILike': 'ILIKE',
+	'NotILike': 'NOT ILIKE',
+	'Is': 'IS',
+	'True': 'IS TRUE',
+	'False': 'IS FALSE',
+}
 
 const equalityMethods = [
 	['Eq'],
@@ -45,6 +65,7 @@ const discreteDomainMethods = [
 	...rangeMethods,
 	...membershipMethods,
 ]
+
 // const continuousDomainMethods = [
 // 	...comparisonMethods,
 // 	...rangeMethods,
@@ -212,11 +233,30 @@ function processFields(tableName, [fieldName, rawField]) {
 			methods: [
 				...equalityMethods,
 				...membershipMethods,
-			]
+			],
 		}
 		field.type = enumName
+		field.escapeDefault = true
 
 		rawField.functions = `CREATE TYPE ${enumName} AS ENUM (\n\t${enumValues.map(s => `'${s}'`).join(',\n\t')}\n);`
+	}
+	else if (field.type.endsWith('[]')) {
+		// this cuts out the array() portion and just gives us the internal type
+		const arrayType = field.type.slice(0, -2)
+		const { goType: internalGoType, methods: internalMethods } = postgresGoTypeMap[arrayType]
+
+		if (postgresGoTypeMap[field.type] === undefined) {
+			postgresGoTypeMap[field.type] = {
+				goType: `[]${internalGoType}`,
+				isArray: true,
+				methods: [
+					...internalMethods
+				],
+			}
+		}
+
+		rawField.required = true
+		rawField.default = `ARRAY[]::${field.type}`
 	}
 
 	if (rawField.functions) globalFunctions.push(rawField.functions)
@@ -298,6 +338,10 @@ const go = {
 		return [`val ${argType}`, 'val']
 	},
 
+	// makeMethod() {
+
+	// },
+
 	makeGoquTypeName: (tableName, fieldName) => changeCase.camelCase(tableName) + changeCase.pascal(fieldName) + 'Column',
 
 	makeGoquTypeForField(tableName, field) {
@@ -316,15 +360,46 @@ const go = {
 			return goquTypeEntries.join('\n')
 		}
 
-		const { goType: fieldGoType, methods: typeMethods } = postgresGoTypeMap[fieldPostgresType]
+		const { goType: fieldGoType, methods: typeMethods, isArray: fieldIsArray = false } = postgresGoTypeMap[fieldPostgresType]
 
 		const goquTypeEntries = []
 		const goquTypeName = this.makeGoquTypeName(tableName, fieldName)
 		goquTypeEntries.push(`type ${goquTypeName} struct {\n\tcolumn\n}`)
 
 
+		if (fieldIsArray) {
+			goquTypeEntries.push(`func (c *${goquTypeName}) Empty() SetExpression {\n\treturn SetExpression{ Name: "${fieldName}", Value: ${fieldGoType}{} }\n}`)
+
+			goquTypeEntries.push(`func (c *${goquTypeName}) IsEmpty() goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) = 0")\n}`)
+			goquTypeEntries.push(`func (c *${goquTypeName}) NotEmpty() goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) != 0")\n}`)
+
+			// equalityMethods
+			// comparisonMethods
+			// rangeMethods
+
+			// for (const m of discreteDomainMethods.map(m => m[0])) {
+			// 	goquTypeEntries.push(`func (c *${goquTypeName}) SizeEq(s int64) goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) = ?", s)\n}`)
+
+			// }
+
+			goquTypeEntries.push(`func (c *${goquTypeName}) SizeEq(s int64) goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) = ?", s)\n}`)
+			goquTypeEntries.push(`func (c *${goquTypeName}) SizeNeq(s int64) goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) != ?", s)\n}`)
+			goquTypeEntries.push(`func (c *${goquTypeName}) SizeGt(s int64) goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) > ?", s)\n}`)
+			goquTypeEntries.push(`func (c *${goquTypeName}) SizeGte(s int64) goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) >= ?", s)\n}`)
+			goquTypeEntries.push(`func (c *${goquTypeName}) SizeLt(s int64) goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) < ?", s)\n}`)
+			goquTypeEntries.push(`func (c *${goquTypeName}) SizeLte(s int64) goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) <= ?", s)\n}`)
+			goquTypeEntries.push(`func (c *${goquTypeName}) SizeBetween(l int64, h int64) goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) BETWEEN ? and ?", l, h)\n}`)
+			goquTypeEntries.push(`func (c *${goquTypeName}) SizeNotBetween(l int64, h int64) goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) NOT BETWEEN ? and ?", l, h)\n}`)
+		}
+
 		if (!fieldReadOnly) {
-			goquTypeEntries.push(`func (c *${goquTypeName}) Set(val ${fieldGoType}) SetExpression {\n\treturn SetExpression{ Name: "${fieldName}", Value: val }\n}`)
+			if (fieldIsArray) {
+				const upperGoType = changeCase.upperCaseFirst(fieldGoType.replace(/\[\]/g, ""))
+				goquTypeEntries.push(`func (c *${goquTypeName}) Set(val ${fieldGoType}) SetExpression {\n\treturn SetExpression{ Name: "${fieldName}", Value: make${upperGoType}ArrayLiteral(val) }\n}`)
+			}
+			else {
+				goquTypeEntries.push(`func (c *${goquTypeName}) Set(val ${fieldGoType}) SetExpression {\n\treturn SetExpression{ Name: "${fieldName}", Value: val }\n}`)
+			}
 
 			if (!fieldRequired) {
 				goquTypeEntries.push(`func (c *${goquTypeName}) Clear() SetExpression {\n\treturn SetExpression{ Name: "${fieldName}", Value: nil }\n}`)
@@ -349,7 +424,19 @@ const go = {
 			] = method
 
 			const [argsString, valString] = this.decideArgsString(argType, fieldGoType)
-			goquTypeEntries.push(`func (c *${goquTypeName}) ${outerName}(${argsString}) goqu.${returnType} {\n\treturn c.column.i.${innerName}(${valString})\n}`)
+
+			let entryToPush
+			if (fieldIsArray) {
+				const operator = goquPostgresMethodMap[innerName]
+
+				entryToPush = `func (c *${goquTypeName}) ${outerName}(${argsString}, arg arrayArg) goqu.LiteralExpression {`
+				entryToPush += `\n\treturn goqu.L(fmt.Sprintf(\`? ${operator} %s (${fieldName})\`, arg), val)\n}`
+			}
+			else {
+				entryToPush = `func (c *${goquTypeName}) ${outerName}(${argsString}) goqu.${returnType} {`
+				entryToPush += `\n\treturn c.column.i.${innerName}(${valString})\n}`
+			}
+			goquTypeEntries.push(entryToPush)
 		}
 
 		return goquTypeEntries.join('\n')
@@ -386,10 +473,10 @@ const go = {
 
 			const currentFieldType = postgresGoTypeMap[field.type]
 
-			// if it wasn't one of the original declared types, it's an enum
-			// we have to create it
-			if (field.type != 'tsvector' && !originalGoTypes.has(currentFieldType.goType)) {
-				const { enumValues, goType } = currentFieldType
+			// if it has an enumValues field, it's an enum and we have to create it
+			if (field.type != 'tsvector' && currentFieldType.enumValues) {
+				const { goType, enumValues } = currentFieldType
+
 				const constEnumValues = enumValues.map(v => `${v} ${goType} = "${v}"`)
 				returnStrings.push(`type ${goType} string\nconst (\n\t${constEnumValues.join('\n\t')}\n)`)
 			}
@@ -451,6 +538,7 @@ const go = {
 		const structsFileString = [
 			"package main",
 			"import (",
+			`\t"fmt"`,
 			`\t"time"`,
 			`\t"reflect"`,
 			`\t"github.com/blainehansen/goqu"`,
@@ -467,7 +555,12 @@ const go = {
 
 function genericStringifyPostgresField(field) {
 	let fieldString = `${field.name} ${field.type}`
-	if (field.default !== undefined) fieldString += ` DEFAULT '${field.default}'`
+	if (field.default !== undefined) {
+		if (field.escapeDefault)
+			fieldString += ` DEFAULT '${field.default}'`
+		else
+			fieldString += ` DEFAULT ${field.default}`
+	}
 	if (field.required) fieldString += ' NOT NULL'
 	if (field.unique) fieldString += ' UNIQUE'
 	if (field.references) fieldString += ` REFERENCES ${field.references}`

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"reflect"
 	"database/sql"
 
@@ -33,6 +34,28 @@ func (c *column) Distinct() goqu.SqlFunctionExpression {
 }
 
 
+type arrayArg string
+const (
+	DIST_ANY arrayArg = "ANY"
+	DIST_ALL arrayArg = "ALL"
+)
+
+func makeStringArrayLiteral(inputValues []string) goqu.LiteralExpression {
+	var b strings.Builder
+
+	b.WriteString("ARRAY [ ")
+
+	for i, v := range inputValues {
+		if i != 0 {
+			b.WriteString(", ")
+		}
+		fmt.Fprintf(&b, "'%s'", v)
+	}
+
+	b.WriteString(" ]")
+
+	return goqu.L(b.String())
+}
 
 
 type DbColumn interface {

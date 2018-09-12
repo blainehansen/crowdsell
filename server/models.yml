@@ -35,6 +35,12 @@ users:
 projects:
   name: text
   description: text
+
+  story: text
+  upload_images:
+    type: text[]
+    no_patch: true
+
   user_id:
     type: bigint
     required: true

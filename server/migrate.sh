@@ -66,7 +66,7 @@ CREATE TABLE users (
 	location text,
 	links text,
 	email text NOT NULL UNIQUE,
-	has_payment_user boolean DEFAULT 'false' NOT NULL,
+	has_payment_user boolean DEFAULT false NOT NULL,
 	password bytea NOT NULL,
 	profile_photo_version text,
 	forgot_password_token bytea,
@@ -108,6 +108,8 @@ CREATE TABLE projects (
 	url_slug text NOT NULL,
 	name text,
 	description text,
+	story text,
+	upload_images text[] DEFAULT ARRAY[]::text[] NOT NULL,
 	user_id bigint NOT NULL REFERENCES users(id),
 	general_search_vector tsvector
 );
