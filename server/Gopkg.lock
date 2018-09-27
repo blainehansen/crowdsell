@@ -2,45 +2,6 @@
 
 
 [[projects]]
-  digest = "1:48e0901f7ca90c9e79ee0a4a5ee54438b6b726a275a49ee89898ce53f6ec4df7"
-  name = "github.com/aws/aws-sdk-go"
-  packages = [
-    "aws",
-    "aws/awserr",
-    "aws/awsutil",
-    "aws/client",
-    "aws/client/metadata",
-    "aws/corehandlers",
-    "aws/credentials",
-    "aws/credentials/ec2rolecreds",
-    "aws/credentials/endpointcreds",
-    "aws/credentials/stscreds",
-    "aws/csm",
-    "aws/defaults",
-    "aws/ec2metadata",
-    "aws/endpoints",
-    "aws/request",
-    "aws/session",
-    "aws/signer/v4",
-    "internal/sdkio",
-    "internal/sdkrand",
-    "internal/shareddefaults",
-    "private/protocol",
-    "private/protocol/eventstream",
-    "private/protocol/eventstream/eventstreamapi",
-    "private/protocol/query",
-    "private/protocol/query/queryutil",
-    "private/protocol/rest",
-    "private/protocol/restxml",
-    "private/protocol/xml/xmlutil",
-    "service/s3",
-    "service/sts",
-  ]
-  pruneopts = "UT"
-  revision = "aff39e8473db578a1cec9ac2f829a56813c1d631"
-  version = "v1.14.14"
-
-[[projects]]
   branch = "master"
   digest = "1:801ee2a0859a55bc95c34976b2fbe360da4a40bb3f9d39ab20bc9725c91ece31"
   name = "github.com/badoux/checkmail"
@@ -50,14 +11,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:5683702828f2065ac8ed207d82caef4a11a9db41667d9012b4547e67f934394c"
+  digest = "1:583bc95af679bfb909391e78ca45675e2dd13de5fbdfd7acc867a1942c857549"
   name = "github.com/blainehansen/goqu"
   packages = [
     ".",
     "adapters/postgres",
   ]
   pruneopts = "UT"
-  revision = "ba20dc529829b584bf9668e9e48fa84d4a3d98f1"
+  revision = "2c446536e3e3fd192345c4edb6c18e9675bf3851"
 
 [[projects]]
   digest = "1:ace1aef6acdf2c4647365dc87c14fb8b71ed8bb0b3ae114ffb216614a24da219"
@@ -97,14 +58,6 @@
   revision = "c00f21ff239822d013b80e54bd403fbc08a0b5ff"
 
 [[projects]]
-  digest = "1:fb46255681497314debedde38b64be32a75bae50bad107586c22f1662bf2d352"
-  name = "github.com/go-ini/ini"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "06f5f3d67269ccec1fe5fe4134ba6e982984f7f5"
-  version = "v1.37.0"
-
-[[projects]]
   digest = "1:15042ad3498153684d09f393bbaec6b216c8eec6d61f63dff711de7d64ed8861"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
@@ -127,13 +80,6 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "3605ed457bf7f8caa1371b4fafadadc026673479"
-
-[[projects]]
-  digest = "1:e22af8c7518e1eab6f2eab2b7d7558927f816262586cd6ed9f349c97a6c285c4"
-  name = "github.com/jmespath/go-jmespath"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "0b12d6b5"
 
 [[projects]]
   digest = "1:70e697d67ccaec45e16bac3a32380ebcd9e7e071079c60d0171d42cf1cf9748a"
@@ -230,12 +176,12 @@
   revision = "7138fd3d9dc8335c567ca206f4333fb75eb05d56"
 
 [[projects]]
-  digest = "1:c1ef96b66b360312d55d3bba70957ed334c636b77a938a0c6da9d8447fed7792"
-  name = "gopkg.in/doug-martin/goqu.v4"
+  digest = "1:d0fc4db71542957fcc6167731d6f48c5f3232f3ee7d06d44484c237a2ab1bc6d"
+  name = "gopkg.in/doug-martin/goqu.v5"
   packages = ["."]
   pruneopts = "UT"
-  revision = "cd495d70a4ff280202e22a09de9502a3fe0b66cb"
-  version = "v4.2.0"
+  revision = "6803bc2ea3462276f0e87814761a787d5537c4eb"
+  version = "v5.0.0"
 
 [[projects]]
   digest = "1:cbc72c4c4886a918d6ab4b95e347ffe259846260f99ebdd8a198c2331cf2b2e9"
@@ -273,10 +219,6 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/aws/aws-sdk-go/aws",
-    "github.com/aws/aws-sdk-go/aws/credentials",
-    "github.com/aws/aws-sdk-go/aws/session",
-    "github.com/aws/aws-sdk-go/service/s3",
     "github.com/badoux/checkmail",
     "github.com/blainehansen/goqu",
     "github.com/blainehansen/goqu/adapters/postgres",

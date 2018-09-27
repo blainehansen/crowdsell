@@ -22,8 +22,10 @@ func makeUploadParams(objectName string, timestamp int64, preset string) []byte 
 }
 
 func SignUploadParams(objectName string, preset string) (string, int64) {
+	fmt.Println(preset)
 	timestamp := time.Now().Unix()
-	data := makeUploadParams(objectName, timestamp, preset)
+	// data := makeUploadParams(objectName, timestamp, preset)
+	data := []byte(fmt.Sprintf("public_id=%s&timestamp=%d%s", objectName, timestamp, imagesApiSecret))
 
 	signature := fmt.Sprintf("%x", sha1.Sum(data))
 	return signature, timestamp

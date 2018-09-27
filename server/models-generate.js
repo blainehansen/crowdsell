@@ -373,15 +373,6 @@ const go = {
 			goquTypeEntries.push(`func (c *${goquTypeName}) IsEmpty() goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) = 0")\n}`)
 			goquTypeEntries.push(`func (c *${goquTypeName}) NotEmpty() goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) != 0")\n}`)
 
-			// equalityMethods
-			// comparisonMethods
-			// rangeMethods
-
-			// for (const m of discreteDomainMethods.map(m => m[0])) {
-			// 	goquTypeEntries.push(`func (c *${goquTypeName}) SizeEq(s int64) goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) = ?", s)\n}`)
-
-			// }
-
 			goquTypeEntries.push(`func (c *${goquTypeName}) SizeEq(s int64) goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) = ?", s)\n}`)
 			goquTypeEntries.push(`func (c *${goquTypeName}) SizeNeq(s int64) goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) != ?", s)\n}`)
 			goquTypeEntries.push(`func (c *${goquTypeName}) SizeGt(s int64) goqu.LiteralExpression {\n\treturn goqu.L("cardinality(${tableName}.${fieldName}) > ?", s)\n}`)
@@ -401,6 +392,8 @@ const go = {
 				goquTypeEntries.push(`func (c *${goquTypeName}) Set(val ${fieldGoType}) SetExpression {\n\treturn SetExpression{ Name: "${fieldName}", Value: val }\n}`)
 			}
 
+			console.log(fieldName)
+			console.log(fieldRequired)
 			if (!fieldRequired) {
 				goquTypeEntries.push(`func (c *${goquTypeName}) Clear() SetExpression {\n\treturn SetExpression{ Name: "${fieldName}", Value: nil }\n}`)
 			}

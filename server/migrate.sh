@@ -168,6 +168,42 @@ FOR EACH ROW
 EXECUTE PROCEDURE default_slug();
 
 
+CREATE TABLE project_confirmations (
+	id serial NOT NULL PRIMARY KEY,
+	date_created timestamptz NOT NULL,
+	date_updated timestamptz NOT NULL,
+	slug text NOT NULL,
+	project_id bigint NOT NULL REFERENCES projects(id),
+	user_id bigint NOT NULL REFERENCES users(id),
+	proceed boolean NOT NULL,
+	almost_promises text[] DEFAULT ARRAY[]::text[] NOT NULL,
+	fraudulent_flag boolean NOT NULL,
+	broken_promises text[] DEFAULT ARRAY[]::text[] NOT NULL,
+	commentary text,
+	CONSTRAINT project_confirmations_unique_project_user unique (project_id, user_id),
+check (
+  (proceed OR cardinality(almost_promises) != 0) != (fraudulent_flag OR cardinality(broken_promises) != 0)
+),
+check (proceed != (char_length(commentary) != 0))
+
+);
+
+CREATE TRIGGER set_created_for_project_confirmations
+BEFORE INSERT ON project_confirmations
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_created();
+
+CREATE TRIGGER set_updated_for_project_confirmations
+BEFORE UPDATE ON project_confirmations
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_updated();
+
+CREATE TRIGGER _1_default_slug_for_project_confirmations
+BEFORE INSERT ON project_confirmations
+FOR EACH ROW
+EXECUTE PROCEDURE default_slug();
+
+
 COMMIT;
 
 

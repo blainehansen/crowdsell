@@ -79,8 +79,50 @@ project_pledges:
     required: true
     server_private: true
 
-  # constraints: |
-  #   unique (project_id, user_id)
+project_confirmations:
+  url_slug: false
+
+  project_id:
+    type: bigint
+    required: true
+    references: projects(id)
+    server_private: true
+  user_id:
+    type: bigint
+    required: true
+    references: users(id)
+    server_private: true
+
+  proceed:
+    type: boolean
+    required: true
+    server_private: true
+
+  almost_promises:
+    type: text[]
+    server_private: true
+
+  fraudulent_flag:
+    type: boolean
+    required: true
+    server_private: true
+
+  broken_promises:
+    type: text[]
+    server_private: true
+
+  commentary:
+    type: text
+    server_private: true
+
+  # the
+  constraints: |
+    CONSTRAINT project_confirmations_unique_project_user unique (project_id, user_id),
+    check (
+      (proceed OR cardinality(almost_promises) != 0) != (fraudulent_flag OR cardinality(broken_promises) != 0)
+    ),
+    check (proceed != (char_length(commentary) != 0))
+
 
 
 functions: |

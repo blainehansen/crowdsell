@@ -1601,3 +1601,546 @@ type OwnerReadProjectPledge struct {
 type PublicReadProjectPledge struct {
 	
 }
+
+type projectConfirmationsIdColumn struct {
+	column
+}
+func (c *projectConfirmationsIdColumn) IsNull() goqu.BooleanExpression {
+	return c.column.i.IsNull()
+}
+func (c *projectConfirmationsIdColumn) IsNotNull() goqu.BooleanExpression {
+	return c.column.i.IsNotNull()
+}
+func (c *projectConfirmationsIdColumn) Eq(val int64) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectConfirmationsIdColumn) Neq(val int64) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectConfirmationsIdColumn) In(val []int64) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectConfirmationsIdColumn) NotIn(val []int64) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectConfirmationsDateCreatedColumn struct {
+	column
+}
+func (c *projectConfirmationsDateCreatedColumn) Eq(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectConfirmationsDateCreatedColumn) Neq(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectConfirmationsDateCreatedColumn) Gt(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectConfirmationsDateCreatedColumn) Gte(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectConfirmationsDateCreatedColumn) Lt(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectConfirmationsDateCreatedColumn) Lte(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectConfirmationsDateCreatedColumn) Between(startVal time.Time, endVal time.Time) goqu.RangeExpression {
+	return c.column.i.Between(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectConfirmationsDateCreatedColumn) NotBetween(startVal time.Time, endVal time.Time) goqu.RangeExpression {
+	return c.column.i.NotBetween(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectConfirmationsDateCreatedColumn) In(val []time.Time) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectConfirmationsDateCreatedColumn) NotIn(val []time.Time) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectConfirmationsDateUpdatedColumn struct {
+	column
+}
+func (c *projectConfirmationsDateUpdatedColumn) Eq(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectConfirmationsDateUpdatedColumn) Neq(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectConfirmationsDateUpdatedColumn) Gt(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectConfirmationsDateUpdatedColumn) Gte(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectConfirmationsDateUpdatedColumn) Lt(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectConfirmationsDateUpdatedColumn) Lte(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectConfirmationsDateUpdatedColumn) Between(startVal time.Time, endVal time.Time) goqu.RangeExpression {
+	return c.column.i.Between(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectConfirmationsDateUpdatedColumn) NotBetween(startVal time.Time, endVal time.Time) goqu.RangeExpression {
+	return c.column.i.NotBetween(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectConfirmationsDateUpdatedColumn) In(val []time.Time) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectConfirmationsDateUpdatedColumn) NotIn(val []time.Time) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectConfirmationsSlugColumn struct {
+	column
+}
+func (c *projectConfirmationsSlugColumn) Eq(val string) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectConfirmationsSlugColumn) Neq(val string) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectConfirmationsSlugColumn) Gt(val string) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectConfirmationsSlugColumn) Gte(val string) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectConfirmationsSlugColumn) Lt(val string) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectConfirmationsSlugColumn) Lte(val string) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectConfirmationsSlugColumn) In(val []string) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectConfirmationsSlugColumn) NotIn(val []string) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+func (c *projectConfirmationsSlugColumn) Like(val string) goqu.BooleanExpression {
+	return c.column.i.Like(val)
+}
+func (c *projectConfirmationsSlugColumn) NotLike(val string) goqu.BooleanExpression {
+	return c.column.i.NotLike(val)
+}
+func (c *projectConfirmationsSlugColumn) ILike(val string) goqu.BooleanExpression {
+	return c.column.i.ILike(val)
+}
+func (c *projectConfirmationsSlugColumn) NotILike(val string) goqu.BooleanExpression {
+	return c.column.i.NotILike(val)
+}
+
+type projectConfirmationsProjectIdColumn struct {
+	column
+}
+func (c *projectConfirmationsProjectIdColumn) Set(val int64) SetExpression {
+	return SetExpression{ Name: "project_id", Value: val }
+}
+func (c *projectConfirmationsProjectIdColumn) Eq(val int64) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectConfirmationsProjectIdColumn) Neq(val int64) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectConfirmationsProjectIdColumn) Gt(val int64) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectConfirmationsProjectIdColumn) Gte(val int64) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectConfirmationsProjectIdColumn) Lt(val int64) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectConfirmationsProjectIdColumn) Lte(val int64) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectConfirmationsProjectIdColumn) Between(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.Between(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectConfirmationsProjectIdColumn) NotBetween(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.NotBetween(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectConfirmationsProjectIdColumn) In(val []int64) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectConfirmationsProjectIdColumn) NotIn(val []int64) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectConfirmationsUserIdColumn struct {
+	column
+}
+func (c *projectConfirmationsUserIdColumn) Set(val int64) SetExpression {
+	return SetExpression{ Name: "user_id", Value: val }
+}
+func (c *projectConfirmationsUserIdColumn) Eq(val int64) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectConfirmationsUserIdColumn) Neq(val int64) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectConfirmationsUserIdColumn) Gt(val int64) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectConfirmationsUserIdColumn) Gte(val int64) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectConfirmationsUserIdColumn) Lt(val int64) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectConfirmationsUserIdColumn) Lte(val int64) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectConfirmationsUserIdColumn) Between(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.Between(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectConfirmationsUserIdColumn) NotBetween(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.NotBetween(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectConfirmationsUserIdColumn) In(val []int64) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectConfirmationsUserIdColumn) NotIn(val []int64) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectConfirmationsProceedColumn struct {
+	column
+}
+func (c *projectConfirmationsProceedColumn) Set(val bool) SetExpression {
+	return SetExpression{ Name: "proceed", Value: val }
+}
+func (c *projectConfirmationsProceedColumn) Is(val bool) goqu.BooleanExpression {
+	return c.column.i.Is(val)
+}
+func (c *projectConfirmationsProceedColumn) True() goqu.BooleanExpression {
+	return c.column.i.IsTrue()
+}
+func (c *projectConfirmationsProceedColumn) False() goqu.BooleanExpression {
+	return c.column.i.IsFalse()
+}
+
+type projectConfirmationsAlmostPromisesColumn struct {
+	column
+}
+func (c *projectConfirmationsAlmostPromisesColumn) Empty() SetExpression {
+	return SetExpression{ Name: "almost_promises", Value: []string{} }
+}
+func (c *projectConfirmationsAlmostPromisesColumn) IsEmpty() goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.almost_promises) = 0")
+}
+func (c *projectConfirmationsAlmostPromisesColumn) NotEmpty() goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.almost_promises) != 0")
+}
+func (c *projectConfirmationsAlmostPromisesColumn) SizeEq(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.almost_promises) = ?", s)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) SizeNeq(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.almost_promises) != ?", s)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) SizeGt(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.almost_promises) > ?", s)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) SizeGte(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.almost_promises) >= ?", s)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) SizeLt(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.almost_promises) < ?", s)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) SizeLte(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.almost_promises) <= ?", s)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) SizeBetween(l int64, h int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.almost_promises) BETWEEN ? and ?", l, h)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) SizeNotBetween(l int64, h int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.almost_promises) NOT BETWEEN ? and ?", l, h)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) Set(val []string) SetExpression {
+	return SetExpression{ Name: "almost_promises", Value: makeStringArrayLiteral(val) }
+}
+func (c *projectConfirmationsAlmostPromisesColumn) Eq(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? = %s (almost_promises)`, arg), val)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) Neq(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? != %s (almost_promises)`, arg), val)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) Gt(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? > %s (almost_promises)`, arg), val)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) Gte(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? >= %s (almost_promises)`, arg), val)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) Lt(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? < %s (almost_promises)`, arg), val)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) Lte(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? <= %s (almost_promises)`, arg), val)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) In(val [][]string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? IN %s (almost_promises)`, arg), val)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) NotIn(val [][]string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? NOT IN %s (almost_promises)`, arg), val)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) Like(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? LIKE %s (almost_promises)`, arg), val)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) NotLike(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? NOT LIKE %s (almost_promises)`, arg), val)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) ILike(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? ILIKE %s (almost_promises)`, arg), val)
+}
+func (c *projectConfirmationsAlmostPromisesColumn) NotILike(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? NOT ILIKE %s (almost_promises)`, arg), val)
+}
+
+type projectConfirmationsFraudulentFlagColumn struct {
+	column
+}
+func (c *projectConfirmationsFraudulentFlagColumn) Set(val bool) SetExpression {
+	return SetExpression{ Name: "fraudulent_flag", Value: val }
+}
+func (c *projectConfirmationsFraudulentFlagColumn) Is(val bool) goqu.BooleanExpression {
+	return c.column.i.Is(val)
+}
+func (c *projectConfirmationsFraudulentFlagColumn) True() goqu.BooleanExpression {
+	return c.column.i.IsTrue()
+}
+func (c *projectConfirmationsFraudulentFlagColumn) False() goqu.BooleanExpression {
+	return c.column.i.IsFalse()
+}
+
+type projectConfirmationsBrokenPromisesColumn struct {
+	column
+}
+func (c *projectConfirmationsBrokenPromisesColumn) Empty() SetExpression {
+	return SetExpression{ Name: "broken_promises", Value: []string{} }
+}
+func (c *projectConfirmationsBrokenPromisesColumn) IsEmpty() goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.broken_promises) = 0")
+}
+func (c *projectConfirmationsBrokenPromisesColumn) NotEmpty() goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.broken_promises) != 0")
+}
+func (c *projectConfirmationsBrokenPromisesColumn) SizeEq(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.broken_promises) = ?", s)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) SizeNeq(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.broken_promises) != ?", s)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) SizeGt(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.broken_promises) > ?", s)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) SizeGte(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.broken_promises) >= ?", s)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) SizeLt(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.broken_promises) < ?", s)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) SizeLte(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.broken_promises) <= ?", s)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) SizeBetween(l int64, h int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.broken_promises) BETWEEN ? and ?", l, h)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) SizeNotBetween(l int64, h int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(project_confirmations.broken_promises) NOT BETWEEN ? and ?", l, h)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) Set(val []string) SetExpression {
+	return SetExpression{ Name: "broken_promises", Value: makeStringArrayLiteral(val) }
+}
+func (c *projectConfirmationsBrokenPromisesColumn) Eq(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? = %s (broken_promises)`, arg), val)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) Neq(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? != %s (broken_promises)`, arg), val)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) Gt(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? > %s (broken_promises)`, arg), val)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) Gte(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? >= %s (broken_promises)`, arg), val)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) Lt(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? < %s (broken_promises)`, arg), val)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) Lte(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? <= %s (broken_promises)`, arg), val)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) In(val [][]string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? IN %s (broken_promises)`, arg), val)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) NotIn(val [][]string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? NOT IN %s (broken_promises)`, arg), val)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) Like(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? LIKE %s (broken_promises)`, arg), val)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) NotLike(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? NOT LIKE %s (broken_promises)`, arg), val)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) ILike(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? ILIKE %s (broken_promises)`, arg), val)
+}
+func (c *projectConfirmationsBrokenPromisesColumn) NotILike(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? NOT ILIKE %s (broken_promises)`, arg), val)
+}
+
+type projectConfirmationsCommentaryColumn struct {
+	column
+}
+func (c *projectConfirmationsCommentaryColumn) Set(val string) SetExpression {
+	return SetExpression{ Name: "commentary", Value: val }
+}
+func (c *projectConfirmationsCommentaryColumn) Clear() SetExpression {
+	return SetExpression{ Name: "commentary", Value: nil }
+}
+func (c *projectConfirmationsCommentaryColumn) IsNull() goqu.BooleanExpression {
+	return c.column.i.IsNull()
+}
+func (c *projectConfirmationsCommentaryColumn) IsNotNull() goqu.BooleanExpression {
+	return c.column.i.IsNotNull()
+}
+func (c *projectConfirmationsCommentaryColumn) Eq(val string) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectConfirmationsCommentaryColumn) Neq(val string) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectConfirmationsCommentaryColumn) Gt(val string) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectConfirmationsCommentaryColumn) Gte(val string) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectConfirmationsCommentaryColumn) Lt(val string) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectConfirmationsCommentaryColumn) Lte(val string) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectConfirmationsCommentaryColumn) In(val []string) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectConfirmationsCommentaryColumn) NotIn(val []string) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+func (c *projectConfirmationsCommentaryColumn) Like(val string) goqu.BooleanExpression {
+	return c.column.i.Like(val)
+}
+func (c *projectConfirmationsCommentaryColumn) NotLike(val string) goqu.BooleanExpression {
+	return c.column.i.NotLike(val)
+}
+func (c *projectConfirmationsCommentaryColumn) ILike(val string) goqu.BooleanExpression {
+	return c.column.i.ILike(val)
+}
+func (c *projectConfirmationsCommentaryColumn) NotILike(val string) goqu.BooleanExpression {
+	return c.column.i.NotILike(val)
+}
+
+
+type projectConfirmationsDataset struct {
+	*goqu.Dataset
+}
+
+type projectConfirmationsSchema struct {
+	Table *goqu.Dataset
+	Query *projectConfirmationsDataset
+	Id projectConfirmationsIdColumn
+	DateCreated projectConfirmationsDateCreatedColumn
+	DateUpdated projectConfirmationsDateUpdatedColumn
+	Slug projectConfirmationsSlugColumn
+	ProjectId projectConfirmationsProjectIdColumn
+	UserId projectConfirmationsUserIdColumn
+	Proceed projectConfirmationsProceedColumn
+	AlmostPromises projectConfirmationsAlmostPromisesColumn
+	FraudulentFlag projectConfirmationsFraudulentFlagColumn
+	BrokenPromises projectConfirmationsBrokenPromisesColumn
+	Commentary projectConfirmationsCommentaryColumn
+}
+
+var ProjectConfirmations = &projectConfirmationsSchema{
+	Table: db.From("project_confirmations"),
+	Query: &projectConfirmationsDataset{ db.From("project_confirmations") },
+	Id: projectConfirmationsIdColumn{ column { i: goqu.I("project_confirmations.id") } },
+	DateCreated: projectConfirmationsDateCreatedColumn{ column { i: goqu.I("project_confirmations.date_created") } },
+	DateUpdated: projectConfirmationsDateUpdatedColumn{ column { i: goqu.I("project_confirmations.date_updated") } },
+	Slug: projectConfirmationsSlugColumn{ column { i: goqu.I("project_confirmations.slug") } },
+	ProjectId: projectConfirmationsProjectIdColumn{ column { i: goqu.I("project_confirmations.project_id") } },
+	UserId: projectConfirmationsUserIdColumn{ column { i: goqu.I("project_confirmations.user_id") } },
+	Proceed: projectConfirmationsProceedColumn{ column { i: goqu.I("project_confirmations.proceed") } },
+	AlmostPromises: projectConfirmationsAlmostPromisesColumn{ column { i: goqu.I("project_confirmations.almost_promises") } },
+	FraudulentFlag: projectConfirmationsFraudulentFlagColumn{ column { i: goqu.I("project_confirmations.fraudulent_flag") } },
+	BrokenPromises: projectConfirmationsBrokenPromisesColumn{ column { i: goqu.I("project_confirmations.broken_promises") } },
+	Commentary: projectConfirmationsCommentaryColumn{ column { i: goqu.I("project_confirmations.commentary") } },
+}
+
+var projectConfirmationsKinds = map[string]NestedKind {
+	
+}
+
+
+func (d *projectConfirmationsDataset) Where(expressions ...goqu.Expression) *projectConfirmationsDataset {
+	return &projectConfirmationsDataset{ d.Dataset.Where(expressions...) }
+}
+
+func (d *projectConfirmationsDataset) Select(columns ...DbColumn) *projectConfirmationsDataset {
+	return &projectConfirmationsDataset{ d.Dataset.Select(makeColumns(columns)...) }
+}
+
+func (d *projectConfirmationsDataset) Returning(columns ...DbColumn) *projectConfirmationsDataset {
+	return &projectConfirmationsDataset{ d.Dataset.Returning(makeColumns(columns)...) }
+}
+
+func (d *projectConfirmationsDataset) Update(expressions ...SetExpression) *goqu.CrudExec {
+	return d.Dataset.Update(makeRecord(expressions))
+}
+
+func (d *projectConfirmationsDataset) Insert(expressions ...SetExpression) *goqu.CrudExec {
+	return d.Dataset.Insert(makeRecord(expressions))
+}
+
+func (d *projectConfirmationsDataset) Patch(values map[string]interface{}) *patchExec {
+	var realValues = make(map[string]interface{})
+	for key, value := range values {
+		realValues[strcase.ToSnake(key)] = value
+	}
+
+	p := patchExec{
+		d.Dataset.Update(realValues),
+		validatePatch(&realValues, &projectConfirmationsKinds),
+		realValues,
+	}
+
+	return &p
+}
+
+type ServerProjectConfirmation struct {
+	Id int64
+	DateCreated time.Time
+	DateUpdated time.Time
+	Slug string
+	ProjectId int64
+	UserId int64
+	Proceed bool
+	AlmostPromises []string
+	FraudulentFlag bool
+	BrokenPromises []string
+	Commentary string
+}
+
+type OwnerPatchProjectConfirmation struct {
+	
+}
+
+type OwnerReadProjectConfirmation struct {
+	Slug string
+}
+
+type PublicReadProjectConfirmation struct {
+	
+}

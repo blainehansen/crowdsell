@@ -1,4 +1,4 @@
-AUTH='Authorization: eyJpIjoiWk5XR292UG4iLCJlIjoxNTM2Nzk1NTU1fQ.VcVUoy8FyWiXuW8qioWe4T0i0WNSX3uSVYXgwdJbV-o'
+AUTH='Authorization: eyJpIjoiWk5XR292UG4iLCJlIjoxNTM3NDc0MTgxfQ.e0zA_dY9hmWthIkgNFdc6o_gPiT-ljtMV9AP4EzNeJU'
 JSON='Content-Type: application/json'
 SERVER='http://localhost:5050'
 
@@ -16,24 +16,21 @@ SERVER='http://localhost:5050'
 
 
 PROJECT_SLUG="ZNWGovPn"
-# curl -X POST $SERVER/secure/project/$PROJECT_SLUG/uploads/sign -H "$AUTH" \
-# 	-d '["fasdfa9sd8f79asdf", "dkfjkfkaf8d89sfad"]'
 
-
-# {"objectName":"ZNWGovPn/dkfjkfkaf8d89sfad","signature":"3234eec76a95be1a6ea71af63850c86fd6c1de9c","timestamp":1536707063}
-# {"objectName":"ZNWGovPn/fasdfa9sd8f79asdf","signature":"e5bd60c742ece6b632cb7012c4400f546bca4766","timestamp":1536707063}
-curl -X POST $SERVER/secure/project/$PROJECT_SLUG/uploads/confirm -H "$AUTH" \
+curl -X POST $SERVER/secure/projects/$PROJECT_SLUG/confirmation -H "$AUTH" -H "$JSON" \
 	-d "$(cat <<EOF
-	[{
-		"signature": "3234eec76a95be1a6ea71af63850c86fd6c1de9c",
-		"timestamp": 1536707063,
-		"hash": "dkfjkfkaf8d89sfad",
-		"version": "1536707080"
-	}, {
-		"signature": "e5bd60c742ece6b632cb7012c4400f546bca4766",
-		"timestamp": 1536707063,
-		"hash": "fasdfa9sd8f79asdf",
-		"version": "1536707080"
-	}]
+	{
+		"fulfills": {
+			"proceed": true,
+			"almostPromises": ["once", "other"],
+			"commentary": "well stuff"
+		}
+	}
 EOF
 )"
+
+
+# "unacceptable": {
+# 	"fraudulentFlag": true,
+# 	"brokenPromiseIds": [3, 4, 5]
+# }

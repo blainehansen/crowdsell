@@ -61,3 +61,26 @@ curl -X "POST" "https://api.cloudinary.com/v1_1/crowdsell/image/upload" -H "$JSO
 	}
 EOF
 )"
+
+
+curl -X POST $SERVER/secure/project/$PROJECT_SLUG/uploads/sign -H "$AUTH" \
+	-d '["fasdfa9sd8f79asdf", "dkfjkfkaf8d89sfad"]'
+
+
+{"objectName":"ZNWGovPn/dkfjkfkaf8d89sfad","signature":"3234eec76a95be1a6ea71af63850c86fd6c1de9c","timestamp":1536707063}
+{"objectName":"ZNWGovPn/fasdfa9sd8f79asdf","signature":"e5bd60c742ece6b632cb7012c4400f546bca4766","timestamp":1536707063}
+curl -X POST $SERVER/secure/project/$PROJECT_SLUG/uploads/confirm -H "$AUTH" \
+	-d "$(cat <<EOF
+	[{
+		"signature": "3234eec76a95be1a6ea71af63850c86fd6c1de9c",
+		"timestamp": 1536707063,
+		"hash": "dkfjkfkaf8d89sfad",
+		"version": "1536707080"
+	}, {
+		"signature": "e5bd60c742ece6b632cb7012c4400f546bca4766",
+		"timestamp": 1536707063,
+		"hash": "fasdfa9sd8f79asdf",
+		"version": "1536707080"
+	}]
+EOF
+)"

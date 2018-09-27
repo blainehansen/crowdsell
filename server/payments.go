@@ -91,10 +91,8 @@ type AssemblyTokenResponse struct {
 	} `json:"token_auth"`
 }
 
-// var _ r = authRoute(POST, "/user/card-token", func(c *gin.Context) {
 var _ r = route(POST, "/user/card-token", func(c *gin.Context) {
-	// userId := c.MustGet("userId").(int64)
-	userId := 1
+	userId := c.MustGet("userId").(int64)
 
 	createTokenBody := struct {
 		TokenType string `json:"token_type"`
@@ -216,3 +214,27 @@ var _ r = authRoute(POST, "/pledge/:projectSlug", func(c *gin.Context) {
 
 	c.Status(204)
 })
+
+
+func ReleaseProjectFunds(projectId int64) []int64 {
+	var pledges []int64
+	ProjectPledges.Query.Where(
+		ProjectPledges.ProjectId.Eq(projectId),
+		ProjectPledges.State.Eq(PAID),
+	).Select(
+		ProjectPledges.Id,
+	).ScanVals(&pledges)
+
+	unsuccessfulPledges := []int64{}
+	for _, pledgeId := range pledges {
+		_, makePaymentErr := AssemblyClient.New().Patch(
+			fmt.Sprintf("/items/%s/release_payment", pledgeId),
+		).ReceiveSuccess(nil)
+
+		if makePaymentErr != nil {
+			unsuccessfulPledges = append(unsuccessfulPledges, pledgeId)
+		}
+	}
+
+	return unsuccessfulPledges
+}

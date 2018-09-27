@@ -109,10 +109,12 @@ var imagesProfilePreset string = environment["CDN_API_PROFILE_IMAGES_PRESET"]
 var _ r = authRoute(POST, "/user/profile-image/sign", func(c *gin.Context) {
 	userSlug := c.MustGet("userSlug").(string)
 
-	signature, timestamp := SignUploadParams(userSlug, imagesProfilePreset)
+	// signature, timestamp := SignUploadParams(userSlug, imagesProfilePreset)
+	objectName := fmt.Sprintf("%s.mp3", userSlug)
+	signature, timestamp := SignUploadParams(objectName, imagesProfilePreset)
 
 	response := uploadResponse {
-		ObjectName: userSlug,
+		ObjectName: objectName,
 		Signature: signature,
 		Timestamp: timestamp,
 	}
@@ -255,7 +257,6 @@ var _ r = authRoute(POST, "/project/:projectSlug/uploads/confirm", func(c *gin.C
 		finalUploads = append(finalUploads, objectName)
 	}
 
-	fmt.Println(finalUploads)
 	updateQuery := Projects.Query.Where(
 		Projects.Id.Eq(projectId), Projects.UserId.Eq(userId),
 	).Update(

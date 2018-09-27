@@ -14,6 +14,7 @@ export const privateHttp = axios.create({ baseURL: config.API_URL + '/secure' })
 privateHttp.defaults.headers = cloneDeep(privateHttp.defaults.headers)
 
 
+
 export const publicApi = {
 	login: (email, password) => publicHttp.post('/login', { email, password }),
 	createUser: (name, email, password) => publicHttp.post('/create-user', { name, email, password }),
@@ -24,21 +25,11 @@ export const publicApi = {
 }
 
 export const privateApi = {
-	// uploadFile(url, file) {
-	// 	const formData = new FormData()
-	// 	formData.append('file', file)
-	// 	return privateHttp.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-	// },
-
-	// uploadProfilePicture(hash, type, file) {
-	// 	return this.uploadFile(`/user/profile-image/${hash}/${type}`, file)
-	// },
-
 	fetchProfileUploadSignature: () => privateHttp.post('/user/profile-image/sign'),
 	confirmProfileUpload: (signature, timestamp, version) => privateHttp.post(`/user/profile-image/confirm`, { signature, timestamp, version }),
 
 	fetchProjectUploadSignatures: (projectId, fileHashes) => privateHttp.post(`/project/${projectId}/uploads/sign`, { hashes: fileHashes }),
-	comfirmProjectUploads: (projectId, confirmationPayloads) => privateHttp.post(`/project/${projectId}/uploads/confirm`, { confirmations: confirmationPayloads }),
+	confirmProjectUploads: (projectId, confirmationPayloads) => privateHttp.post(`/project/${projectId}/uploads/confirm`, { confirmations: confirmationPayloads }),
 
 	fetchFullUser: () => privateHttp.get('/user'),
 	changeSlug: (newSlug) => privateHttp.put('/user/slug', { slug: newSlug }),
@@ -63,22 +54,88 @@ const imagesHttp = axios.create({
 })
 imagesHttp.defaults.headers = cloneDeep(imagesHttp.defaults.headers)
 
-import { getFileData } from '@/utils'
+import { getBinaryFileData, getUrlFileData } from '@/utils'
 
 export const imagesApi = {
+	async postFile(fileDataPromise, route, signature, objectName, timestamp, preset, requestConfig = {}) {
+		const formData = new FormData()
+		formData.append('api_key', config.CDN_API_KEY)
+		formData.append('file', fileDataPromise)
+		formData.append('signature', signature)
+		formData.append('public_id', objectName)
+		formData.append('timestamp', timestamp)
+
+		if (preset) request.upload_preset = preset
+		const response = await imagesHttp.post(route, formData, requestConfig)
+		return response
+	},
+
+	async uploadFile(file, route, signature, objectName, timestamp, preset, requestConfig = undefined) {
+		const chunkLimit = 6291456
+		const fileSize = file.size
+
+		if (fileSize > chunkLimit) {
+			const slicePromises = []
+			const uploadId = randomId()
+			requestConfig = requestConfig || {}
+
+			const createSlicePromise = (startIndex, endIndex = undefined) => {
+				const bytesEndIndex = (endIndex || fileSize) - 1
+				const sliceEndIndex = endIndex
+
+				return this.postFile(
+					file.slice(startIndex, sliceEndIndex),
+					route, signature, objectName, timestamp, preset,
+					{
+						headers: {
+							'Content-Type': 'multipart/form-data',
+							'X-Unique-Upload-Id': uploadId,
+							'Content-Range': `bytes ${startIndex}-${bytesEndIndex}/${fileSize}`,
+							...requestConfig,
+						},
+						onUploadProgress: (progressEvent) => {
+							if (progressEvent.lengthComputable) {
+								console.log((progressEvent.loaded / progressEvent.total) * 100)
+							}
+						}
+					},
+				)
+			}
+
+			let currentIndex = 0
+			// file size is non-inclusive
+			while (currentIndex + chunkLimit < fileSize) {
+				const startIndex = currentIndex
+				const endIndex = currentIndex + chunkLimit
+				slicePromises.push(createSlicePromise(startIndex, endIndex))
+
+				currentIndex = endIndex
+			}
+
+			// upload the last one
+			slicePromises.push(createSlicePromise(currentIndex))
+
+			const results = await Promise.all(slicePromises)
+			for (const { data } of results) {
+				if (data.done) return data.version
+			}
+			throw new Error("no version created")
+		}
+
+		return this.postFile(getUrlFileData(file), route, signature, objectName, timestamp, preset, requestConfig)
+	},
+
 	async uploadProfileImage(file) {
-		const fileDataPromise = getFileData(file)
+		const { data: { signature, objectName, timestamp } } = await privateApi.fetchProfileUploadSignature(signature, objectName, timestamp)
 
-		const { data: { objectName, signature, timestamp } } = await privateApi.fetchProfileUploadSignature()
-
-		const { data: { version } } = await imagesHttp.post(config.CDN_API_IMAGES_ROUTE, {
-			file: await fileDataPromise,
-			timestamp,
-			api_key: config.CDN_API_KEY,
-			public_id: objectName,
+		const response = await this.uploadFile(
+			file,
+			config.CDN_API_IMAGES_ROUTE,
 			signature,
-			upload_preset: config.CDN_API_PROFILE_IMAGES_PRESET,
-		})
+			objectName,
+			timestamp,
+			config.CDN_API_PROFILE_IMAGES_PRESET,
+		)
 
 		await privateApi.confirmProfileUpload(signature, timestamp, version.toString())
 
@@ -86,20 +143,31 @@ export const imagesApi = {
 	},
 
 	async uploadProjectImage(file, objectName, signature, timestamp, progressFunction) {
-		const fileDataPromise = getFileData(file)
-
-		const { data: { version } } = await imagesHttp.post(config.CDN_API_IMAGES_ROUTE, {
-			file: await fileDataPromise,
-			timestamp,
-			api_key: config.CDN_API_KEY,
-			public_id: objectName,
+		const { data: { version } } = await this.uploadFile(
+			file,
+			config.CDN_API_IMAGES_ROUTE,
 			signature,
-			upload_preset: config.CDN_API_PROJECT_IMAGES_PRESET,
-		}, {
-			onUploadProgress: progressFunction,
-		})
+			objectName,
+			timestamp,
+			config.CDN_API_PROJECT_IMAGES_PRESET,
+			{ onUploadProgress: progressFunction },
+		)
 
 		return version
+	},
+
+	async uploadVideo(file) {
+		const { data: { signature, objectName, timestamp } } = await privateApi.fetchProfileUploadSignature()
+
+		const response = await this.uploadFile(
+			file,
+			'/raw/upload',
+			signature,
+			objectName,
+			timestamp,
+		)
+
+		return response
 	},
 
 	// deleteImage(objectName, signature, timestamp) {
@@ -110,4 +178,15 @@ export const imagesApi = {
 	// 		invalidate: true,
 	// 	})
 	// },
+}
+
+
+
+function randomId(chunks = 6) {
+	let id = ""
+	for (let i = 0; i < chunks; i++) {
+		id += Math.random().toString(36).substring(2, 15)
+	}
+
+	return id
 }
