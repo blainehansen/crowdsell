@@ -1,4 +1,4 @@
-AUTH='Authorization: eyJpIjoiWk5XR292UG4iLCJlIjoxNTM3NDc0MTgxfQ.e0zA_dY9hmWthIkgNFdc6o_gPiT-ljtMV9AP4EzNeJU'
+AUTH='Authorization: eyJpIjoiWk5XR292UG4iLCJlIjoxNTM4MTUzNTYyfQ.7LjppfzfpTZow6hr7PR5psZXKU112QlZ95gJVq0FCxo'
 JSON='Content-Type: application/json'
 SERVER='http://localhost:5050'
 
@@ -9,28 +9,14 @@ SERVER='http://localhost:5050'
 # curl -X POST $SERVER/secure/projects -H "$AUTH" -H "$JSON" \
 # 	-d '{"name": "Dude Stuff", "description": "Various Dude Stuff"}'
 
+PROJECT_SLUG="ZNWGovPn"
+curl -X PATCH $SERVER/secure/projects/$PROJECT_SLUG -H "$AUTH" -H "$JSON" \
+	-d '{"name": "Changed Dude Stuff", "description": "Dude Stuff", "promises": ["I will do this", "I will also do this"]}'
+
 # curl -X POST $SERVER/login \
 # 	-d '{"email": "dude@gmail.com", "password": "pass"}'
 
 # curl $SERVER/secure/user -H "$AUTH"
 
 
-PROJECT_SLUG="ZNWGovPn"
 
-curl -X POST $SERVER/secure/projects/$PROJECT_SLUG/confirmation -H "$AUTH" -H "$JSON" \
-	-d "$(cat <<EOF
-	{
-		"fulfills": {
-			"proceed": true,
-			"almostPromises": ["once", "other"],
-			"commentary": "well stuff"
-		}
-	}
-EOF
-)"
-
-
-# "unacceptable": {
-# 	"fraudulentFlag": true,
-# 	"brokenPromiseIds": [3, 4, 5]
-# }

@@ -35,4 +35,4 @@
 
 [[constraint]]
 	name = "github.com/blainehansen/goqu"
-	branch = "master"
+	branch = "postgres_arrays"

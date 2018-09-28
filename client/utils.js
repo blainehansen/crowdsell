@@ -34,40 +34,6 @@ export function sampleHashFile(file) {
 	})
 }
 
-export function getBinaryFileData(file) {
-	return getSliceData(file, true)
-}
-
-export function getUrlFileData(file) {
-	return getSliceData(file, false)
-}
-
-function getSliceData(file, binary) {
-	return new Promise(function(resolve, reject) {
-		const reader = new FileReader()
-
-		reader.readAsBinaryString(file)
-		// reader.readAsDataURL(file)
-
-		reader.onloadend = (event) => {
-			if (event.target.readyState !== FileReader.DONE)
-				return
-
-			// const result = event.target.result
-			// console.log(result)
-			// console.log(new Uint8Array(result))
-			// const finalData = binary
-			// 	? new Uint8Array(result)
-			// 	: result
-			// const finalData = event.target.result.replace('data:application/octet-stream;base64,', '')
-			const finalData = event.target.result
-			console.log(finalData)
-
-			resolve(finalData)
-		}
-	})
-}
-
 
 import config from '@/config'
 import store from '@/vuex'

@@ -37,6 +37,9 @@ projects:
   description: text
 
   story: text
+  promises:
+    type: text[]
+
   upload_images:
     type: text[]
     no_patch: true

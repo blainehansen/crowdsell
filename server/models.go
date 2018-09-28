@@ -1006,6 +1006,82 @@ func (c *projectsStoryColumn) NotILike(val string) goqu.BooleanExpression {
 	return c.column.i.NotILike(val)
 }
 
+type projectsPromisesColumn struct {
+	column
+}
+func (c *projectsPromisesColumn) Empty() SetExpression {
+	return SetExpression{ Name: "promises", Value: []string{} }
+}
+func (c *projectsPromisesColumn) IsEmpty() goqu.LiteralExpression {
+	return goqu.L("cardinality(projects.promises) = 0")
+}
+func (c *projectsPromisesColumn) NotEmpty() goqu.LiteralExpression {
+	return goqu.L("cardinality(projects.promises) != 0")
+}
+func (c *projectsPromisesColumn) SizeEq(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(projects.promises) = ?", s)
+}
+func (c *projectsPromisesColumn) SizeNeq(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(projects.promises) != ?", s)
+}
+func (c *projectsPromisesColumn) SizeGt(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(projects.promises) > ?", s)
+}
+func (c *projectsPromisesColumn) SizeGte(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(projects.promises) >= ?", s)
+}
+func (c *projectsPromisesColumn) SizeLt(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(projects.promises) < ?", s)
+}
+func (c *projectsPromisesColumn) SizeLte(s int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(projects.promises) <= ?", s)
+}
+func (c *projectsPromisesColumn) SizeBetween(l int64, h int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(projects.promises) BETWEEN ? and ?", l, h)
+}
+func (c *projectsPromisesColumn) SizeNotBetween(l int64, h int64) goqu.LiteralExpression {
+	return goqu.L("cardinality(projects.promises) NOT BETWEEN ? and ?", l, h)
+}
+func (c *projectsPromisesColumn) Set(val []string) SetExpression {
+	return SetExpression{ Name: "promises", Value: makeStringArrayLiteral(val) }
+}
+func (c *projectsPromisesColumn) Eq(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? = %s (promises)`, arg), val)
+}
+func (c *projectsPromisesColumn) Neq(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? != %s (promises)`, arg), val)
+}
+func (c *projectsPromisesColumn) Gt(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? > %s (promises)`, arg), val)
+}
+func (c *projectsPromisesColumn) Gte(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? >= %s (promises)`, arg), val)
+}
+func (c *projectsPromisesColumn) Lt(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? < %s (promises)`, arg), val)
+}
+func (c *projectsPromisesColumn) Lte(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? <= %s (promises)`, arg), val)
+}
+func (c *projectsPromisesColumn) In(val [][]string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? IN %s (promises)`, arg), val)
+}
+func (c *projectsPromisesColumn) NotIn(val [][]string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? NOT IN %s (promises)`, arg), val)
+}
+func (c *projectsPromisesColumn) Like(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? LIKE %s (promises)`, arg), val)
+}
+func (c *projectsPromisesColumn) NotLike(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? NOT LIKE %s (promises)`, arg), val)
+}
+func (c *projectsPromisesColumn) ILike(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? ILIKE %s (promises)`, arg), val)
+}
+func (c *projectsPromisesColumn) NotILike(val []string, arg arrayArg) goqu.LiteralExpression {
+	return goqu.L(fmt.Sprintf(`? NOT ILIKE %s (promises)`, arg), val)
+}
+
 type projectsUploadImagesColumn struct {
 	column
 }
@@ -1142,6 +1218,7 @@ type projectsSchema struct {
 	Name projectsNameColumn
 	Description projectsDescriptionColumn
 	Story projectsStoryColumn
+	Promises projectsPromisesColumn
 	UploadImages projectsUploadImagesColumn
 	UserId projectsUserIdColumn
 	GeneralSearchVector projectsGeneralSearchVectorColumn
@@ -1158,6 +1235,7 @@ var Projects = &projectsSchema{
 	Name: projectsNameColumn{ column { i: goqu.I("projects.name") } },
 	Description: projectsDescriptionColumn{ column { i: goqu.I("projects.description") } },
 	Story: projectsStoryColumn{ column { i: goqu.I("projects.story") } },
+	Promises: projectsPromisesColumn{ column { i: goqu.I("projects.promises") } },
 	UploadImages: projectsUploadImagesColumn{ column { i: goqu.I("projects.upload_images") } },
 	UserId: projectsUserIdColumn{ column { i: goqu.I("projects.user_id") } },
 	GeneralSearchVector: projectsGeneralSearchVectorColumn{ column { i: goqu.I("projects.general_search_vector") } },
@@ -1167,6 +1245,7 @@ var projectsKinds = map[string]NestedKind {
 	"name": NestedKind { Outer: reflect.String, Inner: reflect.Invalid },
 	"description": NestedKind { Outer: reflect.String, Inner: reflect.Invalid },
 	"story": NestedKind { Outer: reflect.String, Inner: reflect.Invalid },
+	"promises": NestedKind { Outer: reflect.Slice, Inner: reflect.String },
 }
 
 
@@ -1214,6 +1293,7 @@ type ServerProject struct {
 	Name string
 	Description string
 	Story string
+	Promises []string
 	UploadImages []string
 	UserId int64
 }
@@ -1222,6 +1302,7 @@ type OwnerPatchProject struct {
 	Name string
 	Description string
 	Story string
+	Promises []string
 }
 
 type OwnerReadProject struct {
@@ -1230,6 +1311,7 @@ type OwnerReadProject struct {
 	Name string
 	Description string
 	Story string
+	Promises []string
 	UploadImages []string
 }
 
@@ -1238,6 +1320,7 @@ type PublicReadProject struct {
 	Name string
 	Description string
 	Story string
+	Promises []string
 	UploadImages []string
 }
 

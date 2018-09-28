@@ -252,6 +252,10 @@ function processFields(tableName, [fieldName, rawField]) {
 				methods: [
 					...internalMethods
 				],
+				reflect: {
+					outer: 'Slice',
+					inner: changeCase.pascal(internalGoType)
+				},
 			}
 		}
 
@@ -338,10 +342,6 @@ const go = {
 		return [`val ${argType}`, 'val']
 	},
 
-	// makeMethod() {
-
-	// },
-
 	makeGoquTypeName: (tableName, fieldName) => changeCase.camelCase(tableName) + changeCase.pascal(fieldName) + 'Column',
 
 	makeGoquTypeForField(tableName, field) {
@@ -392,8 +392,6 @@ const go = {
 				goquTypeEntries.push(`func (c *${goquTypeName}) Set(val ${fieldGoType}) SetExpression {\n\treturn SetExpression{ Name: "${fieldName}", Value: val }\n}`)
 			}
 
-			console.log(fieldName)
-			console.log(fieldRequired)
 			if (!fieldRequired) {
 				goquTypeEntries.push(`func (c *${goquTypeName}) Clear() SetExpression {\n\treturn SetExpression{ Name: "${fieldName}", Value: nil }\n}`)
 			}

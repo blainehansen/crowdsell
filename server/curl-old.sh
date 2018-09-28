@@ -84,3 +84,24 @@ curl -X POST $SERVER/secure/project/$PROJECT_SLUG/uploads/confirm -H "$AUTH" \
 	}]
 EOF
 )"
+
+
+
+
+curl -X POST $SERVER/secure/projects/$PROJECT_SLUG/confirmation -H "$AUTH" -H "$JSON" \
+	-d "$(cat <<EOF
+	{
+		"fulfills": {
+			"proceed": true,
+			"almostPromises": ["once", "other"],
+			"commentary": "well stuff"
+		}
+	}
+EOF
+)"
+
+
+# "unacceptable": {
+# 	"fraudulentFlag": true,
+# 	"brokenPromiseIds": [3, 4, 5]
+# }

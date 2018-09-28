@@ -159,9 +159,7 @@ func validatePatch(values *map[string]interface{}, schema *map[string]NestedKind
 		baseValueType := reflect.TypeOf(value)
 		valueKind := baseValueType.Kind()
 
-
 		if schemaKind.Outer == reflect.Struct {
-			// reflect.TypeOf(schemaKind.Instance) == reflect.TypeOf((*Test)(nil)).Elem()
 			if reflect.TypeOf(schemaKind.Instance) != baseValueType {
 				return false
 			}
@@ -172,7 +170,30 @@ func validatePatch(values *map[string]interface{}, schema *map[string]NestedKind
 
 		if valueIterable && schemaIterable {
 			innerValueKind := baseValueType.Elem().Kind()
-			if !typesMatch(innerValueKind, schemaKind.Inner) {
+
+			fmt.Println(value)
+
+			if innerValueKind == reflect.Interface {
+				// return true
+				iterable := reflect.ValueOf(value)
+
+				for iterableIndex := 0; iterableIndex < iterable.Len(); iterableIndex++ {
+					fmt.Println()
+					item := iterable.Index(iterableIndex)
+					fmt.Println(item)
+
+					itemKind := item.Kind()
+					fmt.Println(itemKind)
+
+					// if itemKind == reflect.Struct {
+					// 	for structIndex := 0; structIndex < item.NumField(); structIndex++ {
+					// 		fmt.Printf("%+v\n", item.Field(structIndex))
+					// 	}
+					// } else if !typesMatch(itemKind, schemaKind.Inner) {
+					// 	return false
+					// }
+				}
+			} else if !typesMatch(innerValueKind, schemaKind.Inner) {
 				return false
 			}
 

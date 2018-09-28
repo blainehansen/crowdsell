@@ -10,15 +10,15 @@
   revision = "0755fe2dc241caebab64327c352006712f6a55c4"
 
 [[projects]]
-  branch = "master"
-  digest = "1:583bc95af679bfb909391e78ca45675e2dd13de5fbdfd7acc867a1942c857549"
+  branch = "postgres_arrays"
+  digest = "1:4d881ca104033f8ff32c7947f8686030b16e8b58058a77fb68e010a3ffef3c0b"
   name = "github.com/blainehansen/goqu"
   packages = [
     ".",
     "adapters/postgres",
   ]
   pruneopts = "UT"
-  revision = "2c446536e3e3fd192345c4edb6c18e9675bf3851"
+  revision = "b24158b0f528a36f2fb24d493214ce43b95cc338"
 
 [[projects]]
   digest = "1:ace1aef6acdf2c4647365dc87c14fb8b71ed8bb0b3ae114ffb216614a24da219"
@@ -46,32 +46,32 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:c8de31666a54c98dcf9983867998d3c39e4bcf8b0415082543e6f770414fdf7e"
+  digest = "1:4b837838f219a45267015daa28de33fb422f0142490f8b0d34e32558490bd26e"
   name = "github.com/gin-gonic/gin"
   packages = [
     ".",
     "binding",
-    "json",
+    "internal/json",
     "render",
   ]
   pruneopts = "UT"
-  revision = "c00f21ff239822d013b80e54bd403fbc08a0b5ff"
+  revision = "91a4459dd27a311c2b959708f328d60177fa4046"
 
 [[projects]]
-  digest = "1:15042ad3498153684d09f393bbaec6b216c8eec6d61f63dff711de7d64ed8861"
+  digest = "1:97df918963298c287643883209a2c3f642e6593379f97ab400c2a2e219ab647d"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
   pruneopts = "UT"
-  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
-  version = "v1.1.0"
+  revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
+  version = "v1.2.0"
 
 [[projects]]
-  branch = "master"
   digest = "1:a63cff6b5d8b95638bfe300385d93b2a6d9d687734b863da8e09dc834510a690"
   name = "github.com/google/go-querystring"
   packages = ["query"]
   pruneopts = "UT"
-  revision = "53e6ce116135b80d037921a7fdd5138cf32d7a8a"
+  revision = "44c6ddd0a2342c386950e880b658017258da92fc"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -82,50 +82,50 @@
   revision = "3605ed457bf7f8caa1371b4fafadadc026673479"
 
 [[projects]]
-  digest = "1:70e697d67ccaec45e16bac3a32380ebcd9e7e071079c60d0171d42cf1cf9748a"
+  digest = "1:ecd9aa82687cf31d1585d4ac61d0ba180e42e8a6182b85bd785fcca8dfeefc1b"
   name = "github.com/joho/godotenv"
   packages = ["."]
   pruneopts = "UT"
-  revision = "a79fa1e548e2c689c241d10173efd51e5d689d5b"
-  version = "v1.2.0"
+  revision = "23d116af351c84513e1946b527c88823e476be13"
+  version = "v1.3.0"
 
 [[projects]]
-  digest = "1:6a7e0f59ae03ead324acbcfeeb0864bbea428eafe24174efc683cac1745b7bb5"
+  digest = "1:5d713dbcad44f3358fec51fd5573d4f733c02cac5a40dcb177787ad5ffe9272f"
   name = "github.com/json-iterator/go"
   packages = [
     ".",
     "extra",
   ]
   pruneopts = "UT"
-  revision = "ca39e5af3ece67bbcda3d0f4f56a8e24d9f2dad4"
-  version = "1.1.3"
+  revision = "1624edc4454b8682399def8740d46db5e4362ba4"
+  version = "v1.1.5"
 
 [[projects]]
-  branch = "master"
-  digest = "1:3bf5012bb5a977f690a70d1269837e3ad60596fbdde3af7441e820afc7bd7c11"
+  digest = "1:25f74e1ff06febc7758a34b8d34f2fbb4235fcf075357b6077e8c0444f464b95"
   name = "github.com/lhecker/argon2"
   packages = ["."]
   pruneopts = "UT"
-  revision = "c0922d56400404114424781cd2a091e75124cb0d"
+  revision = "6ee5e5eb5229e6db37d7244f4ca95710ea2fbe2e"
+  version = "v2.0.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:37ce7d7d80531b227023331002c0d42b4b4b291a96798c82a049d03a54ba79e4"
+  digest = "1:8ef506fc2bb9ced9b151dafa592d4046063d744c646c1bbe801982ce87e4bc24"
   name = "github.com/lib/pq"
   packages = [
     ".",
     "oid",
   ]
   pruneopts = "UT"
-  revision = "90697d60dd844d5ef6ff15135d0203f65d2f53b8"
+  revision = "4ded0e9383f75c197b3a2aaa6d590ac52df6fd79"
+  version = "v1.0.0"
 
 [[projects]]
-  digest = "1:d4d17353dbd05cb52a2a52b7fe1771883b682806f68db442b436294926bbfafb"
+  digest = "1:0981502f9816113c9c8c4ac301583841855c8cf4da8c72f696b3ebedf6d0e4e5"
   name = "github.com/mattn/go-isatty"
   packages = ["."]
   pruneopts = "UT"
-  revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
-  version = "v0.0.3"
+  revision = "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c"
+  version = "v0.0.4"
 
 [[projects]]
   digest = "1:33422d238f147d247752996a26574ac48dcf472976eda7f5134015f06bf16563"
@@ -136,12 +136,12 @@
   version = "1.0.3"
 
 [[projects]]
-  digest = "1:d711dfcf661439f1ef0b202a02e8a1ff4deac48f26f34253520dcdbecbd7c5f1"
+  digest = "1:e32bdbdb7c377a07a9a46378290059822efdce5c8d96fe71940d87cb4f918855"
   name = "github.com/modern-go/reflect2"
   packages = ["."]
   pruneopts = "UT"
-  revision = "1df9eeb2bb81f327b96228865c5687bc2194af3f"
-  version = "1.0.0"
+  revision = "4b7aa43c6742a2c18fdef89dd197aaae7dac7ccd"
+  version = "1.0.1"
 
 [[projects]]
   digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
@@ -169,19 +169,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:a3a6de39e290e48a117738abd07843fce514b32ba887044c1dd123030a60c108"
+  digest = "1:ff116c3de0188ee4c62107711d44cc5ec52b16d8a55274d480f5be34270acb4d"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = "UT"
-  revision = "7138fd3d9dc8335c567ca206f4333fb75eb05d56"
-
-[[projects]]
-  digest = "1:d0fc4db71542957fcc6167731d6f48c5f3232f3ee7d06d44484c237a2ab1bc6d"
-  name = "gopkg.in/doug-martin/goqu.v5"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "6803bc2ea3462276f0e87814761a787d5537c4eb"
-  version = "v5.0.0"
+  revision = "dad3d9fb7b6e83d0f9ac8f54670f6334c3a287b4"
 
 [[projects]]
   digest = "1:cbc72c4c4886a918d6ab4b95e347ffe259846260f99ebdd8a198c2331cf2b2e9"

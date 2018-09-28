@@ -109,6 +109,7 @@ CREATE TABLE projects (
 	name text,
 	description text,
 	story text,
+	promises text[] DEFAULT ARRAY[]::text[] NOT NULL,
 	upload_images text[] DEFAULT ARRAY[]::text[] NOT NULL,
 	user_id bigint NOT NULL REFERENCES users(id),
 	general_search_vector tsvector

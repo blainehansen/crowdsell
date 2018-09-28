@@ -54,8 +54,6 @@ const imagesHttp = axios.create({
 })
 imagesHttp.defaults.headers = cloneDeep(imagesHttp.defaults.headers)
 
-import { getBinaryFileData, getUrlFileData } from '@/utils'
-
 export const imagesApi = {
 	async postFile(fileDataPromise, route, signature, objectName, timestamp, preset, requestConfig = {}) {
 		const formData = new FormData()
@@ -65,9 +63,9 @@ export const imagesApi = {
 		formData.append('public_id', objectName)
 		formData.append('timestamp', timestamp)
 
-		if (preset) request.upload_preset = preset
-		const response = await imagesHttp.post(route, formData, requestConfig)
-		return response
+		if (preset) formData.append('upload_preset', preset)
+
+		return imagesHttp.post(route, formData, requestConfig)
 	},
 
 	async uploadFile(file, route, signature, objectName, timestamp, preset, requestConfig = undefined) {
@@ -122,7 +120,7 @@ export const imagesApi = {
 			throw new Error("no version created")
 		}
 
-		return this.postFile(getUrlFileData(file), route, signature, objectName, timestamp, preset, requestConfig)
+		return this.postFile(file, route, signature, objectName, timestamp, preset, requestConfig)
 	},
 
 	async uploadProfileImage(file) {
