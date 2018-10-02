@@ -1,4 +1,4 @@
-import { makeMutations, makeGetters, genericSaveAction} from '@/vuexUtils'
+import { makeMutations, makeGetters, genericSaveAction } from '@/vuexUtils'
 import { privateApi } from '@/api'
 
 const touchedKeyManifest = []

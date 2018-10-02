@@ -1,67 +1,36 @@
 <template lang="pug">
 
 .create-project
+	p Create a project
 	p
-		button(v-if="project$anyTouched", @click="saveProject") save project
-		button(v-else, disabled) project saved
+		button(:disabled="project$anyTouched", @click="saveProject") create this project
 
-	ul.nav.justify-content-center
-		li.nav-item(v-for="componentObject in componentManifest")
-			router-link.nav-link(:to="{ name: componentObject.name }") {{ componentObject.pageName }}
-
-		//- router-link.nav-item(tag="li", :to="{ name: componentObject.name }", v-for="componentObject in componentManifest")
-		//- 	a.nav-link {{ componentObject.pageName }}
-
-	//- portal-target(name="createProjectDescription")
-	router-view
-
-
-//- title
-//- blurb
-//- image
-//- video?
-//- categories and tags
-//- funding goal
-//- funding timeline and structure
-//- add people to project
-//- description
-//- the files themselves
-
-//- the demo materials
-//- the release guarantees
-//- the license
-
-//- financial information
+	Overall
 
 </template>
 
 <script>
-// import { privateApi } from '@/api'
-import { call, get } from 'vuex-pathify'
+import { get } from 'vuex-pathify'
 
-import componentManifest from './create'
+import Overall from './edit/Overall'
 
 export default {
 	name: 'CreateProject',
 
-	props: {
-		projectId: {
-			type: Number,
-			default: null,
-		}
+	components: {
+		Overall,
 	},
 
-	data() {
-		return {
-			componentManifest,
-		}
-	},
 	computed: {
 		project$anyTouched: get('project/$anyTouched'),
 	},
 
 	methods: {
-		saveProject: call('project/saveProject'),
+		async saveProject() {
+			const projectId = await this.$store.dispatch('project/saveProject')
+
+			this.$router.replace({ name: 'projectEditOverall', props: { projectId } })
+		},
 	}
 }
 </script>

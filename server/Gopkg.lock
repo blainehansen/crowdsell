@@ -11,14 +11,14 @@
 
 [[projects]]
   branch = "postgres_arrays"
-  digest = "1:4d881ca104033f8ff32c7947f8686030b16e8b58058a77fb68e010a3ffef3c0b"
+  digest = "1:28429d0532a243b6c6991eab4734a76ef91c3b9388c71a9c1549c58e550b6766"
   name = "github.com/blainehansen/goqu"
   packages = [
     ".",
     "adapters/postgres",
   ]
   pruneopts = "UT"
-  revision = "b24158b0f528a36f2fb24d493214ce43b95cc338"
+  revision = "b8f21f417b758aab4cc1c5a9fd9e15954eaa8d1e"
 
 [[projects]]
   digest = "1:ace1aef6acdf2c4647365dc87c14fb8b71ed8bb0b3ae114ffb216614a24da219"

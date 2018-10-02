@@ -23,8 +23,8 @@
 	//- 	.add
 	//- 		input(type="file", accept="image/png, image/jpeg", multiple, @change="acceptFiles")
 
-	.test
-		input(type="file", @change="acceptFiles")
+	//- .test
+	//- 	input(type="file", @change="acceptFiles")
 
 
 
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import MarkdownEditor from '@/components/MarkdownEditor'
+// import MarkdownEditor from '@/components/MarkdownEditor'
 
 import { privateApi, imagesApi } from '@/api'
 import { sampleHashFile } from '@/utils'
@@ -43,30 +43,30 @@ import { sampleHashFile } from '@/utils'
 export default {
 	name: 'home',
 
-	components: {
-		MarkdownEditor,
-	},
+	// components: {
+	// 	MarkdownEditor,
+	// },
 
-	data() {
-		return {
-			uploads: [],
-			allSuccessful: false,
-		}
-	},
+	// data() {
+	// 	return {
+	// 		uploads: [],
+	// 		allSuccessful: false,
+	// 	}
+	// },
 
-	methods: {
-		async acceptFiles(event) {
-			const eventFile = event.target.files[0]
-			console.log(eventFile)
+	// methods: {
+	// 	async acceptFiles(event) {
+	// 		const eventFile = event.target.files[0]
+	// 		console.log(eventFile)
 
-			const version = await imagesApi.uploadVideo(eventFile)
+	// 		const version = await imagesApi.uploadVideo(eventFile)
 
-			console.log(version)
-		},
+	// 		console.log(version)
+	// 	},
 
-		// markdownChangedHandler(...args) {
-		// 	console.log(args)
-		// },
+	// 	markdownChangedHandler(...args) {
+	// 		console.log(args)
+	// 	},
 
 	// 	async acceptFiles(event) {
 	// 		const eventFiles = event.target.files
@@ -125,7 +125,7 @@ export default {
 	// 		await privateApi.confirmProjectUploads(projectId, finishedUploads)
 	// 		this.allSuccessful = true
 	// 	},
-	},
+	// },
 
 	// data() {
 	// 	return {

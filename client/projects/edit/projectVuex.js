@@ -6,6 +6,8 @@ const touchedKeyManifest = []
 const projectState = {
 	name: null,
 	description: null,
+	story: null,
+	promises: [],
 }
 
 const state = {
@@ -35,8 +37,12 @@ export default {
 		saveProject: genericSaveAction(touchedKeyManifest, async function({ state, getters, commit }, projectPatches) {
 			const response = await publicApi.saveProject(state.id, projectPatches)
 
-			if (has(response, 'data.id'))
-				commit('SET_ID', response.data.id)
+			if (has(response, 'data.id')) {
+				const projectId = response.data.id
+
+				commit('SET_ID', projectId)
+				return projectId
+			}
 		}),
 	}
 }

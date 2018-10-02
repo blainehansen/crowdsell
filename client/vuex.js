@@ -6,7 +6,7 @@ import pathify from 'vuex-pathify'
 Vue.use(Vuex)
 
 import authModule, { authPluginMaker } from '@/auth'
-import projectModule from '@/projects/create/projectVuex'
+import projectModule from '@/projects/edit/projectVuex'
 import userModule from '@/users/userVuex'
 
 const store = new Vuex.Store({

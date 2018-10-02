@@ -1,6 +1,6 @@
 <template lang="pug">
 
-.project-overall
+#project-overall
 	h1 Overall
 
 	input(v-model="name", placeholder="give your project a name")

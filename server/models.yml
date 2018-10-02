@@ -37,8 +37,7 @@ projects:
   description: text
 
   story: text
-  promises:
-    type: text[]
+  promises: text[]
 
   upload_images:
     type: text[]

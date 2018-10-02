@@ -41,13 +41,7 @@ export function makeMutations(stateObject, relevantKeys, touchedKeyManifest) {
 
 export function makeGetters(touchedKeyManifest) {
 	return {
-		$anyTouched(state) {
-			return state.$touchedCount > 0
-			// for (let i = touchedKeyManifest.length - 1; i >= 0; i--) {
-			// 	if (state[touchedKeyManifest[i]]) return true
-			// }
-			// return false
-		}
+		$anyTouched: (state) => state.$touchedCount > 0,
 	}
 }
 
