@@ -3,9 +3,9 @@
 .create-project
 	p Create a project
 	p
-		button(:disabled="project$anyTouched", @click="saveProject") create this project
+		button(:disabled="!project$anyTouched", @click="saveProject") create this project
 
-	Overall
+	Overall(:createMode="true")
 
 </template>
 
@@ -29,7 +29,7 @@ export default {
 		async saveProject() {
 			const projectId = await this.$store.dispatch('project/saveProject')
 
-			this.$router.replace({ name: 'projectEditOverall', props: { projectId } })
+			this.$router.replace({ name: 'projectEditOverall', params: { projectId } })
 		},
 	}
 }

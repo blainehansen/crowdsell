@@ -677,6 +677,12 @@ type PublicReadUser struct {
 	ProfilePhotoVersion string
 }
 
+type ProjectCategoryType string
+const (
+	COMPUTER_HARDWARE ProjectCategoryType = "COMPUTER_HARDWARE"
+	COMPUTER_SOFTWARE ProjectCategoryType = "COMPUTER_SOFTWARE"
+)
+
 type projectsIdColumn struct {
 	column
 }
@@ -1082,6 +1088,80 @@ func (c *projectsPromisesColumn) NotILike(val []string, arg arrayArg) goqu.Liter
 	return goqu.L(fmt.Sprintf(`? NOT ILIKE %s (promises)`, arg), val)
 }
 
+type projectsGoalColumn struct {
+	column
+}
+func (c *projectsGoalColumn) Set(val int64) SetExpression {
+	return SetExpression{ Name: "goal", Value: val }
+}
+func (c *projectsGoalColumn) Clear() SetExpression {
+	return SetExpression{ Name: "goal", Value: nil }
+}
+func (c *projectsGoalColumn) IsNull() goqu.BooleanExpression {
+	return c.column.i.IsNull()
+}
+func (c *projectsGoalColumn) IsNotNull() goqu.BooleanExpression {
+	return c.column.i.IsNotNull()
+}
+func (c *projectsGoalColumn) Eq(val int64) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectsGoalColumn) Neq(val int64) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectsGoalColumn) Gt(val int64) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectsGoalColumn) Gte(val int64) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectsGoalColumn) Lt(val int64) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectsGoalColumn) Lte(val int64) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectsGoalColumn) Between(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.Between(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectsGoalColumn) NotBetween(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.NotBetween(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectsGoalColumn) In(val []int64) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectsGoalColumn) NotIn(val []int64) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectsCategoryColumn struct {
+	column
+}
+func (c *projectsCategoryColumn) Set(val ProjectCategoryType) SetExpression {
+	return SetExpression{ Name: "category", Value: val }
+}
+func (c *projectsCategoryColumn) Clear() SetExpression {
+	return SetExpression{ Name: "category", Value: nil }
+}
+func (c *projectsCategoryColumn) IsNull() goqu.BooleanExpression {
+	return c.column.i.IsNull()
+}
+func (c *projectsCategoryColumn) IsNotNull() goqu.BooleanExpression {
+	return c.column.i.IsNotNull()
+}
+func (c *projectsCategoryColumn) Eq(val ProjectCategoryType) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectsCategoryColumn) Neq(val ProjectCategoryType) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectsCategoryColumn) In(val []ProjectCategoryType) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectsCategoryColumn) NotIn(val []ProjectCategoryType) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
 type projectsUploadImagesColumn struct {
 	column
 }
@@ -1219,6 +1299,8 @@ type projectsSchema struct {
 	Description projectsDescriptionColumn
 	Story projectsStoryColumn
 	Promises projectsPromisesColumn
+	Goal projectsGoalColumn
+	Category projectsCategoryColumn
 	UploadImages projectsUploadImagesColumn
 	UserId projectsUserIdColumn
 	GeneralSearchVector projectsGeneralSearchVectorColumn
@@ -1236,6 +1318,8 @@ var Projects = &projectsSchema{
 	Description: projectsDescriptionColumn{ column { i: goqu.I("projects.description") } },
 	Story: projectsStoryColumn{ column { i: goqu.I("projects.story") } },
 	Promises: projectsPromisesColumn{ column { i: goqu.I("projects.promises") } },
+	Goal: projectsGoalColumn{ column { i: goqu.I("projects.goal") } },
+	Category: projectsCategoryColumn{ column { i: goqu.I("projects.category") } },
 	UploadImages: projectsUploadImagesColumn{ column { i: goqu.I("projects.upload_images") } },
 	UserId: projectsUserIdColumn{ column { i: goqu.I("projects.user_id") } },
 	GeneralSearchVector: projectsGeneralSearchVectorColumn{ column { i: goqu.I("projects.general_search_vector") } },
@@ -1246,6 +1330,8 @@ var projectsKinds = map[string]NestedKind {
 	"description": NestedKind { Outer: reflect.String, Inner: reflect.Invalid },
 	"story": NestedKind { Outer: reflect.String, Inner: reflect.Invalid },
 	"promises": NestedKind { Outer: reflect.Slice, Inner: reflect.String },
+	"goal": NestedKind { Outer: reflect.Int64, Inner: reflect.Invalid },
+	"category": NestedKind { Outer: reflect.String, Inner: reflect.Invalid },
 }
 
 
@@ -1294,6 +1380,8 @@ type ServerProject struct {
 	Description string
 	Story string
 	Promises []string
+	Goal int64
+	Category ProjectCategoryType
 	UploadImages []string
 	UserId int64
 }
@@ -1303,6 +1391,8 @@ type OwnerPatchProject struct {
 	Description string
 	Story string
 	Promises []string
+	Goal int64
+	Category ProjectCategoryType
 }
 
 type OwnerReadProject struct {
@@ -1312,6 +1402,8 @@ type OwnerReadProject struct {
 	Description string
 	Story string
 	Promises []string
+	Goal int64
+	Category ProjectCategoryType
 	UploadImages []string
 }
 
@@ -1321,7 +1413,289 @@ type PublicReadProject struct {
 	Description string
 	Story string
 	Promises []string
+	Goal int64
+	Category ProjectCategoryType
 	UploadImages []string
+}
+
+type ProjectTagTypes string
+const (
+	YEP ProjectTagTypes = "YEP"
+)
+
+type projectTagsIdColumn struct {
+	column
+}
+func (c *projectTagsIdColumn) IsNull() goqu.BooleanExpression {
+	return c.column.i.IsNull()
+}
+func (c *projectTagsIdColumn) IsNotNull() goqu.BooleanExpression {
+	return c.column.i.IsNotNull()
+}
+func (c *projectTagsIdColumn) Eq(val int64) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectTagsIdColumn) Neq(val int64) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectTagsIdColumn) In(val []int64) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectTagsIdColumn) NotIn(val []int64) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectTagsDateCreatedColumn struct {
+	column
+}
+func (c *projectTagsDateCreatedColumn) Eq(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectTagsDateCreatedColumn) Neq(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectTagsDateCreatedColumn) Gt(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectTagsDateCreatedColumn) Gte(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectTagsDateCreatedColumn) Lt(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectTagsDateCreatedColumn) Lte(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectTagsDateCreatedColumn) Between(startVal time.Time, endVal time.Time) goqu.RangeExpression {
+	return c.column.i.Between(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectTagsDateCreatedColumn) NotBetween(startVal time.Time, endVal time.Time) goqu.RangeExpression {
+	return c.column.i.NotBetween(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectTagsDateCreatedColumn) In(val []time.Time) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectTagsDateCreatedColumn) NotIn(val []time.Time) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectTagsDateUpdatedColumn struct {
+	column
+}
+func (c *projectTagsDateUpdatedColumn) Eq(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectTagsDateUpdatedColumn) Neq(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectTagsDateUpdatedColumn) Gt(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectTagsDateUpdatedColumn) Gte(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectTagsDateUpdatedColumn) Lt(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectTagsDateUpdatedColumn) Lte(val time.Time) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectTagsDateUpdatedColumn) Between(startVal time.Time, endVal time.Time) goqu.RangeExpression {
+	return c.column.i.Between(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectTagsDateUpdatedColumn) NotBetween(startVal time.Time, endVal time.Time) goqu.RangeExpression {
+	return c.column.i.NotBetween(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectTagsDateUpdatedColumn) In(val []time.Time) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectTagsDateUpdatedColumn) NotIn(val []time.Time) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectTagsSlugColumn struct {
+	column
+}
+func (c *projectTagsSlugColumn) Eq(val string) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectTagsSlugColumn) Neq(val string) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectTagsSlugColumn) Gt(val string) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectTagsSlugColumn) Gte(val string) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectTagsSlugColumn) Lt(val string) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectTagsSlugColumn) Lte(val string) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectTagsSlugColumn) In(val []string) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectTagsSlugColumn) NotIn(val []string) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+func (c *projectTagsSlugColumn) Like(val string) goqu.BooleanExpression {
+	return c.column.i.Like(val)
+}
+func (c *projectTagsSlugColumn) NotLike(val string) goqu.BooleanExpression {
+	return c.column.i.NotLike(val)
+}
+func (c *projectTagsSlugColumn) ILike(val string) goqu.BooleanExpression {
+	return c.column.i.ILike(val)
+}
+func (c *projectTagsSlugColumn) NotILike(val string) goqu.BooleanExpression {
+	return c.column.i.NotILike(val)
+}
+
+type projectTagsTagTypeColumn struct {
+	column
+}
+func (c *projectTagsTagTypeColumn) Set(val ProjectTagTypes) SetExpression {
+	return SetExpression{ Name: "tag_type", Value: val }
+}
+func (c *projectTagsTagTypeColumn) Eq(val ProjectTagTypes) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectTagsTagTypeColumn) Neq(val ProjectTagTypes) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectTagsTagTypeColumn) In(val []ProjectTagTypes) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectTagsTagTypeColumn) NotIn(val []ProjectTagTypes) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+type projectTagsProjectIdColumn struct {
+	column
+}
+func (c *projectTagsProjectIdColumn) Set(val int64) SetExpression {
+	return SetExpression{ Name: "project_id", Value: val }
+}
+func (c *projectTagsProjectIdColumn) Eq(val int64) goqu.BooleanExpression {
+	return c.column.i.Eq(val)
+}
+func (c *projectTagsProjectIdColumn) Neq(val int64) goqu.BooleanExpression {
+	return c.column.i.Neq(val)
+}
+func (c *projectTagsProjectIdColumn) Gt(val int64) goqu.BooleanExpression {
+	return c.column.i.Gt(val)
+}
+func (c *projectTagsProjectIdColumn) Gte(val int64) goqu.BooleanExpression {
+	return c.column.i.Gte(val)
+}
+func (c *projectTagsProjectIdColumn) Lt(val int64) goqu.BooleanExpression {
+	return c.column.i.Lt(val)
+}
+func (c *projectTagsProjectIdColumn) Lte(val int64) goqu.BooleanExpression {
+	return c.column.i.Lte(val)
+}
+func (c *projectTagsProjectIdColumn) Between(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.Between(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectTagsProjectIdColumn) NotBetween(startVal int64, endVal int64) goqu.RangeExpression {
+	return c.column.i.NotBetween(goqu.RangeVal{ Start: startVal, End: endVal })
+}
+func (c *projectTagsProjectIdColumn) In(val []int64) goqu.BooleanExpression {
+	return c.column.i.In(val)
+}
+func (c *projectTagsProjectIdColumn) NotIn(val []int64) goqu.BooleanExpression {
+	return c.column.i.NotIn(val)
+}
+
+
+type projectTagsDataset struct {
+	*goqu.Dataset
+}
+
+type projectTagsSchema struct {
+	Table *goqu.Dataset
+	Query *projectTagsDataset
+	Id projectTagsIdColumn
+	DateCreated projectTagsDateCreatedColumn
+	DateUpdated projectTagsDateUpdatedColumn
+	Slug projectTagsSlugColumn
+	TagType projectTagsTagTypeColumn
+	ProjectId projectTagsProjectIdColumn
+}
+
+var ProjectTags = &projectTagsSchema{
+	Table: db.From("project_tags"),
+	Query: &projectTagsDataset{ db.From("project_tags") },
+	Id: projectTagsIdColumn{ column { i: goqu.I("project_tags.id") } },
+	DateCreated: projectTagsDateCreatedColumn{ column { i: goqu.I("project_tags.date_created") } },
+	DateUpdated: projectTagsDateUpdatedColumn{ column { i: goqu.I("project_tags.date_updated") } },
+	Slug: projectTagsSlugColumn{ column { i: goqu.I("project_tags.slug") } },
+	TagType: projectTagsTagTypeColumn{ column { i: goqu.I("project_tags.tag_type") } },
+	ProjectId: projectTagsProjectIdColumn{ column { i: goqu.I("project_tags.project_id") } },
+}
+
+var projectTagsKinds = map[string]NestedKind {
+	"tag_type": NestedKind { Outer: reflect.String, Inner: reflect.Invalid },
+}
+
+
+func (d *projectTagsDataset) Where(expressions ...goqu.Expression) *projectTagsDataset {
+	return &projectTagsDataset{ d.Dataset.Where(expressions...) }
+}
+
+func (d *projectTagsDataset) Select(columns ...DbColumn) *projectTagsDataset {
+	return &projectTagsDataset{ d.Dataset.Select(makeColumns(columns)...) }
+}
+
+func (d *projectTagsDataset) Returning(columns ...DbColumn) *projectTagsDataset {
+	return &projectTagsDataset{ d.Dataset.Returning(makeColumns(columns)...) }
+}
+
+func (d *projectTagsDataset) Update(expressions ...SetExpression) *goqu.CrudExec {
+	return d.Dataset.Update(makeRecord(expressions))
+}
+
+func (d *projectTagsDataset) Insert(expressions ...SetExpression) *goqu.CrudExec {
+	return d.Dataset.Insert(makeRecord(expressions))
+}
+
+func (d *projectTagsDataset) Patch(values map[string]interface{}) *patchExec {
+	var realValues = make(map[string]interface{})
+	for key, value := range values {
+		realValues[strcase.ToSnake(key)] = value
+	}
+
+	p := patchExec{
+		d.Dataset.Update(realValues),
+		validatePatch(&realValues, &projectTagsKinds),
+		realValues,
+	}
+
+	return &p
+}
+
+type ServerProjectTag struct {
+	Id int64
+	DateCreated time.Time
+	DateUpdated time.Time
+	Slug string
+	TagType ProjectTagTypes
+	ProjectId int64
+}
+
+type OwnerPatchProjectTag struct {
+	TagType ProjectTagTypes
+}
+
+type OwnerReadProjectTag struct {
+	Slug string
+	TagType ProjectTagTypes
+}
+
+type PublicReadProjectTag struct {
+	TagType ProjectTagTypes
 }
 
 type ProjectPledgesStateEnum string

@@ -46,7 +46,6 @@ const router = new Router({
 
 		{
 			path: '/projects/create/:projectId',
-			// name: 'projectEdit',
 			component: EditProject,
 			props: true,
 			meta: { private: true },

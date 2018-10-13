@@ -32,12 +32,17 @@ users:
       - name
       - bio
 
+
 projects:
   name: text
   description: text
 
   story: text
   promises: text[]
+  goal: bigint
+
+  category:
+    type: enums.project_category_type
 
   upload_images:
     type: text[]
@@ -54,6 +59,23 @@ projects:
     includes:
       - name
       - description
+
+
+project_tags:
+  url_slug: false
+
+  tag_type:
+    type: enums.project_tag_types
+    required: true
+
+  project_id:
+    type: bigint
+    required: true
+    references: projects(id)
+    server_private: true
+
+  constraints: |
+    CONSTRAINT project_tags_unique_project_tag unique (tag_type, project_id)
 
 
 project_pledges:
@@ -80,6 +102,7 @@ project_pledges:
     default: UNPAID
     required: true
     server_private: true
+
 
 project_confirmations:
   url_slug: false
@@ -117,7 +140,6 @@ project_confirmations:
     type: text
     server_private: true
 
-  # the
   constraints: |
     CONSTRAINT project_confirmations_unique_project_user unique (project_id, user_id),
     check (
@@ -125,6 +147,18 @@ project_confirmations:
     ),
     check (proceed != (char_length(commentary) != 0))
 
+
+enums:
+  - name: project_category_type
+    public: true
+    values:
+      - COMPUTER_HARDWARE
+      - COMPUTER_SOFTWARE
+
+  - name: project_tag_types
+    public: true
+    values:
+      - YEP
 
 
 functions: |
@@ -187,6 +221,7 @@ universal:
 
   slug:
     type: text
+    unique: true
     required: true
     read_only: true
     private: true
@@ -206,6 +241,7 @@ universal:
 
   url_slug:
     type: text
+    unique: true
     required: true
     no_patch: true
     functions: |

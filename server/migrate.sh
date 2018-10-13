@@ -14,6 +14,13 @@ AS \$$
   SELECT id_decode_once(\$1, '$HASHID_SALT', $HASHID_MIN_LENGTH, '$HASHID_ALPHABET');
 \$$ LANGUAGE sql;
 
+CREATE TYPE project_category_type AS ENUM (
+	'COMPUTER_HARDWARE',
+	'COMPUTER_SOFTWARE'
+);
+CREATE TYPE project_tag_types AS ENUM (
+	'YEP'
+);
 CREATE OR REPLACE FUNCTION trigger_set_created() RETURNS TRIGGER
 AS \$$
 BEGIN
@@ -110,6 +117,8 @@ CREATE TABLE projects (
 	description text,
 	story text,
 	promises text[] DEFAULT ARRAY[]::text[] NOT NULL,
+	goal bigint,
+	category project_category_type,
 	upload_images text[] DEFAULT ARRAY[]::text[] NOT NULL,
 	user_id bigint NOT NULL REFERENCES users(id),
 	general_search_vector tsvector
@@ -141,6 +150,33 @@ FOR EACH ROW
 EXECUTE PROCEDURE tsvector_update_trigger(general_search_vector, 'pg_catalog.english', name, description);
 
 CREATE INDEX projects_general_search_vector_idx ON projects USING gin (general_search_vector);
+
+CREATE TABLE project_tags (
+	id serial NOT NULL PRIMARY KEY,
+	date_created timestamptz NOT NULL,
+	date_updated timestamptz NOT NULL,
+	slug text NOT NULL,
+	tag_type project_tag_types NOT NULL,
+	project_id bigint NOT NULL REFERENCES projects(id),
+	CONSTRAINT project_tags_unique_project_tag unique (tag_type, project_id)
+
+);
+
+CREATE TRIGGER set_created_for_project_tags
+BEFORE INSERT ON project_tags
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_created();
+
+CREATE TRIGGER set_updated_for_project_tags
+BEFORE UPDATE ON project_tags
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_updated();
+
+CREATE TRIGGER _1_default_slug_for_project_tags
+BEFORE INSERT ON project_tags
+FOR EACH ROW
+EXECUTE PROCEDURE default_slug();
+
 
 CREATE TABLE project_pledges (
 	id serial NOT NULL PRIMARY KEY,

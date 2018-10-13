@@ -135,11 +135,11 @@ const postgresGoTypeMap = {
 const originalGoTypes = new Set(Object.values(postgresGoTypeMap).map(v => v.goType))
 
 
-
 const modelsManifest = yaml.load(fs.readFileSync('./models.yml'))
 
 const {
 	functions = "",
+	enums: globalEnums = [],
 	universal: rawUniversal = {},
 	...rawTables
 } = modelsManifest
@@ -158,6 +158,40 @@ function reduceFields(fields) {
 
 	return fields.reduce(fieldsReducer, [[], []])
 }
+
+function createPostgresEnum(enumName, enumValues) {
+	return `CREATE TYPE ${enumName} AS ENUM (\n\t${enumValues.map(s => `'${s}'`).join(',\n\t')}\n);`
+}
+
+
+const javascriptConstants = {}
+
+for (const enumObj of globalEnums) {
+	const enumName = enumObj.name
+	const enumValues = enumObj.values
+	globalFunctions.push(createPostgresEnum(enumName, enumValues))
+
+	postgresGoTypeMap[enumName] = {
+		goType: changeCase.pascal(enumName),
+		enumValues,
+		methods: [
+			...equalityMethods,
+			...membershipMethods,
+		],
+		reflect: {
+			outer: 'String',
+		},
+	}
+
+	// if it's public, add it to the javascript constants
+	if (enumObj.public) {
+		javascriptConstants[enumName] = enumValues.map(value => ({
+			value,
+			text: changeCase.titleCase(value),
+		}))
+	}
+}
+
 
 const [universalFields,] = reduceFields(Object.entries(rawUniversal).map(e => processFields(null, e)))
 const tables = []
@@ -221,7 +255,15 @@ function processFields(tableName, [fieldName, rawField]) {
 
 		rawField.server_private = true
 	}
+	else if (field.type.startsWith('enums.')) {
+		const enumName = field.type.slice(6)
+
+		field.type = enumName
+		field.escapeDefault = true
+	}
 	else if (field.type.startsWith('enum')) {
+		// find out if it's marked as public, and if it is push it to the javascript constants
+
 		// this cuts out the enum() portion and just gives us the internal values
 		const enumValues = field.type.slice(5, -1).split(', ')
 
@@ -234,11 +276,14 @@ function processFields(tableName, [fieldName, rawField]) {
 				...equalityMethods,
 				...membershipMethods,
 			],
+			reflect: {
+				outer: 'String',
+			},
 		}
 		field.type = enumName
 		field.escapeDefault = true
 
-		rawField.functions = `CREATE TYPE ${enumName} AS ENUM (\n\t${enumValues.map(s => `'${s}'`).join(',\n\t')}\n);`
+		rawField.functions = createPostgresEnum(enumName, enumValues)
 	}
 	else if (field.type.endsWith('[]')) {
 		// this cuts out the array() portion and just gives us the internal type
@@ -610,3 +655,13 @@ const postgres = {
 
 go.create(tables)
 postgres.create(tables)
+
+const javascriptExports = Object.entries(javascriptConstants).map(([constantName, constantValue]) => {
+	const values = constantValue.map(({ value, text }) => {
+		return `{\n\tvalue: '${value}',\n\ttext: '${changeCase.titleCase(text)}'\n}`
+	}).join(', ')
+
+	return `export const ${changeCase.constant(constantName)} = [${values}]`
+}).join('\n\n')
+
+fs.writeFileSync('../client/constants.js', javascriptExports)

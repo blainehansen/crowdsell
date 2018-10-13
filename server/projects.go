@@ -53,6 +53,24 @@ var _ r = route(GET, "/projects", func(c *gin.Context) {
 })
 
 
+var _ r = authRoute(GET, "/projects/check-url-slug/:urlSlug", func(c *gin.Context) {
+	urlSlug := c.Param("urlSlug")
+
+	count, err := Projects.Query.Where(
+		Projects.UrlSlug.Eq(urlSlug)
+	).Count()
+
+	if err != nil {
+		c.AbortWithError(500, err); return
+	}
+	else if count > 1 {
+		c.AbortWithError(500, fmt.Errorf("a urlSlug count had more than one? %s", urlSlug)); return
+	}
+
+	response := count == 1
+	c.JSON(200, response)
+})
+
 var _ r = authRoute(POST, "/projects", func(c *gin.Context) {
 	userId := c.MustGet("userId").(int64)
 
@@ -60,6 +78,7 @@ var _ r = authRoute(POST, "/projects", func(c *gin.Context) {
 		Name string
 		Description string
 		UrlSlug string
+		Category ProjectCategoryType
 	}{}
 	if err := c.ShouldBindJSON(&project); err != nil {
 		c.AbortWithError(422, err); return
@@ -71,6 +90,7 @@ var _ r = authRoute(POST, "/projects", func(c *gin.Context) {
 		Projects.Description.Set(project.Description),
 		Projects.UrlSlug.Set(project.UrlSlug),
 		Projects.UserId.Set(userId),
+		Projects.Category.Set(project.Category),
 	).ScanVal(&projectSlug)
 	if err != nil {
 		c.AbortWithError(500, err); return

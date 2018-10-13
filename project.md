@@ -1,3 +1,18 @@
+# postgraphile refactor
+
+- simple naming plugin
+- http caching in client
+- http caching in server
+- graphql webpack plugins
+- persisted queries
+- vue cli with apollo vue and typescript
+- argon2 extension
+- --no-ignore-rbac
+
+
+
+
+
 What's the mvp?
 
 People can create (very bare) profiles.

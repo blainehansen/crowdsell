@@ -1,5 +1,4 @@
 import { makeMutations, makeGetters, genericSaveAction } from '@/vuexUtils'
-import { has } from 'lodash'
 
 const touchedKeyManifest = []
 
@@ -8,6 +7,7 @@ const projectState = {
 	description: null,
 	story: null,
 	promises: [],
+	category: null,
 }
 
 const state = {
@@ -15,7 +15,7 @@ const state = {
 	...projectState
 }
 
-import { publicApi } from '@/api'
+import { privateApi } from '@/api'
 
 export default {
 	namespaced: true,
@@ -35,10 +35,10 @@ export default {
 
 	actions: {
 		saveProject: genericSaveAction(touchedKeyManifest, async function({ state, getters, commit }, projectPatches) {
-			const response = await publicApi.saveProject(state.id, projectPatches)
+			const response = await privateApi.saveProject(state.id, projectPatches)
 
-			if (has(response, 'data.id')) {
-				const projectId = response.data.id
+			if (response.data) {
+				const projectId = response.data
 
 				commit('SET_ID', projectId)
 				return projectId

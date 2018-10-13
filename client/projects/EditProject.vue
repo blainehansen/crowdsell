@@ -5,12 +5,12 @@
 		button(v-if="project$anyTouched", @click="saveProject") save project
 		button(v-else, disabled) project saved
 
-	ul.nav.justify-content-center
-		li.nav-item(v-for="componentObject in componentManifest")
-			router-link.nav-link(:to="{ name: componentObject.name }") {{ componentObject.pageName }}
-
-		//- router-link.nav-item(tag="li", :to="{ name: componentObject.name }", v-for="componentObject in componentManifest")
-		//- 	a.nav-link {{ componentObject.pageName }}
+	ul.nav.nav-pills.justify-content-center
+		li.nav-item(
+			v-for="componentObject in componentManifest",
+			:key="componentObject.name",
+		)
+			router-link.nav-link(:to="{ name: componentObject.name }", exact) {{ componentObject.pageName }}
 
 	router-view
 
