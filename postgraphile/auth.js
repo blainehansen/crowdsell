@@ -1,10 +1,8 @@
-const fs = require('fs')
-const environment = require('dotenv').parse(fs.readFileSync('/.env'))
-
 const crypto = require('crypto')
 const base64 = require('base64url')
 const Hashids = require('hashids')
 
+const environment = require('./environment.js')
 
 const hashids = new Hashids(environment.HASHID_SALT, parseInt(environment.HASHID_MIN_LENGTH), environment.HASHID_ALPHABET)
 function decodeHashid(id) {
@@ -34,21 +32,36 @@ module.exports = async function verifyToken(req) {
 	console.log(token)
 
 	const tokenSegments = token.split('.')
-	if (tokenSegments.length !== 2) return [false, 400]
+	if (tokenSegments.length !== 2) return [null, 400]
 	const [proposedEncodedToken, proposedEncodedSignature] = tokenSegments
 
-	const proposedSignature = base64.toBuffer(proposedEncodedSignature)
+	let proposedSignature, actualSignature
+	try {
+		proposedSignature = base64.toBuffer(proposedEncodedSignature)
 
-	const actualSignature = await getHmacBuffer(proposedEncodedToken)
+		actualSignature = await getHmacBuffer(proposedEncodedToken)
+	}
+	catch (e)
+		return [null, 400]
 
-	if (!crypto.timingSafeEqual(actualSignature, proposedSignature)) return [false, 403]
+	if (!crypto.timingSafeEqual(actualSignature, proposedSignature)) return [null, 403]
 
 	// decode the json
-	const decodedToken = JSON.parse(base64.decode(proposedEncodedToken))
+	let decodedToken
+	try
+		decodedToken = JSON.parse(base64.decode(proposedEncodedToken))
+	catch (e)
+		return [null, 500]
 
 	// check the expiration
-	if (decodedToken.e <= unixTime()) return [false, 401]
+	if (decodedToken.e <= unixTime()) return [null, 401]
 
 	// decode the hashid
-	return [true, decodeHashid(decodedToken.i)]
+	let decodedTokenId
+	try
+		decodedTokenId = decodeHashid(decodedToken.i)
+	catch (e)
+		return [null, 500]
+
+	return [decodedTokenId, null]
 }

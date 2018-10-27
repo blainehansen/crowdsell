@@ -1,33 +1,3 @@
-// gets environment
-// const environment = require('./environment.js')
-
-const app = require('express')()
-
-app.use(require('body-parser').json())
-
-// creates postgraphile schema
-const { createPostGraphileSchema } = require('postgraphile-core')
-const PgSimplifyInflectorPlugin = require("@graphile-contrib/pg-simplify-inflector")
-
-// const connectionString = "postgres://postgraphile_user:postgraphile-password@database:5432/dev_database"
-const connectionString = "postgres://user:asdf@database:5432/dev_database"
-
-const graphqlSchema = await createPostGraphileSchema(
-	connectionString,
-	["public"],
-	{
-		dynamicJson: true,
-		appendPlugins: [PgSimplifyInflectorPlugin],
-		ignoreRBAC: false,
-	}
-)
-
-
-// Create a postgres pool for efficiency
-const pg = require("pg")
-const pgPool = new pg.Pool({ connectionString })
-
-// set up query maps
 const { parse: parseGraphql, execute: executeGraphql } = require('graphql')
 
 function reduceQueryMap(intitialQueryMap) {
@@ -40,18 +10,53 @@ function reduceQueryMap(intitialQueryMap) {
 	return queryMap
 }
 
+
 const fs = require('fs')
-const publicQueryMap = reduceQueryMap(JSON.parse(fs.readFileSync('/persisted_public_queries.json')))
-const secureQueryMap = reduceQueryMap(JSON.parse(fs.readFileSync('/persisted_secure_queries.json')))
-const secureMutationMap = reduceQueryMap(JSON.parse(fs.readFileSync('/persisted_secure_mutations.json')))
+const publicQueryMap = reduceQueryMap(JSON.parse(fs.readFileSync('/public-queries.json')))
+const secureQueryMap = reduceQueryMap(JSON.parse(fs.readFileSync('/secure-queries.json')))
+const secureMutationMap = reduceQueryMap(JSON.parse(fs.readFileSync('/secure-mutations.json')))
+
+// const environment = require('./environment.js')
+
+// const connectionString = "postgres://postgraphile_user:postgraphile-password@database:5432/dev_database"
+const connectionString = "postgres://user:asdf@database:5432/dev_database"
+
+// Create a postgres pool for efficiency
+const pg = require("pg")
+const pgPool = new pg.Pool({ connectionString })
+
+let graphqlSchema
 
 
-// sets up a server
+async function main() {
+	// const querystring = require('querystring')
+
+	// creates postgraphile schema
+	const { createPostGraphileSchema } = require('postgraphile-core')
+	const PgSimplifyInflectorPlugin = require("@graphile-contrib/pg-simplify-inflector")
+
+
+	graphqlSchema = await createPostGraphileSchema(
+		connectionString,
+		["public"],
+		{
+			dynamicJson: true,
+			appendPlugins: [PgSimplifyInflectorPlugin],
+			ignoreRBAC: false,
+		}
+	)
+
+	console.log('starting postgraphile')
+	const app = require('express')()
+	app.use(require('body-parser').json())
+	app.use('/graphql/:queryHash', requestHandler)
+	app.listen(5555)
+}
+
+
 const verifyToken = require('./auth.js')
-// const querystring = require('querystring')
 
-
-app.use('/graphql/:queryHash', async (req, res) => {
+async function requestHandler(req, res) {
 	const method = req.method
 
 	if (method === 'OPTIONS') {
@@ -62,10 +67,10 @@ app.use('/graphql/:queryHash', async (req, res) => {
 
 	const queryHash = req.params.queryHash
 
-	let requiresAuth = false
-	let variables
-	let personId
 	let query
+	let personId
+	let variables
+	let requiresAuth = false
 	if (method === 'GET') {
 		variables = req.query
 
@@ -108,9 +113,9 @@ app.use('/graphql/:queryHash', async (req, res) => {
 		+ ';'
 
 	const pgClient = await pgPool.connect()
-	await pgClient.query(contextQuery)
-
 	try {
+		await pgClient.query(contextQuery)
+
 		const { data, errors } = await executeGraphql(
 		  graphqlSchema,
 		  query, // fetched from the query map
@@ -128,14 +133,13 @@ app.use('/graphql/:queryHash', async (req, res) => {
 	}
 	catch (error) {
 		console.error(error)
+		res.end(500)
 	}
 	finally {
 		await pgClient.query('commit')
 		await pgClient.release()
 	}
-})
-
-app.listen(5555)
+}
 
 
 function addCORSHeaders(res) {
@@ -162,3 +166,6 @@ function addCORSHeaders(res) {
     ].join(', '),
   )
 }
+
+
+main()
