@@ -99,7 +99,6 @@ func issueAuthToken(userSlug string) (string, error) {
 	// get tomorrow unix time
 	tomorrow := time.Now().Add(time.Duration(24) * time.Hour).Unix()
 
-
 	// create an authtoken
 	token := AuthToken{ userSlug, tomorrow }
 
@@ -139,6 +138,7 @@ func verifyAuthToken(token string) (int64, string, error) {
 
 	// decode the signature
 	proposedSignature, signatureDecodeError := decodeBase64(proposedEncodedSignature)
+
 	if signatureDecodeError != nil {
 		return 0, "", InvalidTokenError
 	}

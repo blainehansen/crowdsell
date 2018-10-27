@@ -55,10 +55,10 @@ const imagesHttp = axios.create({
 imagesHttp.defaults.headers = cloneDeep(imagesHttp.defaults.headers)
 
 export const imagesApi = {
-	async postFile(fileDataPromise, route, signature, objectName, timestamp, preset, requestConfig = {}) {
+	async postFile(fileSlice, route, signature, objectName, timestamp, preset, requestConfig = {}) {
 		const formData = new FormData()
 		formData.append('api_key', config.CDN_API_KEY)
-		formData.append('file', fileDataPromise)
+		formData.append('file', fileSlice)
 		formData.append('signature', signature)
 		formData.append('public_id', objectName)
 		formData.append('timestamp', timestamp)

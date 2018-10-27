@@ -1,12 +1,12 @@
 # postgraphile refactor
 
+- X argon2 extension
+- vue cli with apollo vue and typescript
 - simple naming plugin
 - http caching in client
 - http caching in server
 - graphql webpack plugins
 - persisted queries
-- vue cli with apollo vue and typescript
-- argon2 extension
 - --no-ignore-rbac
 
 

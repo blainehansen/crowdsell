@@ -29,10 +29,13 @@ yarn-error.log*
 
 
 *.pem
-*.secret
 
 server/vendor
 server-bin
 server/.env
 
 .env.*.sh
+
+
+client/queries/*.json
+.gitsecret/keys/random_seed

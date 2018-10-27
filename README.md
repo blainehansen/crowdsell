@@ -5,6 +5,13 @@
 ## Build Setup
 
 ``` bash
+# make sure you have git secret
+http://git-secret.io/
+
+# pre-commit hooks
+https://www.npmjs.com/package/pre-commit
+
+
 # install dependencies
 npm install
 

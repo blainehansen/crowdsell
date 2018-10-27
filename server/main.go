@@ -108,7 +108,7 @@ var db *goqu.Database = func() *goqu.Database {
 
 	finalDb := goqu.New("postgres", pgDb)
 
-	_, err := finalDb.Exec("SELECT * FROM pg_catalog.pg_tables")
+	_, err := finalDb.Exec("SHOW server_version")
 	if err != nil {
 		fmt.Println("failed to connect to database")
 		panic(err.Error())

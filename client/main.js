@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import App from './App'
+import './registerServiceWorker'
 
 import BootstrapVue from 'bootstrap-vue'
 Vue.use(BootstrapVue)
@@ -15,6 +16,13 @@ Vue.use(AsyncProperties, {
 import store from './vuex'
 import router from './router'
 
+// store.commit('auth/login', {
+// 	token: 'eyJpIjoiWk5XR292UG4iLCJlIjoxNTM5Mzc0Njc1fQ.QfrTb6QH1wYAVbpp5PS5WtPk-G4VbGjDcM449JbM1AQ',
+// 	name: 'dude',
+// 	email: 'dude@gmail.com',
+// 	slug: 'dude',
+// })
+
 import Cookies from 'js-cookie'
 const signedUser = Cookies.getJSON('signedUser')
 if (signedUser) {
@@ -24,12 +32,15 @@ if (signedUser) {
 import { formatProfileImageUrl } from './utils'
 Vue.filter('formatProfileImageUrl', formatProfileImageUrl)
 
+import apolloProvider from './apollo'
+
+
 new Vue({
-	el: '#app',
-	store,
 	router,
+	store,
+	apolloProvider,
 	render: h => h(App)
-})
+}).$mount('#app')
 
 
 // https://forum.vuejs.org/t/how-import-a-cdn-on-vuejs/6824/2

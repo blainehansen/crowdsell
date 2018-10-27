@@ -1,27 +1,40 @@
 version: '3'
 services:
-  go-api:
-    image: go-anywhere:latest
-    container_name: go-api
-    links:
-      - go-database
-    ports:
-      - "5050:5050"
-    tty: true
-    volumes:
-      - .env.dev.sh:/go/src/main/.env
-      - ./server:/go/src/main
-    working_dir: /go/src/main
-    command: reflex -g '*.go' -G '*_test.go' --start-service=true -- sh -c "go run -tags=jsoniter *.go"
-  go-database:
+  # go-api:
+  #   image: go-anywhere
+  #   links:
+  #     - database
+  #   ports:
+  #     - "5050:5050"
+  #   volumes:
+  #     - .env.dev.sh:/go/src/main/.env
+  #     - ./server:/go/src/main
+  #   working_dir: /go/src/main
+  #   command: reflex -g '*.go' -G '*_test.go' --start-service=true -- sh -c "go run -tags=jsoniter *.go"
+  #   tty: true
+
+  database:
     image: postgres-custom
     environment:
       - POSTGRES_DB=dev_database
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=asdf
-    container_name: go-database
     ports:
       - "5432:5432"
-    # volumes:
-    #   - ./server:/server
     command: postgres -c 'max_wal_size=2GB'
+
+  # node:
+  #   image: postgraphile
+  #   links:
+  #     - database
+  #   ports:
+  #     - "5555:5555"
+  #   volumes:
+  #     - .env.dev.sh:/.env
+  #     - ./client/persisted_public_queries.json:/persisted_public_queries.json
+  #     - ./client/persisted_secure_queries.json:/persisted_secure_queries.json
+  #     - ./client/persisted_secure_mutations.json:/persisted_secure_mutations.json
+  #     - ./postgraphile:/postgraphile
+  #   command: node /postgraphile/server.js
+  #   tty: true
+

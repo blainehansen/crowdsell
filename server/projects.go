@@ -57,13 +57,12 @@ var _ r = authRoute(GET, "/projects/check-url-slug/:urlSlug", func(c *gin.Contex
 	urlSlug := c.Param("urlSlug")
 
 	count, err := Projects.Query.Where(
-		Projects.UrlSlug.Eq(urlSlug)
+		Projects.UrlSlug.Eq(urlSlug),
 	).Count()
 
 	if err != nil {
 		c.AbortWithError(500, err); return
-	}
-	else if count > 1 {
+	} else if count > 1 {
 		c.AbortWithError(500, fmt.Errorf("a urlSlug count had more than one? %s", urlSlug)); return
 	}
 
