@@ -1,11 +1,7 @@
-query firstPost {
-  post: postById(id: 1) {
-    title
-  }
-}
-
-query secondPost {
-  post: postById(id: 2) {
-    title
+query firstPeople {
+  people(first: 3) {
+    nodes {
+      slug, name
+    }
   }
 }

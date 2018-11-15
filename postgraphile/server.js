@@ -1,43 +1,62 @@
 const { parse: parseGraphql, execute: executeGraphql } = require('graphql')
 
-function reduceQueryMap(intitialQueryMap) {
-	const queryMap = {}
+function parseQueryMap(queryMap) {
+	const newQueryMap = {}
 
-	for (const [query, hash] of Object.entries(intitialQueryMap)) {
-		queryMap[hash] = parseGraphql(query)
+	for (const [hash, query] of Object.entries(queryMap)) {
+		newQueryMap[hash] = parseGraphql(query)
 	}
 
-	return queryMap
+	return newQueryMap
+}
+
+const fs = require('fs')
+const publicQueryMap = parseQueryMap(JSON.parse(fs.readFileSync('/public-queries.json')))
+const secureQueryMap = parseQueryMap(JSON.parse(fs.readFileSync('/secure-queries.json')))
+const secureMutationMap = parseQueryMap(JSON.parse(fs.readFileSync('/secure-mutations.json')))
+
+console.log(publicQueryMap)
+console.log(secureQueryMap)
+console.log(secureMutationMap)
+
+const environment = require('./environment.js')
+
+function createConnectionString({ user, password, host, port, database }) {
+	return `postgres://${user}:${password}@${host}:${port}/${database}`
+}
+
+const serverConnectionConfig = {
+	host: environment['DOCKER_DATABASE_HOST'],
+	port: environment['DATABASE_PORT'],
+	database: environment['DATABASE_DB_NAME'],
+
+	user: 'postgraphile_server_user',
+	password: environment['POSTGRAPHILE_DATABASE_PASSWORD'],
+}
+
+const inspectConnectionConfig = {
+	...serverConnectionConfig,
+
+	user: 'postgraphile_inspect_user',
+	password: environment['POSTGRAPHILE_INSPECT_DATABASE_PASSWORD'],
 }
 
 
-const fs = require('fs')
-const publicQueryMap = reduceQueryMap(JSON.parse(fs.readFileSync('/public-queries.json')))
-const secureQueryMap = reduceQueryMap(JSON.parse(fs.readFileSync('/secure-queries.json')))
-const secureMutationMap = reduceQueryMap(JSON.parse(fs.readFileSync('/secure-mutations.json')))
-
-// const environment = require('./environment.js')
-
-// const connectionString = "postgres://postgraphile_user:postgraphile-password@database:5432/dev_database"
-const connectionString = "postgres://user:asdf@database:5432/dev_database"
-
 // Create a postgres pool for efficiency
 const pg = require("pg")
-const pgPool = new pg.Pool({ connectionString })
+const pgPool = new pg.Pool({ connectionString: createConnectionString(serverConnectionConfig) })
 
 let graphqlSchema
 
 
 async function main() {
-	// const querystring = require('querystring')
-
 	// creates postgraphile schema
 	const { createPostGraphileSchema } = require('postgraphile-core')
 	const PgSimplifyInflectorPlugin = require("@graphile-contrib/pg-simplify-inflector")
 
 
 	graphqlSchema = await createPostGraphileSchema(
-		connectionString,
+		createConnectionString(inspectConnectionConfig),
 		["public"],
 		{
 			dynamicJson: true,
@@ -48,123 +67,144 @@ async function main() {
 
 	console.log('starting postgraphile')
 	const app = require('express')()
-	app.use(require('body-parser').json())
-	app.use('/graphql/:queryHash', requestHandler)
+
+	app.get(
+		'/graphql/:queryHash',
+		handleOptions,
+		publicRequestHandler,
+	)
+
+	app.use(
+		'/graphql/secure/:queryHash',
+		handleOptions,
+		require('body-parser').json(),
+		secureRequestHandler,
+	)
+
 	app.listen(5555)
 }
 
 
 const verifyToken = require('./auth.js')
 
-async function requestHandler(req, res) {
-	const method = req.method
-
-	if (method === 'OPTIONS') {
-		res.header('Access-Control-Max-Age', 86400)
-		addCORSHeaders(res)
-		return res.end()
-	}
+async function publicRequestHandler(req, res) {
+	// can only handle gets
+	if (req.method !== 'GET') return res.status(405).end()
 
 	const queryHash = req.params.queryHash
-
-	let query
-	let personId
-	let variables
-	let requiresAuth = false
-	if (method === 'GET') {
-		variables = req.query
-
-		query = publicQueryMap[queryHash]
-		if (!query) {
-			requiresAuth = true
-			query = secureQueryMap[queryHash]
-			if (!query) return res.end(404)
-		}
-	}
-	else if (method === 'POST') {
-		variables = req.body.variables
-
-		requiresAuth = true
-		query = secureMutationMap[queryHash]
-		if (!query) return res.end(404)
-	}
-	else
-		return res.end(405)
-
-	if (requiresAuth) {
-		const [verifiedPersonId, statusCode] = verifyToken(req)
-		if (statusCode) return res.end(statusCode)
-
-		personId = verifiedPersonId
+	const query = publicQueryMap[queryHash]
+	if (!query) {
+		console.error('404: ', queryHash)
+		return res.status(404).end()
 	}
 
+	const variables = req.query
 
-	const role = personId
-		? 'anonymous_user'
-		: 'logged_in_user'
-
-	const personIdFragment = personId
-		? `, set_config('jwt.claims.person_id', ${personId}, true)`
-		: ''
-
-	const contextQuery = 'begin; '
-		+ `select set_config('role', '${role}', true)`
-		+ personIdFragment
-		+ ';'
-
-	const pgClient = await pgPool.connect()
-	try {
-		await pgClient.query(contextQuery)
-
-		const { data, errors } = await executeGraphql(
-		  graphqlSchema,
-		  query, // fetched from the query map
-		  null,
-		  { pgClient },
-		  variables,
-		  null,
-		)
-
-		console.log(data)
-		console.log(errors)
-
-		// do something to end
-		return res.json(data)
-	}
-	catch (error) {
-		console.error(error)
-		res.end(500)
-	}
-	finally {
-		await pgClient.query('commit')
-		await pgClient.release()
-	}
+	return await handleQuery(res, query, variables, false)
 }
 
 
-function addCORSHeaders(res) {
-  // res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080')
-  // res.setHeader('Access-Control-Allow-Methods', 'HEAD, GET, POST')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST')
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    [
-      'Origin',
-      'X-Requested-With',
-      // Used by `express-graphql` to determine whether to expose the GraphiQL
-      // interface (`text/html`) or not.
-      'Accept',
-      // Used by PostGraphile for auth purposes.
-      'Authorization',
-      // Used by GraphQL Playground and other Apollo-enabled servers
-      'X-Apollo-Tracing',
-      // The `Content-*` headers are used when making requests with a body,
-      // like in a POST request.
-      'Content-Type',
-      'Content-Length',
-    ].join(', '),
-  )
+async function secureRequestHandler(req, res) {
+	const queryHash = req.params.queryHash
+
+	let query
+	let variables
+	let isPatch = false
+	switch (req.method) {
+		case 'GET':
+			variables = req.query
+
+			query = secureQueryMap[queryHash]
+			if (!query) return res.status(404).end()
+			break
+
+		case 'PATCH':
+			isPatch = true
+		case 'POST':
+			variables = req.body.variables
+			query = secureMutationMap[queryHash]
+			if (!query) return res.status(404).end()
+			break
+
+		default:
+			return res.status(405).end()
+	}
+
+	const [personId, statusCode] = verifyToken(req)
+	if (statusCode) return res.status(statusCode).end()
+
+	return await handleQuery(res, query, variables, isPatch, personId)
+}
+
+async function handleQuery(res, query, variables, isPatch, personId = undefined) {
+	const contextQuery = personId
+		? `begin; select set_config('role', 'postgraphile_known_user', true), set_config('jwt.claims.person_id', ${personId}, true)`
+		: null
+
+	let data, errors
+	const pgClient = await pgPool.connect()
+	try {
+		if (contextQuery) await pgClient.query(contextQuery)
+
+		const { data: requestData, errors: requestErrors = [] } = await executeGraphql(
+			graphqlSchema,
+			query, // fetched from the query map
+			null,
+			{ pgClient },
+			variables,
+			null,
+		)
+
+		data = requestData
+		errors = requestErrors
+	}
+	catch (error) {
+		errors = [error]
+	}
+	finally {
+		if (contextQuery) await pgClient.query('commit')
+		await pgClient.release()
+	}
+
+	if (errors.length > 0) {
+		console.error(errors)
+		return res.status(500).end()
+	}
+	else {
+		if (isPatch) res.status(204).end()
+		else return res.json(data)
+	}
+
+}
+
+
+function handleOptions(req, res, next) {
+	// if (req.method !== 'OPTIONS') return next()
+
+	res.header('Access-Control-Max-Age', 86400)
+
+	res.setHeader('Access-Control-Allow-Origin', '*')
+	res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, HEAD, GET, POST, PATCH')
+	res.setHeader(
+		'Access-Control-Allow-Headers',
+		[
+			'Origin',
+			'X-Requested-With',
+			// Used by `express-graphql` to determine whether to expose the GraphiQL
+			// interface (`text/html`) or not.
+			'Accept',
+			// Used by PostGraphile for auth purposes.
+			'Authorization',
+			// // Used by GraphQL Playground and other Apollo-enabled servers
+			// 'X-Apollo-Tracing',
+			// The `Content-*` headers are used when making requests with a body,
+			// like in a POST request.
+			'Content-Type',
+			'Content-Length',
+		].join(', '),
+	)
+
+	return next()
 }
 
 

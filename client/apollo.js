@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import VueApollo from 'vue-apollo'
 
 import { ApolloClient } from 'apollo-client'
 
@@ -6,9 +7,10 @@ import { HttpLink } from 'apollo-link-http'
 import { ApolloLink, split } from 'apollo-link'
 
 import { InMemoryCache } from 'apollo-cache-inmemory'
-import VueApollo from 'vue-apollo'
 
-const queryMap = require('@/persisted_queries.json')
+const publicQueryMap = require('@/queries/public-queries.json')
+const secureQueryMap = require('@/queries/secure-queries.json')
+const mutationMap = require('@/queries/secure-mutations.json')
 
 import querystring from 'querystring'
 
@@ -62,7 +64,7 @@ const link = ApolloLink.from([
 
 	new HttpLink({
 		// You should use an absolute URL here
-		uri: 'http://localhost:5050/graphql',
+		uri: 'http://localhost:5555/graphql',
 		useGETForQueries: true,
 		fetch: customFetch,
 	}),

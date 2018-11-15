@@ -1,6 +1,8 @@
 export default {
 	API_URL: process.env.API_URL,
 
+	GQL_API_URL: process.env.GQL_API_URL,
+
 	CDN_API_ENDPOINT: process.env.CDN_API_ENDPOINT,
 	CDN_API_KEY: process.env.CDN_API_KEY,
 	CDN_API_SECRET: process.env.CDN_API_SECRET,

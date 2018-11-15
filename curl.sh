@@ -1,4 +1,4 @@
-AUTH='Authorization: eyJpIjoiWk5XR292UG4iLCJlIjoxNTQwNzA5MzY0fQ.kWXdrzdfPEkL19-HLb1cV52Nodvz4StGlh5zH39ssz4'
+AUTH='Authorization: eyJpIjoiZ214Ymtud2UiLCJlIjoxNTQyMjQxNTM4fQ.Oz0UFQnjsHYqhtSlEaQRX2J46zb9h2R7G1AGPwgMrp0'
 JSON='Content-Type: application/json'
 SERVER='http://localhost:5050'
 GRAPHILE='http://localhost:5555'
@@ -10,7 +10,7 @@ GRAPHILE='http://localhost:5555'
 # curl -X POST $SERVER/login \
 # 	-d '{"email": "dude@gmail.com", "password": "pass"}'
 
-curl $GRAPHILE/graphql/FykmbGi6zUTHDLLffYX8H1IckNXUksfAT1edmghY5pg
+curl $GRAPHILE/graphql/Or27CPXH319u1hnCSF5ck0nTVMXBYfHztg4TbB2AG4Y
 
 # curl -X POST $SERVER/secure/projects -H "$AUTH" -H "$JSON" \
 # 	-d '{"name": "Dude Stuff", "description": "Various Dude Stuff"}'

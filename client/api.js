@@ -13,12 +13,19 @@ publicHttp.defaults.headers = cloneDeep(publicHttp.defaults.headers)
 export const privateHttp = axios.create({ baseURL: config.API_URL + '/secure' })
 privateHttp.defaults.headers = cloneDeep(privateHttp.defaults.headers)
 
+export const publicGqlHttp = axios.create({ baseURL: config.GQL_API_URL })
+export const privateGqlHttp = axios.create({ baseURL: config.GQL_API_URL + '/secure' })
+
+import publicQueries from '@/queries/public-queries.gql'
+// import secureQueries from '@/queries/secure-queries.gql'
+// import secureMutations from '@/queries/secure-mutations.gql'
 
 
 export const publicApi = {
 	login: (email, password) => publicHttp.post('/login', { email, password }),
 	createUser: (name, email, password) => publicHttp.post('/create-user', { name, email, password }),
-	getProjects: () => publicHttp.get('/projects'),
+	getPeople: () => publicGqlHttp.get(publicQueries.firstPeople)
+	// getProjects: () => publicGqlHttp.get(publicQueries.),
 
 	// getProjectById: (projectId) => publicHttp.get(`/projects/${projectId}`)
 	// getProjectBySlug: (projectSlug) => publicHttp.get(`/projects/${projectId}`)
@@ -123,22 +130,22 @@ export const imagesApi = {
 		return this.postFile(file, route, signature, objectName, timestamp, preset, requestConfig)
 	},
 
-	async uploadProfileImage(file) {
-		const { data: { signature, objectName, timestamp } } = await privateApi.fetchProfileUploadSignature(signature, objectName, timestamp)
+	// async uploadProfileImage(file) {
+	// 	const { data: { signature, objectName, timestamp } } = await privateApi.fetchProfileUploadSignature(signature, objectName, timestamp)
 
-		const response = await this.uploadFile(
-			file,
-			config.CDN_API_IMAGES_ROUTE,
-			signature,
-			objectName,
-			timestamp,
-			config.CDN_API_PROFILE_IMAGES_PRESET,
-		)
+	// 	const response = await this.uploadFile(
+	// 		file,
+	// 		config.CDN_API_IMAGES_ROUTE,
+	// 		signature,
+	// 		objectName,
+	// 		timestamp,
+	// 		config.CDN_API_PROFILE_IMAGES_PRESET,
+	// 	)
 
-		await privateApi.confirmProfileUpload(signature, timestamp, version.toString())
+	// 	await privateApi.confirmProfileUpload(signature, timestamp, version.toString())
 
-		return version
-	},
+	// 	return version
+	// },
 
 	async uploadProjectImage(file, objectName, signature, timestamp, progressFunction) {
 		const { data: { version } } = await this.uploadFile(

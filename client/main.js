@@ -32,13 +32,13 @@ if (signedUser) {
 import { formatProfileImageUrl } from './utils'
 Vue.filter('formatProfileImageUrl', formatProfileImageUrl)
 
-import apolloProvider from './apollo'
+// import apolloProvider from './apollo'
 
 
 new Vue({
 	router,
 	store,
-	apolloProvider,
+	// apolloProvider,
 	render: h => h(App)
 }).$mount('#app')
 

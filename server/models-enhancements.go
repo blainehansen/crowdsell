@@ -88,18 +88,20 @@ func makeColumns(columns []DbColumn) []interface{} {
 }
 
 
+// type TransactionDataset struct {
+// 	goqu.Dataset
+// 	id int64
+// }
 
-// func (d *SafeDataset) InsertStruct(insert interface{}) *goqu.CrudExec {
-// 	if !structs.IsStruct(insert) {
-// 		panic("InsertStruct was not passed a struct: %T", insert)
-// 	}
+// func (d *TransactionDataset) WithId(id int64) {
+// 	d.id = id
+// 	return d
+// }
 
-// 	values := make(map[string]interface{})
-// 	for _, field := range structs.Fields(server) {
-// 		values[field.Name()] = field.Value()
-// 	}
+// func (d *TransactionDataset) ScanVal(v interface{}) {
+// 	d.Dataset.
 
-// 	return d.Dataset.Insert(values)
+// 	d.Dataset.ScanVal()
 // }
 
 

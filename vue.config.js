@@ -21,9 +21,7 @@ module.exports = {
 			rules: [
 				{
 					test: /\.gql$/,
-					use: [
-						'graphql-tag/loader',
-					]
+					use: './client/queries/gql-loader.js',
 				},
 			]
 		},

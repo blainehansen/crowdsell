@@ -96,8 +96,8 @@ var db *goqu.Database = func() *goqu.Database {
 			environment["DOCKER_DATABASE_HOST"],
 			environment["DATABASE_PORT"],
 			environment["DATABASE_DB_NAME"],
-			environment["DATABASE_USER"],
-			environment["DATABASE_PASSWORD"],
+			"golang_server_user",
+			environment["GOLANG_DATABASE_PASSWORD"],
 			environment["DATABASE_SSL"],
 		),
 	)

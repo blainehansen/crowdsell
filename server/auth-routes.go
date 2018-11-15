@@ -38,8 +38,11 @@ var _ r = route(POST, "/create-user", func(c *gin.Context) {
 	}
 
 	var userSlug string
-	found, err := Users.Query.Returning(Users.Slug).Insert(
-		Users.Name.Set(newUser.Name), Users.Email.Set(newUser.Email), Users.Password.Set(hashedPassword),
+	// found, err := Users.Query.Returning(Users.Slug).Insert(
+	// 	Users.Name.Set(newUser.Name), Users.Email.Set(newUser.Email), Users.Password.Set(hashedPassword),
+	// ).ScanVal(&userSlug)
+	found, err := db.From("person").Returning(goqu.I("slug")).Insert(
+		goqu.Record{ "name": newUser.Name, "email": newUser.Email, "password": hashedPassword },
 	).ScanVal(&userSlug)
 	if err != nil {
 		c.AbortWithError(500, err); return

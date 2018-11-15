@@ -1,21 +1,16 @@
 const fs = require('fs')
-const crypto = require('crypto')
-const base64 = require('base64url')
+const loaderFunction = require('./client/queries/gql-loader.js')
 
 const fileBases = ['public-queries', 'secure-queries', 'secure-mutations']
 
 for (const fileBase of fileBases) {
-	const fileName = `./client/queries/${fileBase}.json`
+	// go through the graphql source files
+	const sourceFilename = `./client/queries/${fileBase}.gql`
+	// get the source
+	const source = fs.readFileSync(sourceFilename, 'utf8')
+	// pass it to the loader with the file name
+	const finalString = loaderFunction(source, true)
 
-	const persistedQueries = JSON.parse(fs.readFileSync(fileName))
-
-	const queryMap = {}
-	for (const key of Object.keys(persistedQueries)) {
-		const hash = base64.encode(crypto.createHash('sha256').update(key, 'utf8').digest())
-		queryMap[key] = hash
-	}
-
-	fs.writeFileSync(fileName, JSON.stringify(queryMap))
+	const targetFilename = `./client/queries/${fileBase}.json`
+	fs.writeFileSync(targetFilename, finalString)
 }
-
-

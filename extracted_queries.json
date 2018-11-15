@@ -1,1 +1,0 @@
-{"mutation CreateProject($input: CreateProjectInput!) {\n  createProject(input: $input) {\n    project {\n      id\n    }\n  }\n}\n":1}

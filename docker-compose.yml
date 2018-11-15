@@ -1,17 +1,17 @@
 version: '3'
 services:
-  go-api:
-    image: go-anywhere
-    links:
-      - database
-    ports:
-      - "5050:5050"
-    volumes:
-      - .env.dev.sh:/go/src/main/.env
-      - ./server:/go/src/main
-    working_dir: /go/src/main
-    command: reflex -g '*.go' -G '*_test.go' --start-service=true -- sh -c "go run -tags=jsoniter *.go"
-    tty: true
+  # go-api:
+  #   image: go-anywhere
+  #   links:
+  #     - database
+  #   ports:
+  #     - "5050:5050"
+  #   volumes:
+  #     - .env.dev.sh:/go/src/main/.env
+  #     - ./server:/go/src/main
+  #   working_dir: /go/src/main
+  #   command: reflex -g '*.go' -G '*_test.go' --start-service=true -- sh -c "go run -tags=jsoniter *.go"
+  #   tty: true
 
   database:
     image: postgres-custom
@@ -37,4 +37,3 @@ services:
       - ./postgraphile:/postgraphile
     command: node /postgraphile/server.js
     tty: true
-

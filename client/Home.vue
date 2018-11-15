@@ -3,6 +3,10 @@
 #home
 	h1 Welcome
 
+	div(v-for="person in people")
+		p {{ person.slug }}
+		p {{ person.name }}
+
 	//- MarkdownEditor(
 	//- 	initialMarkdown="**hello**",
 	//- 	mode="all",
@@ -37,11 +41,19 @@
 <script>
 // import MarkdownEditor from '@/components/MarkdownEditor'
 
-import { privateApi, imagesApi } from '@/api'
-import { sampleHashFile } from '@/utils'
+// import { privateApi, publicApi, imagesApi } from '@/api'
+import { publicApi } from '@/api'
+// import { sampleHashFile } from '@/utils'
 
 export default {
 	name: 'home',
+
+	asyncData: {
+		people: {
+			get: publicApi.getPeople,
+			transform: (response) => response.data.people.nodes,
+		}
+	},
 
 	// components: {
 	// 	MarkdownEditor,
