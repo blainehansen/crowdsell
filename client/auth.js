@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie'
-import { privateHttp } from '@/api'
+import { secureGolangHttp, secureGqlHttp } from '@/api'
 
 function decodeToken(token) {
 	const segments = token.split('.')
@@ -42,14 +42,16 @@ export default {
 			state.token = token
 			// TODO perhaps this should store some of this in the user module?
 			state.user = { name, email, slug }
-			privateHttp.defaults.headers.common['Authorization'] = token
+			secureGolangHttp.defaults.headers['Authorization'] = token
+			secureGqlHttp.defaults.headers['Authorization'] = token
 			Cookies.set('signedUser', signedUser)
 		},
 
 		logout(state) {
 			state.token = null
 			state.user = null
-			delete privateHttp.defaults.headers['Authorization']
+			delete secureGolangHttp.defaults.headers['Authorization']
+			delete secureGqlHttp.defaults.headers['Authorization']
 			Cookies.remove('signedUser')
 		},
 

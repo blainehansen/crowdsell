@@ -4,7 +4,7 @@ create type project_category_type as enum (
 );
 
 create table project (
-	id bigint not null primary key default random_big_int(),
+	id uuid primary key default gen_random_uuid(),
 	date_created timestamptz not null,
 	date_updated timestamptz not null,
 
@@ -32,14 +32,14 @@ create policy select_project on project for select
 grant insert, update (slug, title, description, story, promises, category, goal, upload_images)
 	on table project to postgraphile_known_user;
 create policy insert_project on project for insert to postgraphile_known_user
-	with check (person_id = current_setting('jwt.claims.id')::integer);
+	with check (person_id = current_person_id());
 create policy update_project on project for update to postgraphile_known_user
-	using (person_id = current_setting('jwt.claims.id')::integer);
+	using (person_id = current_person_id());
 
 grant delete
 	on table project to postgraphile_known_user;
 create policy delete_project on project for delete to postgraphile_known_user
-	using (person_id = current_setting('jwt.claims.id')::integer);
+	using (person_id = current_person_id());
 
 
 
@@ -134,13 +134,13 @@ create index project_general_search_vector_idx on project using gin (general_sea
 --   using (true);
 
 -- create policy insert_project_pledge on project_pledge for insert to postgraphile_known_user
---   with check (person_id = current_setting('jwt.claims.id')::integer);
+--   with check (person_id = current_person_id());
 
 -- create policy update_project_pledge on project_pledge for update to postgraphile_known_user
---   using (person_id = current_setting('jwt.claims.id')::integer);
+--   using (person_id = current_person_id());
 
 -- create policy delete_project_pledge on project_pledge for delete to postgraphile_known_user
---   using (person_id = current_setting('jwt.claims.id')::integer);
+--   using (person_id = current_person_id());
 
 
 

@@ -9,5 +9,6 @@ RUN npm install base64url
 RUN npm install body-parser
 RUN npm install postgraphile-core
 RUN npm install @graphile-contrib/pg-simplify-inflector
+RUN npm install -g nodemon
 
 # sudo docker build -f Dockerfile-postgraphile-node -t postgraphile .

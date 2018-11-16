@@ -1,5 +1,5 @@
 import { makeMutations, makeGetters, genericSaveAction } from '@/vuexUtils'
-import { privateApi } from '@/api'
+import { secureApi } from '@/api'
 
 const touchedKeyManifest = []
 
@@ -39,13 +39,13 @@ export default {
 			// TODO perhaps this should be stored in localstorage?
 			if (state.$fetched) return
 
-			const { data: fullUser } = await privateApi.fetchFullUser(getters['auth/userSlug'])
+			const { data: fullUser } = await secureApi.fetchFullUser(getters['auth/userSlug'])
 
 			commit('SET_FULL_USER', fullUser)
 		},
 
 		saveUser: genericSaveAction(touchedKeyManifest, async function({ state, getters, commit }, userPatches) {
-			await privateApi.saveUser(userPatches)
+			await secureApi.saveUser(userPatches)
 		}),
 	}
 }

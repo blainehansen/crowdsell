@@ -35,16 +35,15 @@ export function sampleHashFile(file) {
 }
 
 
-import config from '@/config'
 import store from '@/vuex'
 
 export function formatSpacesUrl(inputUrl) {
-	return `https://${config.SPACES_BUCKET_NAME}.${config.CDN_BASENAME}/${inputUrl}`
+	return `https://${process.env.SPACES_BUCKET_NAME}.${process.env.CDN_BASENAME}/${inputUrl}`
 }
 
 
 export function formatProfileImageUrl(version) {
 	const userId = store.getters['auth/userId']
 
-	return `${config.CDN_ENDPOINT}${config.CDN_IMAGES_ROUTE}/v${version}/profile-images/${userId}.png`
+	return `${process.env.CDN_ENDPOINT}${process.env.CDN_IMAGES_ROUTE}/v${version}/profile-images/${userId}.png`
 }

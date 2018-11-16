@@ -26,10 +26,6 @@ module.exports = {
 			]
 		},
 
-		externals: {
-			promisepay: 'promisepay',
-		},
-
 		plugins: [
 			new Dotenv({
 				path: process.env.NODE_ENV === 'production'

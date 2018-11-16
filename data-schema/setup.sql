@@ -20,28 +20,12 @@ grant golang_known_user to golang_server_user;
 grant usage on schema public to postgraphile_server_user, postgraphile_known_user, golang_server_user, golang_known_user;
 
 
-
-create or replace function random_big_int() returns bigint
+create or replace function current_person_id() returns uuid
 as $$
 begin
-	return (random() * 9223372036854775807)::bigint;
+	return current_setting('jwt.claims.id')::uuid
 end;
 $$ language plpgsql;
-
-
-
--- create extension pg_hashids;
-
--- create or replace function hashid(bigint) returns text
--- as $$
--- 	-- select id_encode($1, '$hashid_salt', $hashid_min_length, '$hashid_alphabet');
--- 	select id_encode($1, '$hashid_salt', 8, 'abcdefghijklmnopqrstuvwxyz');
--- $$ language sql;
-
--- create or replace function unhashid(text) returns bigint
--- as $$
--- 	select id_decode_once($1, '$hashid_salt', 8, 'abcdefghijklmnopqrstuvwxyz');
--- $$ language sql;
 
 
 create or replace function trigger_set_created() returns trigger
@@ -68,11 +52,3 @@ begin
 	return new;
 end;
 $$ language plpgsql;
-
--- create or replace function default_url_slug() returns trigger
--- as $$
--- begin
--- 	new.url_slug := new.slug;
--- 	return new;
--- end;
--- $$ language plpgsql;

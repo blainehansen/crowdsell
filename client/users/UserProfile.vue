@@ -41,7 +41,7 @@
 
 
 <script>
-import { privateApi, imagesApi } from '@/api'
+import { secureApi, imagesApi } from '@/api'
 import { sampleHashFile } from '@/utils'
 import { call, get, sync } from 'vuex-pathify'
 
@@ -66,7 +66,7 @@ export default {
 
 	methods: {
 		async changeSlug(newSlug) {
-			const { data: signedUser }= await privateApi.changeSlug(newSlug)
+			const { data: signedUser }= await secureApi.changeSlug(newSlug)
 			this.$store.commit('auth/login', signedUser)
 		},
 

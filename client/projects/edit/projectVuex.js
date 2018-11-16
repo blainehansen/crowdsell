@@ -15,7 +15,7 @@ const state = {
 	...projectState
 }
 
-import { privateApi } from '@/api'
+import { secureApi } from '@/api'
 
 export default {
 	namespaced: true,
@@ -35,7 +35,7 @@ export default {
 
 	actions: {
 		saveProject: genericSaveAction(touchedKeyManifest, async function({ state, getters, commit }, projectPatches) {
-			const response = await privateApi.saveProject(state.id, projectPatches)
+			const response = await secureApi.saveProject(state.id, projectPatches)
 
 			if (response.data) {
 				const projectId = response.data

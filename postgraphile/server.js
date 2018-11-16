@@ -15,10 +15,6 @@ const publicQueryMap = parseQueryMap(JSON.parse(fs.readFileSync('/public-queries
 const secureQueryMap = parseQueryMap(JSON.parse(fs.readFileSync('/secure-queries.json')))
 const secureMutationMap = parseQueryMap(JSON.parse(fs.readFileSync('/secure-mutations.json')))
 
-console.log(publicQueryMap)
-console.log(secureQueryMap)
-console.log(secureMutationMap)
-
 const environment = require('./environment.js')
 
 function createConnectionString({ user, password, host, port, database }) {
@@ -50,6 +46,8 @@ let graphqlSchema
 
 
 async function main() {
+	await new Promise(r => setTimeout(r, 1000))
+
 	// creates postgraphile schema
 	const { createPostGraphileSchema } = require('postgraphile-core')
 	const PgSimplifyInflectorPlugin = require("@graphile-contrib/pg-simplify-inflector")
@@ -141,12 +139,12 @@ async function handleQuery(res, query, variables, isPatch, personId = undefined)
 		? `begin; select set_config('role', 'postgraphile_known_user', true), set_config('jwt.claims.person_id', ${personId}, true)`
 		: null
 
-	let data, errors
-	const pgClient = await pgPool.connect()
+	let pgClient, data, errors
 	try {
+		pgClient = await pgPool.connect()
 		if (contextQuery) await pgClient.query(contextQuery)
 
-		const { data: requestData, errors: requestErrors = [] } = await executeGraphql(
+		const { data: requestData, errors: requestErrors } = await executeGraphql(
 			graphqlSchema,
 			query, // fetched from the query map
 			null,
@@ -166,7 +164,7 @@ async function handleQuery(res, query, variables, isPatch, personId = undefined)
 		await pgClient.release()
 	}
 
-	if (errors.length > 0) {
+	if (errors && errors.length > 0) {
 		console.error(errors)
 		return res.status(500).end()
 	}
@@ -179,8 +177,6 @@ async function handleQuery(res, query, variables, isPatch, personId = undefined)
 
 
 function handleOptions(req, res, next) {
-	// if (req.method !== 'OPTIONS') return next()
-
 	res.header('Access-Control-Max-Age', 86400)
 
 	res.setHeader('Access-Control-Allow-Origin', '*')
@@ -204,7 +200,8 @@ function handleOptions(req, res, next) {
 		].join(', '),
 	)
 
-	return next()
+	if (req.method === 'OPTIONS') return res.end()
+	else return next()
 }
 
 

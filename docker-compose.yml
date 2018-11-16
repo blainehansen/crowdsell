@@ -14,7 +14,7 @@ services:
   #   tty: true
 
   database:
-    image: postgres-custom
+    image: postgres:10-alpine
     environment:
       - POSTGRES_DB=dev_database
       - POSTGRES_USER=user
@@ -35,5 +35,5 @@ services:
       - ./client/queries/secure-queries.json:/secure-queries.json
       - ./client/queries/secure-mutations.json:/secure-mutations.json
       - ./postgraphile:/postgraphile
-    command: node /postgraphile/server.js
+    command: nodemon --watch /postgraphile /postgraphile/server.js
     tty: true

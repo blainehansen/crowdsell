@@ -1,5 +1,5 @@
 create table person (
-	id bigint not null primary key default random_big_int(),
+	id uuid primary key default gen_random_uuid(),
 	date_created timestamptz not null,
 	date_updated timestamptz not null,
 
@@ -29,11 +29,11 @@ create policy pg_select_person on person for select
 grant update (name, bio, location, links)
 	on table person to postgraphile_known_user;
 create policy pg_update_person on person for update to postgraphile_known_user
-	using (id = current_setting('jwt.claims.id')::integer);
+	using (id = current_person_id());
 
 -- grant delete on table person to postgraphile_known_user;
 -- create policy delete_person on person for delete to postgraphile_known_user
---   using (id = current_setting('jwt.claims.id')::integer);
+--   using (id = current_person_id());
 
 
 grant select (id, slug, email, password) on table person to golang_server_user;
@@ -70,7 +70,7 @@ create index person_general_search_vector_idx on person using gin (general_searc
 -- as $$
 --   select *
 --   from person
---   where id = current_setting('jwt.claims.id')::integer
+--   where id = current_person_id()
 -- $$ language sql stable;
 
 -- grant execute on function current_person() to postgraphile_server_user, postgraphile_known_user;
