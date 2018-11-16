@@ -8,9 +8,10 @@
 		"hide"
 	],
 	"scripts": {
+		"get-promisepay": "wget -O client/libs/prelive-promisepay.js https://js.prelive.promisepay.com/PromisePay.js && wget -O client/libs/promisepay.js https://js.promisepay.com/PromisePay.js",
 		"hide": "git secret hide",
 		"serve": "npm run persist && vue-cli-service serve",
-		"build": "npm run persist && vue-cli-service build",
+		"build": "npm run get-promisepay && npm run persist && vue-cli-service build",
 		"lint": "vue-cli-service lint",
 		"persist": "node ./persist.js"
 	},

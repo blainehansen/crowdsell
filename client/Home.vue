@@ -4,10 +4,8 @@
 	h1 Welcome
 
 	MarkdownEditor(
-		initialMarkdown="**hello**",
-		mode="all",
-		:textareaConfig="{name: 'my-textarea'}",
-		@contentChangeMarkdown="markdownChangedHandler",
+		v-model="content",
+		mode="prosemirror",
 	)
 
 </template>
@@ -20,6 +18,12 @@ export default {
 
 	components: {
 		MarkdownEditor,
+	},
+
+	data() {
+		return {
+			content: '**hello**'
+		}
 	},
 }
 </script>

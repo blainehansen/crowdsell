@@ -44,7 +44,7 @@ export default {
 			commit('SET_FULL_USER', fullUser)
 		},
 
-		saveUser: genericSaveAction(touchedKeyManifest, async function({ state, getters, commit }, userPatches) {
+		saveUser: genericSaveAction(touchedKeyManifest, async function(_context, userPatches) {
 			await secureApi.saveUser(userPatches)
 		}),
 	}

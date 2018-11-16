@@ -7,7 +7,7 @@ import Login from '@/Login'
 // import ProjectsIndex from '@/projects/ProjectsIndex'
 import CreateProject from '@/projects/CreateProject'
 import EditProject from '@/projects/EditProject'
-import Project from '@/projects/Project'
+// import Project from '@/projects/Project'
 
 import editProjectSteps from '@/projects/edit'
 

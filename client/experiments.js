@@ -40,10 +40,6 @@
 	// 		console.log(version)
 	// 	},
 
-	// 	markdownChangedHandler(...args) {
-	// 		console.log(args)
-	// 	},
-
 	// 	async acceptFiles(event) {
 	// 		const eventFiles = event.target.files
 	// 		const fileHashes = []

@@ -42,7 +42,7 @@
 
 <script>
 import { secureApi, imagesApi } from '@/api'
-import { sampleHashFile } from '@/utils'
+// import { sampleHashFile } from '@/utils'
 import { call, get, sync } from 'vuex-pathify'
 
 export default {

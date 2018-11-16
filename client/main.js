@@ -38,6 +38,3 @@ new Vue({
 	store,
 	render: h => h(App)
 }).$mount('#app')
-
-
-// https://forum.vuejs.org/t/how-import-a-cdn-on-vuejs/6824/2

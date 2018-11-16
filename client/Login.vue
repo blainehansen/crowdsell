@@ -62,7 +62,7 @@ export default {
 				this.$store.commit('auth/login', signedUser)
 
 				const goingTo = await this.$store.dispatch('auth/grabGoingTo')
-				const routeObj = !!goingTo ? { path: goingTo } : { name: 'home' }
+				const routeObj = goingTo ? { path: goingTo } : { name: 'home' }
 				this.$router.replace(routeObj)
 			}
 		},

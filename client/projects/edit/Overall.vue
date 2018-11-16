@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { publicApi } from '@/api'
+// import { publicApi } from '@/api'
 import { sync } from 'vuex-pathify'
 import { PROJECT_CATEGORY_TYPE } from '@/constants'
 

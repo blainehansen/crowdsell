@@ -34,7 +34,7 @@ export default {
 	},
 
 	actions: {
-		saveProject: genericSaveAction(touchedKeyManifest, async function({ state, getters, commit }, projectPatches) {
+		saveProject: genericSaveAction(touchedKeyManifest, async function({ state, commit }, projectPatches) {
 			const response = await secureApi.saveProject(state.id, projectPatches)
 
 			if (response.data) {
