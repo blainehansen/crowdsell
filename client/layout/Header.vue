@@ -18,6 +18,8 @@ b-navbar(toggleable="md")
 				li.nav-item(@click="logout")
 					a.nav-link Logout
 			template(v-else)
+				router-link.nav-item(:to="{ name: 'projectsExplore' }", tag="li")
+					a.nav-link Explore
 				router-link.nav-item(:to="{ name: 'login' }", tag="li")
 					a.nav-link Login
 

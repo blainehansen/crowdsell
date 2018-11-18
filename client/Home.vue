@@ -3,28 +3,28 @@
 #home
 	h1 Welcome
 
-	MarkdownEditor(
-		v-model="content",
-		mode="prosemirror",
-	)
+	//- MarkdownEditor(
+	//- 	v-model="content",
+	//- 	mode="prosemirror",
+	//- )
 
 </template>
 
 <script>
-import MarkdownEditor from '@/components/MarkdownEditor'
+// import MarkdownEditor from '@/components/MarkdownEditor'
 
 export default {
 	name: 'home',
 
-	components: {
-		MarkdownEditor,
-	},
+	// components: {
+	// 	MarkdownEditor,
+	// },
 
-	data() {
-		return {
-			content: '**hello**'
-		}
-	},
+	// data() {
+	// 	return {
+	// 		content: '**hello**'
+	// 	}
+	// },
 }
 </script>
 

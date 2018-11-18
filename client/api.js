@@ -1,3 +1,9 @@
+export function delay(data) {
+	return new Promise(resolve => {
+		setTimeout(() => resolve({ data }), 1500)
+	})
+}
+
 import axios from 'axios'
 
 axios.defaults.responseType = 'json'

@@ -4,12 +4,15 @@ import Router from 'vue-router'
 import Home from '@/Home'
 import Login from '@/Login'
 
-// import ProjectsIndex from '@/projects/ProjectsIndex'
 import CreateProject from '@/projects/CreateProject'
 import EditProject from '@/projects/EditProject'
-// import Project from '@/projects/Project'
-
 import editProjectSteps from '@/projects/edit'
+import Project from '@/projects/Project'
+
+import ProjectsExplore from '@/projects/ProjectsExplore'
+
+import ProjectPledge from '@/projects/ProjectPledge'
+import ProjectConfirm from '@/projects/ProjectConfirm'
 
 import UserProfile from '@/users/UserProfile'
 import Profile from '@/users/Profile'
@@ -22,6 +25,7 @@ const router = new Router({
 	mode: 'history',
 
 	linkActiveClass: 'active',
+	linkExactActiveClass: 'active-exact',
 
 	routes: [
 		{
@@ -35,8 +39,44 @@ const router = new Router({
 			component: Login,
 		},
 
-		// { path: '/projects', name: 'projects', component: ProjectsIndex },
+		// explore
+		{
+			path: '/projects',
+			name: 'projectsExplore',
+			component: ProjectsExplore,
+			// this will have query parameters
+			props: route => ({
+				query: route.query.query,
+				categories: route.query.categories,
+				tags: route.query.tags,
+			}),
+		},
 
+		// individual project
+		{
+			path: '/projects/:userSlug/:projectSlug',
+			name: 'project',
+			component: Project,
+			props: true,
+		},
+
+		// payment flow
+		{
+			path: '/projects/:userSlug/:projectSlug/pledge',
+			name: 'projectPledge',
+			component: ProjectPledge,
+			props: true,
+		},
+
+		// feedback flow
+		{
+			path: '/projects/:userSlug/:projectSlug/confirm',
+			name: 'projectConfirm',
+			component: ProjectConfirm,
+			props: true,
+		},
+
+		// start project
 		{
 			path: '/projects/create',
 			name: 'projectCreate',
@@ -44,6 +84,7 @@ const router = new Router({
 			meta: { private: true },
 		},
 
+		// edit project
 		{
 			path: '/projects/create/:projectId',
 			component: EditProject,
@@ -52,8 +93,8 @@ const router = new Router({
 			children: editProjectSteps,
 		},
 
-		// { path: '/projects/:userSlug/:projectSlug', name: 'project', component: Project, props: true },
 
+		// your profile
 		{
 			path: '/you',
 			name: 'userProfile',
@@ -61,6 +102,7 @@ const router = new Router({
 			meta: { private: true },
 		},
 
+		// your profile preview
 		{
 			path: '/you/preview',
 			name: 'userProfilePreview',
@@ -68,6 +110,8 @@ const router = new Router({
 			props: { previewing: true },
 			meta: { private: true },
 		},
+
+		// someone else's profile
 		{
 			path: '/profile/:userSlug',
 			name: 'profile',
