@@ -39,16 +39,14 @@ const router = new Router({
 			component: Login,
 		},
 
-		// explore
 		{
 			path: '/projects',
 			name: 'projectsExplore',
 			component: ProjectsExplore,
-			// this will have query parameters
 			props: route => ({
-				query: route.query.query,
-				categories: route.query.categories,
-				tags: route.query.tags,
+				query: route.query.q,
+				categories: route.query.c,
+				tags: route.query.t,
 			}),
 		},
 

@@ -5,12 +5,18 @@
 	#input-area
 		input(v-model="internalQuery", placeholder="search")
 
+		MultipleSelect(v-model="fakeValue", :options="['one', 'two', 'three'].map(v => ({ name: v, value: v }))")
+
+		p {{ fakeValue }}
+
 		select(:value="categories", @input="changeCategories", multiple)
 			option(v-for="option in categoryOptions", :value="option.value") {{ option.name }}
 
 		select(:value="tags", @change="changeTags", multiple)
 			option(v-for="tag in tagOptions", :value="tag.value") {{ tag.name }}
 
+
+	p(v-if="loading")
 
 	#found-projects
 		.project(v-for="project in foundProjects")
@@ -63,6 +69,8 @@ export default {
 
 	data() {
 		return {
+			fakeValue: [],
+
 			internalQuery: '',
 
 			categoryOptions,
@@ -72,6 +80,30 @@ export default {
 
 	created() {
 		this.internalQuery = this.query
+	},
+
+	asyncComputed: {
+		foundProjects: {
+			get() {
+				const { query, categories, tags } = this
+				const projects = cannedProjects
+					.filter(project => (!categories.length && !tags.length) || categories.includes(project.category) || tags.includes(project.tag))
+					.filter(project => !query.length || project.title.toLowerCase().includes(query.toLowerCase()))
+
+				return delay(projects)
+			},
+			eager: true,
+			watch: 'query',
+			watchClosely() {
+				return { categories: this.categories, tags: this.tags, }
+			},
+		},
+	},
+
+	computed: {
+		loading() {
+			return this.foundProjects$loading || this.foundProjects$pending
+		},
 	},
 
 	watch: {
@@ -100,28 +132,11 @@ export default {
 			this.$router.push({
 				name: this.$route.name,
 				query: {
-					categories: categories.length ? categories : undefined,
-					tags: tags.length ? tags : undefined,
-					query: query.length ? query : undefined,
+					q: query.length ? query : undefined,
+					c: categories.length ? categories : undefined,
+					t: tags.length ? tags : undefined,
 				}
 			})
-		},
-	},
-
-	asyncComputed: {
-		foundProjects: {
-			get() {
-				const projects = cannedProjects
-					.filter(project => this.categories.includes(project.category) || this.tags.includes(project.tag) || (!this.categories.length && !this.tags.length))
-					.filter(project => !this.query.length || project.title.toLowerCase().includes(this.query.toLowerCase()))
-
-				return delay(projects)
-			},
-			eager: true,
-			watch: 'query',
-			watchClosely() {
-				return { categories: this.categories, tags: this.tags, }
-			},
 		},
 	},
 }

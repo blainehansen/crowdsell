@@ -1,12 +1,14 @@
 import Vue from 'vue'
 import App from './App'
 import './registerServiceWorker'
+Vue.config.productionTip = false
 
 import BootstrapVue from 'bootstrap-vue'
 Vue.use(BootstrapVue)
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-Vue.config.productionTip = false
+import vClickOutside from 'v-click-outside'
+Vue.use(vClickOutside)
 
 import AsyncProperties from 'vue-async-properties'
 Vue.use(AsyncProperties, {
@@ -31,6 +33,29 @@ if (signedUser) {
 
 import { formatProfileImageUrl } from './utils'
 Vue.filter('formatProfileImageUrl', formatProfileImageUrl)
+
+Vue.directive('visible', (el, binding) => {
+	el.style.visibility = binding.value ? 'visible' : 'hidden'
+})
+
+Vue.directive('displaying', (el, binding) => {
+	el.style.display = binding.value ? '__invalid' : 'none'
+})
+
+
+// TODO see if you can do a webpack multiple import thing
+import SingleSelect from '@/components/SingleSelect'
+import MultipleSelect from '@/components/MultipleSelect'
+
+const components = [
+	SingleSelect,
+	MultipleSelect,
+]
+
+for (const component of components) {
+	Vue.component(component.name, component)
+}
+
 
 
 new Vue({
