@@ -1,6 +1,16 @@
 <template lang="pug">
 
 div
+	div
+		input(type="file", accept="image/png, image/jpeg", multiple, @change="acceptFiles")
+
+	//- so there's two views
+	//- one that's a bare bones textarea that just uses v-model
+	//- the other is a fully enabled prosemirror instance
+
+	//- when we're in markdown mode, we just handle v-model events like normal
+	//- when we're in prosemirror mode, we hook into dispatchTransaction
+
 	.prosemirror(
 		ref="prosemirrorEditor",
 		v-show="mode === 'prosemirror'",
@@ -10,15 +20,93 @@ div
 		:value="internalMarkdown",
 		@input="applyMarkdown",
 	)
+	//- button(@click="insertTextAreaImage")
 
 </template>
 
 <script>
 
-const { EditorView } = require('prosemirror-view')
-const { EditorState } = require('prosemirror-state')
-const { exampleSetup } = require('prosemirror-example-setup')
-const { schema, defaultMarkdownParser, defaultMarkdownSerializer } = require('prosemirror-markdown')
+import { sampleHashFile } from '@/utils'
+import markdownit from "markdown-it"
+import { EditorView } from 'prosemirror-view'
+import { EditorState } from 'prosemirror-state'
+import { exampleSetup } from 'prosemirror-example-setup'
+// MarkdownSerializer
+import { schema, MarkdownParser, defaultMarkdownSerializer } from 'prosemirror-markdown'
+
+const managedImages = {}
+const managedImagePrefix = 'managed-image:'
+let foundKeys = new Set()
+
+async function addManagedImage(file) {
+	const hash = await sampleHashFile(file)
+	const key = managedImagePrefix + hash
+
+	const existing = managedImages[key]
+	if (existing) {
+		URL.revokeObjectURL(existing.url)
+	}
+	const managedImage = {
+		key,
+		name: file.name,
+		url: URL.createObjectURL(file),
+	}
+	managedImages[key] = managedImage
+	return managedImage
+}
+
+
+const defaultMarkdownParser = new MarkdownParser(schema, markdownit("commonmark", { html: false }), {
+	blockquote: { block: "blockquote" },
+	paragraph: { block: "paragraph" },
+	list_item: { block: "list_item" },
+	bullet_list: { block: "bullet_list" },
+	ordered_list: { block: "ordered_list", getAttrs: tok => ({ order: +tok.attrGet("order") || 1 }) },
+	heading: { block: "heading", getAttrs: tok => ({ level: +tok.tag.slice(1) }) },
+	code_block: { block: "code_block" },
+	fence: { block: "code_block", getAttrs: tok => ({ params: tok.info || "" }) },
+	hr: { node: "horizontal_rule" },
+	image: {
+		node: "image",
+		getAttrs(tok) {
+			const alt = tok.content || ""
+			if (alt.startsWith(managedImagePrefix)) {
+				foundKeys.add(alt)
+			}
+
+			return {
+				alt: alt || null,
+				src: tok.attrGet("src"),
+				title: tok.attrGet("title") || null,
+			}
+		}
+	},
+
+	hardbreak: { node: "hard_break" },
+
+	em: { mark: "em" },
+	strong: { mark: "strong" },
+	link: { mark: "link", getAttrs: tok => ({
+		href: tok.attrGet("href"),
+		title: tok.attrGet("title") || null,
+	})},
+	code_inline: { mark: "code" }
+})
+
+// we always maintain a list of images in the document managed by the site
+// when the upload manager adds them, it creates a hash and prefixes it with 'managed-upload' or something
+// it's an object mapping these prefixed hashes to actual data or url's or whatever
+
+// the image uploader also has a "from url option" if someone wants to do that
+
+// in raw markdown mode, there's a button that can add images. it takes the file, adds it to the managed list, and inserts a markdown snippet at the current cursor position. when this markdown string is viewed as html, we just append a "footnote" area to the string containing footnotes for all the images. this gives us the capability to have file url's or whatever act as
+
+// since we prefix managed ones, we can detect when we parse (serlialize?) if any have been messed with or broken in some way
+
+// from a performance perspective, the best thing is to not touch the api until they persist changes
+// then we do a diff of the hashes already added to the ones currently in
+// we delete any that are removed, and add any that are new
+
 
 export default {
 	name: 'markdown-editor',
@@ -44,20 +132,13 @@ export default {
 		}
 	},
 
-	// so there's two views
-	// one that's a bare bones textarea that just uses v-model
-	// the other is a fully enabled prosemirror instance
-
-	// when we're in markdown mode, we just handle v-model events like normal
-	// when we're in prosemirror mode, we hook into dispatchTransaction and keep the
-
 	mounted() {
 		const internalMarkdown = this.internalMarkdown = this.markdownValue
 
 		this.view = new EditorView(this.$refs.prosemirrorEditor, {
 			state: this.createState(internalMarkdown),
 
-			dispatchTransaction: (transaction) => {
+			dispatchTransaction(transaction) {
 				this.view.updateState(this.view.state.apply(transaction))
 				this.applyMarkdown(defaultMarkdownSerializer.serialize(this.view.state.doc))
 			},
@@ -85,6 +166,32 @@ export default {
 				this.view.updateState(state)
 			}
 		},
+
+		async acceptFiles(event) {
+			foundKeys = new Set()
+
+			const managedImage = await addManagedImage(event.target.files[0])
+			const parseInput = `![${managedImage.key}][${managedImage.key}]\n\n[${managedImage.key}]: ${managedImage.url} "${managedImage.name}"`
+
+			defaultMarkdownParser.parse(parseInput)
+			console.log(foundKeys)
+
+			managedImages['irrelevant'] = {}
+
+			const toRemove = Object.keys(managedImages).filter(key => !foundKeys.has(key))
+			console.log(toRemove)
+
+			// those that manangedImages has but foundKeys doesn't have
+			// managedImages / foundKeys = remove
+		},
+
+		syncPictures() {
+			// imageList
+			// diff imageList with a previous?
+			// no matter what, we need to parse, because that doesn't happen as a matter of course in either mode
+			// once we've parsed, the imageList should be in the correct state
+			// and we do the work
+		},
 	},
 
 	watch: {
@@ -102,6 +209,140 @@ export default {
 	}
 }
 
+
+// schema.spec.nodes.update("image", newNodeSpec)
+
+// const defaultMarkdownSerializer = new MarkdownSerializer({
+// 	blockquote(state, node) {
+// 		state.wrapBlock("> ", null, node, () => state.renderContent(node))
+// 	},
+// 	code_block(state, node) {
+// 		state.write("```" + (node.attrs.params || "") + "\n")
+// 		state.text(node.textContent, false)
+// 		state.ensureNewLine()
+// 		state.write("```")
+// 		state.closeBlock(node)
+// 	},
+// 	heading(state, node) {
+// 		state.write(state.repeat("#", node.attrs.level) + " ")
+// 		state.renderInline(node)
+// 		state.closeBlock(node)
+// 	},
+// 	horizontal_rule(state, node) {
+// 		state.write(node.attrs.markup || "---")
+// 		state.closeBlock(node)
+// 	},
+// 	bullet_list(state, node) {
+// 		state.renderList(node, "  ", () => (node.attrs.bullet || "*") + " ")
+// 	},
+// 	ordered_list(state, node) {
+// 		let start = node.attrs.order || 1
+// 		let maxW = String(start + node.childCount - 1).length
+// 		let space = state.repeat(" ", maxW + 2)
+// 		state.renderList(node, space, i => {
+// 			let nStr = String(start + i)
+// 			return state.repeat(" ", maxW - nStr.length) + nStr + ". "
+// 		})
+// 	},
+// 	list_item(state, node) {
+// 		state.renderContent(node)
+// 	},
+// 	paragraph(state, node) {
+// 		state.renderInline(node)
+// 		state.closeBlock(node)
+// 	},
+
+// 	image(state, node) {
+// 		state.write("![" + state.esc(node.attrs.alt || "") + "](" + state.esc(node.attrs.src) +
+// 								(node.attrs.title ? " " + state.quote(node.attrs.title) : "") + ")")
+// 	},
+// 	hard_break(state, node, parent, index) {
+// 		for (let i = index + 1; i < parent.childCount; i++)
+// 			if (parent.child(i).type != node.type) {
+// 				state.write("\\\n")
+// 				return
+// 			}
+// 	},
+// 	text(state, node) {
+// 		state.text(node.text)
+// 	}
+// }, {
+// 	em: { open: "*", close: "*", mixable: true, expelEnclosingWhitespace: true },
+// 	strong: { open: "**", close: "**", mixable: true, expelEnclosingWhitespace: true },
+// 	link: {
+// 		open: "[",
+// 		close(state, mark) {
+// 			return "](" + state.esc(mark.attrs.href) + (mark.attrs.title ? " " + state.quote(mark.attrs.title) : "") + ")"
+// 		}
+// 	},
+// 	code: { open: "`", close: "`", escape: false },
+// })
+
+// function insertImageItem(nodeType) {
+// 	return new MenuItem({
+// 		title: "Insert image",
+// 		label: "Image",
+// 		enable(state) { return canInsert(state, nodeType) },
+// 		run(state, _, view) {
+// 			let {from, to} = state.selection, attrs = null
+// 			if (state.selection instanceof NodeSelection && state.selection.node.type == nodeType)
+// 				attrs = state.selection.node.attrs
+// 			openPrompt({
+// 				title: "Insert image",
+// 				fields: {
+// 					src: new TextField({label: "Location", required: true, value: attrs && attrs.src}),
+// 					title: new TextField({label: "Title", value: attrs && attrs.title}),
+// 					alt: new TextField({label: "Description",
+// 															value: attrs ? attrs.alt : state.doc.textBetween(from, to, " ")})
+// 				},
+// 				callback(attrs) {
+// 					view.dispatch(view.state.tr.replaceSelectionWith(nodeType.createAndFill(attrs)))
+// 					view.focus()
+// 				}
+// 			})
+// 		}
+// 	})
+// }
+
+// // https://stackoverflow.com/questions/11076975/insert-text-into-textarea-at-cursor-position-javascript
+// function insertAtCursor(el, value) {
+// 	// IE support
+// 	if (document.selection) {
+// 		el.focus()
+// 		const sel = document.selection.createRange()
+// 		sel.text = value
+// 	}
+// 	// Microsoft Edge, Mozilla, others
+// 	else if (el.selectionStart || el.selectionStart == '0') {
+// 		const startPos = el.selectionStart
+// 		const endPos = el.selectionEnd
+
+// 		el.value = el.value.substring(0, startPos)
+// 			+ value
+// 			+ el.value.substring(endPos, el.value.length)
+
+// 		const pos = startPos + value.length
+// 		el.focus()
+// 		el.setSelectionRange(pos, pos)
+// 	}
+// 	else {
+// 		el.value += value
+// 	}
+
+// 	const eventType = 'input'
+// 	if ('createEvent' in document) {
+// 		// modern browsers, IE9+
+// 		const e = document.createEvent('HTMLEvents')
+// 		e.initEvent(eventType, false, true)
+// 		el.dispatchEvent(e)
+// 	}
+// 	else {
+// 		// IE 8
+// 		const e = document.createEventObject()
+// 		e.eventType = eventType
+// 		el.fireEvent('on' + e.eventType, e)
+// 	}
+// }
 </script>
 
 <style lang="sass">

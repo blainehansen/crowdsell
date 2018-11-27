@@ -58,7 +58,6 @@ const router = new Router({
 			props: true,
 		},
 
-		// payment flow
 		{
 			path: '/projects/:userSlug/:projectSlug/pledge',
 			name: 'projectPledge',

@@ -26,6 +26,4 @@ export default {
 
 
 <style lang="sass">
-
-
 </style>

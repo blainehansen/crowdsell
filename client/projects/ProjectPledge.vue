@@ -5,7 +5,7 @@
 		//- TODO make this a numeric
 		input(v-model="amount", placeholder="0.00")
 
-		button(v-for="suggestedAmount in [500, 250, 100, 50, 25, 10, 5]", @click="amount = suggestedAmount")
+		button(v-for="suggestedAmount in [500, 250, 100, 50, 25, 10, 5]", @click="amount = suggestedAmount") {{ suggestedAmount }}
 
 		button(@click="transitionAndClear(stages.ACCOUNT)") Yes that's how much
 
@@ -97,24 +97,35 @@ export default {
 	},
 
 	data() {
-		amount: 20.0,
-		account: null,
+		return {
+			amount: 20.0,
+			account: null,
 
-		stages,
-		stage: stages.AMOUNT,
+			stages,
+			stage: stages.AMOUNT,
 
-		routingNumber: '',
-		accountNumber: '',
-		cardNumber: '',
-		expirationMonth: null,
-		expirationYear: null,
-		cvv: '',
+			routingNumber: '111111',
+			accountNumber: '1111111111',
+			cardNumber: '11111111111111111',
+			expirationMonth: 'January',
+			expirationYear: '2019',
+			cvv: '111',
 
-		creatingBank: false,
-		isBusinessAccount: false,
-		isSavingsAccount: false,
+			creatingBank: false,
+			isBusinessAccount: false,
+			isSavingsAccount: false,
 
-		paymentError: false,
+			paymentError: false,
+		}
+	},
+
+	asyncData: {
+		user: {
+			get() {
+				return delay({ accounts: [{ type: 'card', source: 'Bronze Bank', number: '22222222' }, { type: 'bank account', source: 'Bank', number: '3333333' }] })
+			},
+			default: {},
+		},
 	},
 
 	methods: {
@@ -146,8 +157,8 @@ export default {
 			await delay()
 			this.account = account
 
-			this.transitionAndClear(stages.PAID)
-		}
+			this.transitionAndClear(stages.REVIEW)
+		},
 
 		async makePayment() {
 			const payment = {
@@ -155,6 +166,7 @@ export default {
 				account: this.account,
 			}
 
+			console.log(this.userSlug, this.projectSlug)
 			console.log(payment)
 
 			// TODO do something to pay
@@ -172,14 +184,11 @@ export default {
 		transitionAndClear(stage) {
 			this.paymentError = false
 			this.stage = stage
-		}
+		},
 	}
 }
 
 </script>
 
 <style lang="sass">
-
-
-
 </style>
