@@ -9,7 +9,8 @@ module.exports = {
 		resolve: {
 			extensions: ['.gql'],
 			alias: {
-				'@': __dirname + '/client'
+				'@': __dirname + '/client',
+				'styles': __dirname + '/client/styles',
 			},
 		},
 

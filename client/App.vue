@@ -5,18 +5,19 @@
 
 	router-view
 
-	Footer
+	//- Footer
 
 </template>
 
 <script>
 import Header from '@/layout/Header'
-import Footer from '@/layout/Footer'
+// import Footer from '@/layout/Footer'
 
 export default {
 	name: 'App',
 	components: {
-		Header, Footer
+		Header,
+		// Footer,
 	},
 }
 </script>
@@ -24,10 +25,11 @@ export default {
 <style lang="sass">
 
 #app
-	font-family: 'Avenir', Helvetica, Arial, sans-serif
+	// font-family: 'Avenir', Helvetica, Arial, sans-serif
+	position: relative
 	-webkit-font-smoothing: antialiased
 	-moz-osx-font-smoothing: grayscale
-	text-align: center
+	// text-align: center
 
 @import './styles/main'
 
