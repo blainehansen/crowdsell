@@ -53,7 +53,7 @@ before update on person
 for each row
 execute procedure trigger_set_updated();
 
-create trigger _1_default_slug_for_person
+create trigger default_slug_for_person
 before insert on person
 for each row
 execute procedure default_slug();

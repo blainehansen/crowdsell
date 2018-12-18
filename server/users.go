@@ -17,7 +17,7 @@ var urlSlugInvalidCharactersRegex = regexp.MustCompile("[^[:alnum:]-]")
 var hashInvalidCharactersRegex = regexp.MustCompile("[^[:alnum:]]")
 
 var _ r = authRoute(PUT, "/user/slug", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
+	userId := c.MustGet("userId").(string)
 
 	slugPayload := struct {
 		Slug string `binding:"required"`
@@ -30,10 +30,10 @@ var _ r = authRoute(PUT, "/user/slug", func(c *gin.Context) {
 		c.AbortWithError(400, fmt.Errorf("slug doesn't match the required format: %s", slugPayload.Slug)); return
 	}
 
-	updateQuery := Users.Query.Where(
-		Users.Id.Eq(userId),
+	updateQuery := db.From("person").Where(
+		goqu.I("id").Eq(userId),
 	).Update(
-		Users.UrlSlug.Set(slugPayload.Slug),
+		goqu.Record{ "slug": slugPayload.Slug },
 	)
 
 	if !doExec(c, updateQuery) { return }
@@ -43,7 +43,7 @@ var _ r = authRoute(PUT, "/user/slug", func(c *gin.Context) {
 
 
 var _ r = authRoute(GET, "/user", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
+	userId := c.MustGet("userId").(string)
 
 	user := struct {
 		Name null.String
@@ -52,8 +52,8 @@ var _ r = authRoute(GET, "/user", func(c *gin.Context) {
 		Location null.String
 		ProfilePhotoVersion null.String
 	}{}
-	found, err := Users.Query.Where(
-		Users.Id.Eq(userId),
+	found, err := db.From("person").Where(
+		goqu.I("id").Eq(userId),
 	).ScanStruct(&user)
 
 	if err != nil {
@@ -67,22 +67,22 @@ var _ r = authRoute(GET, "/user", func(c *gin.Context) {
 })
 
 
-var _ r = authRoute(PATCH, "/user", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
+// var _ r = authRoute(PATCH, "/user", func(c *gin.Context) {
+// 	userId := c.MustGet("userId").(string)
 
-	var userMap map[string]interface{}
-	if err := c.ShouldBindJSON(&userMap); err != nil {
-		c.AbortWithError(422, err); return
-	}
+// 	var userMap map[string]interface{}
+// 	if err := c.ShouldBindJSON(&userMap); err != nil {
+// 		c.AbortWithError(422, err); return
+// 	}
 
-	patchQuery := Users.Query.Where(
-		Users.Id.Eq(userId),
-	).Patch(userMap)
+// 	patchQuery := db.From("person").Where(
+// 		goqu.I().Id.Eq(userId),
+// 	).Patch(userMap)
 
-	if !doPatch(c, patchQuery) { return }
+// 	if !doPatch(c, patchQuery) { return }
 
-	c.Status(204)
-})
+// 	c.Status(204)
+// })
 
 
 
@@ -123,7 +123,7 @@ var _ r = authRoute(POST, "/user/profile-image/sign", func(c *gin.Context) {
 
 
 var _ r = authRoute(POST, "/user/profile-image/confirm", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
+	userId := c.MustGet("userId").(string)
 	userSlug := c.MustGet("userSlug").(string)
 
 	confirmationPayload := struct {
@@ -139,10 +139,10 @@ var _ r = authRoute(POST, "/user/profile-image/confirm", func(c *gin.Context) {
 		c.AbortWithError(403, fmt.Errorf("invalid signature")); return
 	}
 
-	updateQuery := Users.Query.Where(
-		Users.Id.Eq(userId),
+	updateQuery := db.From("person").Where(
+		goqu.I("id").Eq(userId),
 	).Update(
-		Users.ProfilePhotoVersion.Set(confirmationPayload.Version),
+		goqu.Record{ "profile_photo_version": confirmationPayload.Version },
 	)
 	if !doExec(c, updateQuery) { return }
 
@@ -152,20 +152,12 @@ var _ r = authRoute(POST, "/user/profile-image/confirm", func(c *gin.Context) {
 
 var imagesProjectPreset string = environment["CDN_API_PROJECT_IMAGES_PRESET"]
 
-func checkUserOwnsProject(c *gin.Context, userId int64, projectId int64) bool {
-	var count int64
-	found, err := Projects.Table.Where(
-		Projects.Id.Eq(projectId), Projects.UserId.Eq(userId),
-	).Select(
-		goqu.COUNT("*"),
-	).ScanVal(&count)
+func checkUserOwnsProject(c *gin.Context, userId string, projectId string) bool {
+	count, err := db.From("project").Where(
+		goqu.I("id").Eq(projectId), goqu.I("person_id").Eq(userId),
+	).Count()
 	if err != nil {
-		c.AbortWithError(500, err)
-		return false
-	}
-	if !found {
-		c.AbortWithError(500, fmt.Errorf("count not found? %s", count))
-		return false
+		c.AbortWithError(500, err); return false
 	}
 
 	switch count {
@@ -182,21 +174,17 @@ func checkUserOwnsProject(c *gin.Context, userId int64, projectId int64) bool {
 }
 
 
-func makeProjectUploadName(projectSlug string, hash string, version string) string {
+func makeProjectUploadName(projectId string, hash string, version string) string {
 	if version == "" {
-		return fmt.Sprintf("%s/%s", projectSlug, hash)
+		return fmt.Sprintf("%s/%s", projectId, hash)
 	}
-	return fmt.Sprintf("v%s/%s/%s", version, projectSlug, hash)
+	return fmt.Sprintf("v%s/%s/%s", version, projectId, hash)
 }
 
-var _ r = authRoute(POST, "/project/:projectSlug/uploads/sign", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
+var _ r = authRoute(POST, "/project/:projectId/uploads/sign", func(c *gin.Context) {
+	userId := c.MustGet("userId").(string)
 
-	projectSlug := c.Param("projectSlug")
-	projectId, decodeError := decodeSlug(projectSlug)
-	if decodeError != nil {
-		c.AbortWithStatus(400); return
-	}
+	projectId := c.Param("projectId")
 
 	hashes := struct {
 		Hashes []string `binding:"required"`
@@ -215,7 +203,7 @@ var _ r = authRoute(POST, "/project/:projectSlug/uploads/sign", func(c *gin.Cont
 			c.AbortWithError(400, fmt.Errorf("hash doesn't match the required format: %s", hash)); return
 		}
 
-		objectName := makeProjectUploadName(projectSlug, hash, "")
+		objectName := makeProjectUploadName(projectId, hash, "")
 		signature, timestamp := SignUploadParams(objectName, imagesProjectPreset)
 
 		newResponse := uploadResponse {
@@ -229,14 +217,10 @@ var _ r = authRoute(POST, "/project/:projectSlug/uploads/sign", func(c *gin.Cont
 	c.JSON(200, response)
 })
 
-var _ r = authRoute(POST, "/project/:projectSlug/uploads/confirm", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
+var _ r = authRoute(POST, "/project/:projectId/uploads/confirm", func(c *gin.Context) {
+	userId := c.MustGet("userId").(string)
 
-	projectSlug := c.Param("projectSlug")
-	projectId, decodeError := decodeSlug(projectSlug)
-	if decodeError != nil {
-		c.AbortWithStatus(400); return
-	}
+	projectId := c.Param("projectId")
 
 	confirmations := struct {
 		Confirmations []uploadConfirmation `binding:"required"`
@@ -248,19 +232,19 @@ var _ r = authRoute(POST, "/project/:projectSlug/uploads/confirm", func(c *gin.C
 	finalUploads := []string{}
 
 	for _, confirmation := range confirmations.Confirmations {
-		signedObjectName := makeProjectUploadName(projectSlug, confirmation.Hash, "")
+		signedObjectName := makeProjectUploadName(projectId, confirmation.Hash, "")
 		if !VerifyUploadParamsSignature(confirmation.Signature, signedObjectName, imagesProjectPreset, confirmation.Timestamp) {
 			c.AbortWithError(403, fmt.Errorf("invalid signature")); return
 		}
-		objectName := makeProjectUploadName(projectSlug, confirmation.Hash, confirmation.Version)
+		objectName := makeProjectUploadName(projectId, confirmation.Hash, confirmation.Version)
 
 		finalUploads = append(finalUploads, objectName)
 	}
 
-	updateQuery := Projects.Query.Where(
-		Projects.Id.Eq(projectId), Projects.UserId.Eq(userId),
+	updateQuery := db.From("project").Where(
+		goqu.I("id").Eq(projectId), goqu.I("person_id").Eq(userId),
 	).Update(
-		Projects.UploadImages.Set(finalUploads),
+		goqu.Record{ "upload_images": finalUploads },
 	)
 
 	if !doExec(c, updateQuery) { return }

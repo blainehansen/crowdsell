@@ -42,7 +42,7 @@ export default {
 
 	methods: {
 		saveProject: call('project/saveProject'),
-	}
+	},
 }
 </script>
 

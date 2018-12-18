@@ -5,8 +5,15 @@
 
 	MarkdownEditor(
 		v-model="content",
-		mode="prosemirror",
+		ref="markdownEditor",
+		:mode="inProsemirror ? 'prosemirror' : 'textarea'",
+		:managedImages.sync="managedImages",
+		:uploadImage="(image) => { console.log(image); return image.url }",
+		:deleteImage="(image) => console.log(image)"
 	)
+
+	input(type="checkbox", v-model="inProsemirror")
+
 
 </template>
 
@@ -22,10 +29,25 @@ export default {
 
 	data() {
 		return {
-			content: '**hello**'
+			content: "**hello**",
+			inProsemirror: true,
+			internalManagedImages: {},
 		}
 	},
+
+	computed: {
+		managedImages: {
+			get() {
+				return this.internalManagedImages
+			},
+			set(newManagedImages) {
+				// TODO don't bother with this if some are not uploaded
+				this.internalManagedImages = newManagedImages
+			},
+		}
+	}
 }
+
 </script>
 
 <style lang="sass">

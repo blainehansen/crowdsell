@@ -1,7 +1,7 @@
 import xxh from 'xxhashjs'
 
 export function sampleHashFile(file) {
-	return new Promise(function (resolve, reject) {
+	return new Promise(function (resolve, _reject) {
 		const reader = new FileReader()
 		const hasher = xxh.h64(0xABCD)
 
@@ -32,6 +32,51 @@ export function sampleHashFile(file) {
 		}
 		nextSlice()
 	})
+}
+
+// https://stackoverflow.com/questions/11076975/insert-text-into-textarea-at-cursor-position-javascript
+export function insertToElement(el, cursorValue = undefined, endValue = undefined) {
+	if (cursorValue) {
+		// IE support
+		if (document.selection) {
+			el.focus()
+			const sel = document.selection.createRange()
+			sel.text = cursorValue
+		}
+		// Microsoft Edge, Mozilla, others
+		else if (el.selectionStart || el.selectionStart == '0') {
+			const startPos = el.selectionStart
+			const endPos = el.selectionEnd
+
+			el.value = el.value.substring(0, startPos)
+				+ cursorValue
+				+ el.value.substring(endPos, el.value.length)
+
+			const pos = startPos + cursorValue.length
+			el.focus()
+			el.setSelectionRange(pos, pos)
+		}
+		else {
+			el.value += cursorValue
+		}
+	}
+	if (endValue) {
+		el.value += endValue
+	}
+
+	const eventType = 'input'
+	if ('createEvent' in document) {
+		// modern browsers, IE9+
+		const e = document.createEvent('HTMLEvents')
+		e.initEvent(eventType, false, true)
+		el.dispatchEvent(e)
+	}
+	else {
+		// IE 8
+		const e = document.createEventObject()
+		e.eventType = eventType
+		el.fireEvent('on' + e.eventType, e)
+	}
 }
 
 

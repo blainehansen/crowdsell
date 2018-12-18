@@ -12,7 +12,7 @@ import (
 
 type SignedUser struct {
 	Name string
-	UrlSlug string
+	Slug string
 	Email string
 	Token string
 }
@@ -37,26 +37,23 @@ var _ r = route(POST, "/create-user", func(c *gin.Context) {
 		c.AbortWithError(500, hashError); return
 	}
 
-	var userSlug string
-	// found, err := Users.Query.Returning(Users.Slug).Insert(
-	// 	Users.Name.Set(newUser.Name), Users.Email.Set(newUser.Email), Users.Password.Set(hashedPassword),
-	// ).ScanVal(&userSlug)
-	found, err := db.From("person").Returning(goqu.I("slug")).Insert(
+	var userId string
+	found, err := db.From("person").Returning(goqu.I("id")).Insert(
 		goqu.Record{ "name": newUser.Name, "email": newUser.Email, "password": hashedPassword },
-	).ScanVal(&userSlug)
+	).ScanVal(&userId)
 	if err != nil {
 		c.AbortWithError(500, err); return
 	}
 	if !found {
-		c.AbortWithError(500, fmt.Errorf("userSlug not found? %s", userSlug)); return
+		c.AbortWithError(500, fmt.Errorf("userId not found? %s", userId)); return
 	}
 
-	authTokenString, issueError := issueAuthToken(userSlug)
+	authTokenString, issueError := issueAuthToken(userId)
 	if issueError != nil {
 		c.AbortWithError(500, issueError); return
 	}
 
-	c.JSON(200, SignedUser { Name: newUser.Name, Email: newUser.Email, UrlSlug: userSlug, Token: authTokenString })
+	c.JSON(200, SignedUser { Name: newUser.Name, Email: newUser.Email, Slug: userId, Token: authTokenString })
 })
 
 
@@ -70,7 +67,7 @@ var _ r = route(POST, "/login", func(c *gin.Context) {
 	}
 
 	loginAttemptPassword := []byte(loginAttempt.Password)
-	valid, databaseUser := checkUserPassword(c, Users.Email.Eq(loginAttempt.Email), &loginAttemptPassword)
+	valid, databaseUser := checkUserPassword(c, goqu.I("email").Eq(loginAttempt.Email), &loginAttemptPassword)
 	if !valid { return }
 
 	authTokenString, issueError := issueAuthToken(databaseUser.Slug)
@@ -78,12 +75,12 @@ var _ r = route(POST, "/login", func(c *gin.Context) {
 		c.AbortWithError(500, issueError); return
 	}
 
-	c.JSON(200, SignedUser { Name: databaseUser.Name, UrlSlug: databaseUser.UrlSlug, Email: loginAttempt.Email, Token: authTokenString })
+	c.JSON(200, SignedUser { Name: databaseUser.Name, Slug: databaseUser.Slug, Email: loginAttempt.Email, Token: authTokenString })
 })
 
 
 var _ r = authRoute(PUT, "/user/password", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
+	userId := c.MustGet("userId").(string)
 
 	passwordPayload := struct {
 		OldPassword string `binding:"required"`
@@ -95,7 +92,7 @@ var _ r = authRoute(PUT, "/user/password", func(c *gin.Context) {
 
 
 	oldPassword := []byte(passwordPayload.OldPassword)
-	valid, databaseUser := checkUserPassword(c, Users.Id.Eq(userId), &oldPassword)
+	valid, databaseUser := checkUserPassword(c, goqu.I("id").Eq(userId), &oldPassword)
 	if !valid { return }
 
 	// hash the new password
@@ -105,11 +102,10 @@ var _ r = authRoute(PUT, "/user/password", func(c *gin.Context) {
 		c.AbortWithError(500, hashError); return
 	}
 
-	// update the user
-	updateQuery := Users.Query.Where(
-		Users.Id.Eq(userId),
+	updateQuery := db.From("person").Where(
+		goqu.I("id").Eq(userId),
 	).Update(
-		Users.Password.Set(hashedPassword),
+		goqu.Record{ "password": hashedPassword },
 	)
 
 	if !doExec(c, updateQuery) { return }
@@ -120,13 +116,12 @@ var _ r = authRoute(PUT, "/user/password", func(c *gin.Context) {
 		c.AbortWithError(500, issueError); return
 	}
 
-	c.JSON(200, SignedUser { Name: databaseUser.Name, UrlSlug: databaseUser.UrlSlug, Email: databaseUser.Email, Token: authTokenString })
+	c.JSON(200, SignedUser { Name: databaseUser.Name, Slug: databaseUser.Slug, Email: databaseUser.Email, Token: authTokenString })
 })
 
 
 type readyToSignUser struct {
 	Slug string
-	UrlSlug string
 	Name string
 	Email string
 	Password []byte
@@ -134,7 +129,7 @@ type readyToSignUser struct {
 
 func checkUserPassword(c *gin.Context, condition goqu.BooleanExpression, attemptPassword *[]byte) (bool, readyToSignUser) {
 	databaseUser := readyToSignUser{}
-	userFound, queryError := Users.Query.Where(condition).ScanStruct(&databaseUser)
+	userFound, queryError := db.From("person").Where(condition).ScanStruct(&databaseUser)
 	if queryError != nil {
 		c.AbortWithError(500, queryError);
 		return false, databaseUser
@@ -172,10 +167,10 @@ var _ r = route(POST, "/user/password/forgot", func(c *gin.Context) {
 		c.AbortWithError(500, generationError)
 	}
 
-	result, err := Users.Query.Where(
-		Users.Email.Eq(forgottenEmail),
+	result, err := db.From("person").Where(
+		goqu.I("email").Eq(forgottenEmail),
 	).Update(
-		Users.ForgotPasswordToken.Set(forgotPasswordToken),
+		goqu.Record{ "forgot_password_token": forgotPasswordToken },
 	).Exec()
 	if err != nil {
 		c.AbortWithError(500, err); return
@@ -224,16 +219,18 @@ var _ r = route(POST, "/user/password/recover", func(c *gin.Context) {
 	}
 
 	databaseUser := struct {
+		Id string
 		Slug string
-		UrlSlug string
 		Name string
 		Email string
 	}{}
-	found, err := Users.Query.Where(
-		Users.Email.Eq(forgottenEmail), Users.ForgotPasswordToken.Eq(forgotPasswordToken),
-	).Returning(Users.Slug, Users.UrlSlug, Users.Name, Users.Email).Update(
-		Users.ForgotPasswordToken.Set(nil), Users.Password.Set(hashedPassword),
+
+	found, err := db.From("person").Where(
+		goqu.I("email").Eq(forgottenEmail), goqu.I("forgot_password_token").Eq(forgotPasswordToken),
+	).Returning(goqu.I("id"), goqu.I("slug"), goqu.I("name"), goqu.I("email")).Update(
+		goqu.Record{ "forgot_password_token": nil, "password": hashedPassword },
 	).ScanStruct(&databaseUser)
+
 	if err != nil {
 		c.AbortWithError(500, err); return
 	}
@@ -246,14 +243,14 @@ var _ r = route(POST, "/user/password/recover", func(c *gin.Context) {
 		c.AbortWithError(500, issueError); return
 	}
 
-	c.JSON(200, SignedUser { Name: databaseUser.Name, UrlSlug: databaseUser.UrlSlug, Email: databaseUser.Email, Token: authTokenString })
+	c.JSON(200, SignedUser { Name: databaseUser.Name, Slug: databaseUser.Slug, Email: databaseUser.Email, Token: authTokenString })
 })
 
 
 func VerifyTokenMiddleWare(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
 
-	userId, userSlug, verifyError := verifyAuthToken(authHeader)
+	userId, verifyError := verifyAuthToken(authHeader)
 	switch verifyError {
 		case nil:
 			break
@@ -268,7 +265,6 @@ func VerifyTokenMiddleWare(c *gin.Context) {
 	}
 
 	c.Set("userId", userId)
-	c.Set("userSlug", userSlug)
 	// c.Set("userRole", userRole)
 	c.Next()
 }

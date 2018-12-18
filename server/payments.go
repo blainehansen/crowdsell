@@ -7,7 +7,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	// "github.com/blainehansen/goqu"
+	"github.com/blainehansen/goqu"
+)
+
+type ProjectPledgesStateEnum string
+const (
+	UNPAID ProjectPledgesStateEnum = "UNPAID"
+	PAID ProjectPledgesStateEnum = "PAID"
+	RELEASED ProjectPledgesStateEnum = "RELEASED"
 )
 
 var assemblyBaseUrl string = environment["ASSEMBLY_ENDPOINT"]
@@ -34,12 +41,12 @@ var _ r = route(GET, "/assembly/status", func(c *gin.Context) {
 
 // // create a payment user
 // var _ r = authRoute(PATCH, "user/payment/user", func(c *gin.Context) {
-// 	userId := c.MustGet("userId").(int64)
+// 	userId := c.MustGet("userId").(string)
 
 // })
 
 // var _ r = authRoute(POST, "/user/payment/account/:type", func(c *gin.Context) {
-// 	userId := c.MustGet("userId").(int64)
+// 	userId := c.MustGet("userId").(string)
 
 // 	// account
 // })
@@ -92,14 +99,14 @@ type AssemblyTokenResponse struct {
 }
 
 var _ r = route(POST, "/user/card-token", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
+	userId := c.MustGet("userId").(string)
 
 	createTokenBody := struct {
 		TokenType string `json:"token_type"`
 		UserId string `json:"user_id"`
 	}{
 		TokenType: "card",
-		UserId: string(userId),
+		UserId: userId,
 	}
 
 
@@ -116,8 +123,8 @@ var _ r = route(POST, "/user/card-token", func(c *gin.Context) {
 // 	//
 // })
 
-var _ r = authRoute(POST, "/pledge/:projectSlug", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
+var _ r = authRoute(POST, "/pledge/:projectId", func(c *gin.Context) {
+	userId := c.MustGet("userId").(string)
 
 	payment := struct {
 		// this will be in some non-fractional unit, like cents
@@ -131,17 +138,13 @@ var _ r = authRoute(POST, "/pledge/:projectSlug", func(c *gin.Context) {
 		c.AbortWithError(422, err); return
 	}
 
-	projectId, decodeError := decodeSlug(c.Param("projectSlug"))
-	if decodeError != nil {
-		c.AbortWithError(400, decodeError); return
-	}
+	projectId := c.Param("projectId")
 
-
-	var projectUserId int64
-	projectUserIdFound, projectUserIdErr := Projects.Query.Select(
-		Projects.UserId,
+	var projectUserId string
+	projectUserIdFound, projectUserIdErr := db.From("project").Select(
+		goqu.I("person_id"),
 	).Where(
-		Projects.Id.Eq(projectId),
+		goqu.I("id").Eq(projectId),
 	).ScanVal(&projectUserId)
 
 	if projectUserIdErr != nil {
@@ -152,13 +155,15 @@ var _ r = authRoute(POST, "/pledge/:projectSlug", func(c *gin.Context) {
 	}
 
 
-	var pledgeId int64
-	pledgeIdFound, pledgeIdErr := ProjectPledges.Query.Returning(
-		ProjectPledges.Id,
+	var pledgeId string
+	pledgeIdFound, pledgeIdErr := db.From("project_pledge").Returning(
+		goqu.I("id"),
 	).Insert(
-		ProjectPledges.ProjectId.Set(projectId),
-		ProjectPledges.Amount.Set(payment.Amount),
-		ProjectPledges.UserId.Set(userId),
+		goqu.Record {
+			"project_id": projectId,
+			"person_id": userId,
+			"amount": payment.Amount,
+		},
 	).ScanVal(&pledgeId)
 
 	if pledgeIdErr != nil {
@@ -176,10 +181,10 @@ var _ r = authRoute(POST, "/pledge/:projectSlug", func(c *gin.Context) {
 		BuyerId string
 		SellerId string
 	}{
-		Id: string(pledgeId),
+		Id: pledgeId,
 		Amount: payment.Amount,
-		BuyerId: string(userId),
-		SellerId: string(projectUserId),
+		BuyerId: userId,
+		SellerId: projectUserId,
 	}
 	_, createItemErr := AssemblyClient.New().Post("/items").BodyJSON(&createItemBody).ReceiveSuccess(nil)
 	if createItemErr != nil {
@@ -204,10 +209,10 @@ var _ r = authRoute(POST, "/pledge/:projectSlug", func(c *gin.Context) {
 	}
 
 	// else update its state to PAID
-	updateQuery := ProjectPledges.Query.Where(
-		ProjectPledges.Id.Eq(pledgeId),
+	updateQuery := db.From("project_pledge").Where(
+		goqu.I("id").Eq(pledgeId),
 	).Update(
-		ProjectPledges.State.Set(PAID),
+		goqu.Record{ "state": PAID },
 	)
 
 	if !doExec(c, updateQuery) { return }
@@ -216,16 +221,16 @@ var _ r = authRoute(POST, "/pledge/:projectSlug", func(c *gin.Context) {
 })
 
 
-func ReleaseProjectFunds(projectId int64) []int64 {
-	var pledges []int64
-	ProjectPledges.Query.Where(
-		ProjectPledges.ProjectId.Eq(projectId),
-		ProjectPledges.State.Eq(PAID),
+func ReleaseProjectFunds(projectId string) []string {
+	var pledges []string
+	db.From("project_pledge").Where(
+		goqu.I("project_id").Eq(projectId),
+		goqu.I("state").Eq(PAID),
 	).Select(
-		ProjectPledges.Id,
+		goqu.I("id"),
 	).ScanVals(&pledges)
 
-	unsuccessfulPledges := []int64{}
+	unsuccessfulPledges := []string{}
 	for _, pledgeId := range pledges {
 		_, makePaymentErr := AssemblyClient.New().Patch(
 			fmt.Sprintf("/items/%s/release_payment", pledgeId),

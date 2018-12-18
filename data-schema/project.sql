@@ -9,7 +9,7 @@ create table project (
 	date_updated timestamptz not null,
 
 	slug text not null unique,
-	person_id bigint not null references person(id),
+	person_id uuid not null references person(id),
 
 	title text not null unique,
 	description text,
@@ -53,7 +53,7 @@ before update on project
 for each row
 execute procedure trigger_set_updated();
 
-create trigger _1_default_slug_for_project
+create trigger default_slug_for_project
 before insert on project
 for each row
 execute procedure default_slug();
@@ -77,7 +77,7 @@ create index project_general_search_vector_idx on project using gin (general_sea
 -- 	date_updated timestamptz not null,
 -- 	slug text not null,
 -- 	tag_type project_tag_type not null,
--- 	project_id bigint not null references project(id),
+-- 	project_id uuid not null references project(id),
 
 -- 	constraint project_tag_unique_project_tag unique (tag_type, project_id)
 -- );
@@ -92,7 +92,7 @@ create index project_general_search_vector_idx on project using gin (general_sea
 -- for each row
 -- execute procedure trigger_set_updated();
 
--- create trigger _1_default_slug_for_project_tag
+-- create trigger default_slug_for_project_tag
 -- before insert on project_tag
 -- for each row
 -- execute procedure default_slug();
@@ -111,8 +111,8 @@ create index project_general_search_vector_idx on project using gin (general_sea
 -- 	date_updated timestamptz not null,
 -- 	-- slug text not null,
 
--- 	project_id bigint not null references project(id),
--- 	person_id bigint not null references person(id),
+-- 	project_id uuid not null references project(id),
+-- 	person_id uuid not null references person(id),
 
 -- 	amount bigint not null,
 -- 	state project_pledge_state_type default 'UNPAID' not null
@@ -154,7 +154,7 @@ create index project_general_search_vector_idx on project using gin (general_sea
 -- for each row
 -- execute procedure trigger_set_updated();
 
--- create trigger _1_default_slug_for_project_pledge
+-- create trigger default_slug_for_project_pledge
 -- before insert on project_pledge
 -- for each row
 -- execute procedure default_slug();
@@ -162,8 +162,8 @@ create index project_general_search_vector_idx on project using gin (general_sea
 
 
 -- create table project_confirmation (
--- 	project_id bigint not null references project(id),
--- 	person_id bigint not null references person(id),
+-- 	project_id uuid not null references project(id),
+-- 	person_id uuid not null references person(id),
 -- 	primary key (project_id, person_id),
 
 -- 	date_created timestamptz not null,

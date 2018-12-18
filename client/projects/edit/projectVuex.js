@@ -8,6 +8,7 @@ const projectState = {
 	story: null,
 	promises: [],
 	category: null,
+	managedImages: {},
 }
 
 const state = {
@@ -35,6 +36,23 @@ export default {
 
 	actions: {
 		saveProject: genericSaveAction(touchedKeyManifest, async function({ state, commit }, projectPatches) {
+			const managedImages = projectPatches.managedImages
+			if (managedImages) {
+				const projectId = state.id
+				if (!projectId) throw new Error("blaine, you've let an uncreated project get created with managedImages")
+
+				const finalManagedImages = {}
+
+				for (const key in managedImages) {
+					const managedImage = managedImages[key]
+					const newUrl = secureApi.uploadProjectImage(projectId, managedImage.hash, managedImage.file)
+					finalManagedImages[key] = { ...managedImage, url: newUrl, uploaded: true }
+				}
+
+				projectPatches.managedImages = finalManagedImages
+				commit('SET_MANAGED_IMAGES', finalManagedImages)
+			}
+
 			const response = await secureApi.saveProject(state.id, projectPatches)
 
 			if (response.data) {

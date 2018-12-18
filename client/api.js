@@ -21,8 +21,11 @@ export const secureGqlHttp = axios.create({ baseURL: GQL_API_URL + '/secure', he
 
 import publicQueries from '@/queries/public-queries.gql'
 // import secureQueries from '@/queries/secure-queries.gql'
-// import secureMutations from '@/queries/secure-mutations.gql'
+import secureMutations from '@/queries/secure-mutations.gql'
 
+function i(input) {
+	return { input }
+}
 
 export const publicApi = {
 	login: (email, password) => publicGolangHttp.post('/login', { email, password }),
@@ -34,11 +37,8 @@ export const publicApi = {
 }
 
 export const secureApi = {
-	fetchProfileUploadSignature: () => secureGolangHttp.post('/user/profile-image/sign'),
-	confirmProfileUpload: (signature, timestamp, version) => secureGolangHttp.post(`/user/profile-image/confirm`, { signature, timestamp, version }),
-
-	fetchProjectUploadSignatures: (projectId, fileHashes) => secureGolangHttp.post(`/project/${projectId}/uploads/sign`, { hashes: fileHashes }),
-	confirmProjectUploads: (projectId, confirmationPayloads) => secureGolangHttp.post(`/project/${projectId}/uploads/confirm`, { confirmations: confirmationPayloads }),
+	// secureGolangHttp.post('/user/profile-image/sign')
+	// secureGolangHttp.post(`/user/profile-image/confirm`, { signature, timestamp, version })
 
 	fetchFullUser: () => secureGolangHttp.get('/user'),
 	changeSlug: (newSlug) => secureGolangHttp.put('/user/slug', { slug: newSlug }),
@@ -48,7 +48,31 @@ export const secureApi = {
 	saveProject(projectId, projectPatches) {
 		return projectId === null
 			? secureGolangHttp.post(`/projects`, projectPatches)
-			: secureGolangHttp.patch(`/projects/${projectId}`, projectPatches)
+			: secureGqlHttp.patch(secureMutations.updateProject, i({ project: projectPatches }))
+	},
+
+	async uploadProjectImages(projectId, hashes, files) {
+		const { data: { timestamp, objectNames, signatures } } = await secureGolangHttp.post(`/project/${projectId}/uploads/sign`, { hashes })
+
+		const promises = []
+		for (let imageIndex = files.length - 1; imageIndex >= 0; imageIndex--) {
+			const promise = uploadFile({
+				files[imageIndex],
+				process.env.CDN_API_IMAGES_ROUTE,
+				signatures[imageIndex],
+				objectNames[imageIndex],
+				timestamp,
+				process.env.CDN_API_PROJECT_IMAGES_PRESET,
+			})
+
+			promises.push(promise)
+		}
+
+		await Promise.all(promises)
+
+		await secureGolangHttp.post(`/project/${projectId}/uploads/confirm`, { confirmations: confirmationPayloads })
+
+		return url
 	},
 
 	generateCardToken: () => secureGolangHttp.post('/user/card-token'),
@@ -62,6 +86,57 @@ const imagesHttp = axios.create({
 	headers: {},
 })
 
+async function uploadFile(file, route, signature, objectName, timestamp, preset, requestConfig = {}) {
+	const chunkLimit = 6291456
+	const fileSize = file.size
+
+	if (fileSize < chunkLimit)
+		return postFile(file, route, signature, objectName, timestamp, preset, requestConfig)
+
+	const slicePromises = []
+	const uploadId = randomId()
+
+	function createSlicePromise(startIndex, endIndex = undefined) {
+		const bytesEndIndex = (endIndex || fileSize) - 1
+		const sliceEndIndex = endIndex
+
+		const requestConfig = {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+				'X-Unique-Upload-Id': uploadId,
+				'Content-Range': `bytes ${startIndex}-${bytesEndIndex}/${fileSize}`,
+				...requestConfig,
+			},
+			onUploadProgress(progressEvent) {
+				if (progressEvent.lengthComputable) {
+					console.log((progressEvent.loaded / progressEvent.total) * 100)
+				}
+			}
+		}
+
+		return postFile(file.slice(startIndex, sliceEndIndex), route, signature, objectName, timestamp, preset, requestConfig)
+	}
+
+	let currentIndex = 0
+	// file size is non-inclusive
+	while (currentIndex + chunkLimit < fileSize) {
+		const startIndex = currentIndex
+		const endIndex = currentIndex + chunkLimit
+		slicePromises.push(createSlicePromise(startIndex, endIndex))
+
+		currentIndex = endIndex
+	}
+
+	// upload the last one
+	slicePromises.push(createSlicePromise(currentIndex))
+
+	const results = await Promise.all(slicePromises)
+	for (const { data } of results) {
+		if (data.done) return data.version
+	}
+	throw new Error("no version created")
+}
+
 async function postFile(fileSlice, route, signature, objectName, timestamp, preset, requestConfig = {}) {
 	const formData = new FormData()
 	formData.append('api_key', process.env.CDN_API_KEY)
@@ -73,58 +148,6 @@ async function postFile(fileSlice, route, signature, objectName, timestamp, pres
 	if (preset) formData.append('upload_preset', preset)
 
 	return imagesHttp.post(route, formData, requestConfig)
-}
-
-async function uploadFile(file, route, signature, objectName, timestamp, preset, requestConfig = {}) {
-	const chunkLimit = 6291456
-	const fileSize = file.size
-
-	if (fileSize > chunkLimit) {
-		const slicePromises = []
-		const uploadId = randomId()
-
-		function createSlicePromise(startIndex, endIndex = undefined) {
-			const bytesEndIndex = (endIndex || fileSize) - 1
-			const sliceEndIndex = endIndex
-
-			const requestConfig = {
-				headers: {
-					'Content-Type': 'multipart/form-data',
-					'X-Unique-Upload-Id': uploadId,
-					'Content-Range': `bytes ${startIndex}-${bytesEndIndex}/${fileSize}`,
-					...requestConfig,
-				},
-				onUploadProgress(progressEvent) {
-					if (progressEvent.lengthComputable) {
-						console.log((progressEvent.loaded / progressEvent.total) * 100)
-					}
-				}
-			}
-
-			return postFile(file.slice(startIndex, sliceEndIndex), route, signature, objectName, timestamp, preset, requestConfig)
-		}
-
-		let currentIndex = 0
-		// file size is non-inclusive
-		while (currentIndex + chunkLimit < fileSize) {
-			const startIndex = currentIndex
-			const endIndex = currentIndex + chunkLimit
-			slicePromises.push(createSlicePromise(startIndex, endIndex))
-
-			currentIndex = endIndex
-		}
-
-		// upload the last one
-		slicePromises.push(createSlicePromise(currentIndex))
-
-		const results = await Promise.all(slicePromises)
-		for (const { data } of results) {
-			if (data.done) return data.version
-		}
-		throw new Error("no version created")
-	}
-
-	return postFile(file, route, signature, objectName, timestamp, preset, requestConfig)
 }
 
 export const imagesApi = {
@@ -173,14 +196,17 @@ export const imagesApi = {
 		return response
 	},
 
-	// deleteImage(objectName, signature, timestamp) {
-	// 	return imagesHttp.post(process.env.CDN_API_IMAGES_DELETE_ROUTE, {
-	// 		public_id: objectName,
-	// 		signature,
-	// 		timestamp,
-	// 		invalidate: true,
-	// 	})
-	// },
+	async deleteImage(objectName, signature, timestamp) {
+		return imagesHttp.post(
+			process.env.CDN_API_IMAGES_DELETE_ROUTE,
+			{
+				public_id: objectName,
+				signature,
+				timestamp,
+				invalidate: true,
+			},
+		)
+	},
 }
 
 

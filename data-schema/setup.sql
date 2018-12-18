@@ -19,11 +19,12 @@ grant golang_known_user to golang_server_user;
 
 grant usage on schema public to postgraphile_server_user, postgraphile_known_user, golang_server_user, golang_known_user;
 
+create extension pgcrypto;
 
 create or replace function current_person_id() returns uuid
 as $$
 begin
-	return current_setting('jwt.claims.id')::uuid
+	return current_setting('jwt.claims.id')::uuid;
 end;
 $$ language plpgsql;
 

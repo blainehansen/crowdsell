@@ -1,111 +1,46 @@
 <template lang="pug">
 
 div
-	div
-		input(type="file", accept="image/png, image/jpeg", multiple, @change="acceptFiles")
-
-	//- so there's two views
-	//- one that's a bare bones textarea that just uses v-model
-	//- the other is a fully enabled prosemirror instance
-
-	//- when we're in markdown mode, we just handle v-model events like normal
-	//- when we're in prosemirror mode, we hook into dispatchTransaction
-
 	.prosemirror(
 		ref="prosemirrorEditor",
 		v-show="mode === 'prosemirror'",
 	)
-	textarea.markdown(
-		v-show="mode === 'textarea'",
-		:value="internalMarkdown",
-		@input="applyMarkdown",
+	template(v-if="mode === 'textarea'")
+		textarea.markdown(
+			ref="textareaEditor",
+			:value="internalMarkdown",
+			@input="handleTextareaInput",
+		)
+		button(@click="insertImageToTextarea") insert image
+
+	input(
+		type="file",
+		style="display: none",
+		ref="filesInput",
+		accept="image/png, image/jpeg",
+		multiple,
+		@change="event => $emit('files', event)",
 	)
-	//- button(@click="insertTextAreaImage")
 
 </template>
 
 <script>
 
-import { sampleHashFile } from '@/utils'
-import markdownit from "markdown-it"
+import debounce from 'lodash.debounce'
+import isEqual from 'lodash.isequal'
+
+import { sampleHashFile, insertToElement } from '@/utils'
+import { schema, managedImagePrefix, markdownSerializerArgs, baseMarkdownParserArgs } from './MarkdownEditorSchema'
+
+import markdownit from 'markdown-it'
 import { EditorView } from 'prosemirror-view'
-import { EditorState } from 'prosemirror-state'
 import { exampleSetup } from 'prosemirror-example-setup'
-// MarkdownSerializer
-import { schema, MarkdownParser, defaultMarkdownSerializer } from 'prosemirror-markdown'
+import { EditorState, NodeSelection } from 'prosemirror-state'
+import { MarkdownParser, MarkdownSerializer } from 'prosemirror-markdown'
+// import { ReplaceStep } from 'prosemirror-transform'
 
-const managedImages = {}
-const managedImagePrefix = 'managed-image:'
-let foundKeys = new Set()
-
-async function addManagedImage(file) {
-	const hash = await sampleHashFile(file)
-	const key = managedImagePrefix + hash
-
-	const existing = managedImages[key]
-	if (existing) {
-		URL.revokeObjectURL(existing.url)
-	}
-	const managedImage = {
-		key,
-		name: file.name,
-		url: URL.createObjectURL(file),
-	}
-	managedImages[key] = managedImage
-	return managedImage
-}
-
-
-const defaultMarkdownParser = new MarkdownParser(schema, markdownit("commonmark", { html: false }), {
-	blockquote: { block: "blockquote" },
-	paragraph: { block: "paragraph" },
-	list_item: { block: "list_item" },
-	bullet_list: { block: "bullet_list" },
-	ordered_list: { block: "ordered_list", getAttrs: tok => ({ order: +tok.attrGet("order") || 1 }) },
-	heading: { block: "heading", getAttrs: tok => ({ level: +tok.tag.slice(1) }) },
-	code_block: { block: "code_block" },
-	fence: { block: "code_block", getAttrs: tok => ({ params: tok.info || "" }) },
-	hr: { node: "horizontal_rule" },
-	image: {
-		node: "image",
-		getAttrs(tok) {
-			const alt = tok.content || ""
-			if (alt.startsWith(managedImagePrefix)) {
-				foundKeys.add(alt)
-			}
-
-			return {
-				alt: alt || null,
-				src: tok.attrGet("src"),
-				title: tok.attrGet("title") || null,
-			}
-		}
-	},
-
-	hardbreak: { node: "hard_break" },
-
-	em: { mark: "em" },
-	strong: { mark: "strong" },
-	link: { mark: "link", getAttrs: tok => ({
-		href: tok.attrGet("href"),
-		title: tok.attrGet("title") || null,
-	})},
-	code_inline: { mark: "code" }
-})
-
-// we always maintain a list of images in the document managed by the site
-// when the upload manager adds them, it creates a hash and prefixes it with 'managed-upload' or something
-// it's an object mapping these prefixed hashes to actual data or url's or whatever
-
-// the image uploader also has a "from url option" if someone wants to do that
-
-// in raw markdown mode, there's a button that can add images. it takes the file, adds it to the managed list, and inserts a markdown snippet at the current cursor position. when this markdown string is viewed as html, we just append a "footnote" area to the string containing footnotes for all the images. this gives us the capability to have file url's or whatever act as
-
-// since we prefix managed ones, we can detect when we parse (serlialize?) if any have been messed with or broken in some way
-
-// from a performance perspective, the best thing is to not touch the api until they persist changes
-// then we do a diff of the hashes already added to the ones currently in
-// we delete any that are removed, and add any that are new
+import { MenuItem } from 'prosemirror-menu'
+import { buildMenuItems } from 'prosemirror-example-setup'
 
 
 export default {
@@ -121,33 +56,190 @@ export default {
 			default: 'prosemirror',
 			type: String,
 			required: false,
-			validator: (value) => ['prosemirror', 'textarea'].includes(value),
+			validator: value => ['prosemirror', 'textarea'].includes(value),
 		},
 		markdownValue: String,
+
+		managedImages: {
+			type: Object,
+			validator(object) {
+				for (const [key, value] of Object.entries(object)) {
+					if (typeof key !== 'string') return false
+					if (!(value.file instanceof File)) return false
+					if (typeof value.url !== 'string') return false
+					if (typeof value.key !== 'string') return false
+					if (typeof value.uploaded !== 'boolean') return false
+				}
+
+				return true
+			},
+		},
+
+		uploadImage: Function,
+		deleteImage: Function,
 	},
 
 	data() {
 		return {
 			internalMarkdown: '',
+
+			markdownParserInstance: null,
+			markdownSerializerInstance: null,
 		}
 	},
 
 	mounted() {
+		const menu = buildMenuItems(schema)
+		const existingInsertImage = menu.insertImage.spec
+
+		menu.insertMenu.content[0] = menu.insertImage = new MenuItem({
+			...existingInsertImage,
+			label: "Image",
+
+			run: async (state, _, view) => {
+				const { from: $from, to } = state.selection
+
+				// this is allowing editing of existing images
+				// if we're already over an image, we grab that node's attrs and use them to populate the thing
+				const attrs = state.selection instanceof NodeSelection && state.selection.node.type == schema.nodes.image
+					? state.selection.node.attrs
+					// this grabs the selected text, if there is any
+					// for the situation where they aren't over an image node
+					: { alt: state.doc.textBetween($from, to, " ") }
+
+				// deploy the picker
+				const [file,] = await this.getFiles()
+				const managedImage = await this.makeAndManageImage(file)
+				attrs.key = managedImage.key
+				attrs.src = managedImage.url
+				attrs.title = managedImage.file.name
+
+				// here's the real code that actually applies the thing
+				view.dispatch(view.state.tr.replaceSelectionWith(schema.nodes.image.createAndFill(attrs)))
+				view.focus()
+			}
+		})
+		this.menu = menu
+
+		this.markdownSerializerInstance = new MarkdownSerializer(...markdownSerializerArgs)
+
+		const markdownParserArgs = {
+			...baseMarkdownParserArgs,
+			image: {
+				...baseMarkdownParserArgs.image,
+				getAttrs: tok => {
+					const foundSrc = tok.attrGet("src")
+					const foundManaged = this.managedImages[foundSrc]
+
+					return {
+						key: foundManaged ? foundManaged.key : null,
+						src: foundManaged ? foundManaged.url : foundSrc,
+						alt: tok.content || null,
+						title: tok.attrGet("title") || null,
+					}
+				}
+			},
+		}
+		this.markdownParserInstance = new MarkdownParser(schema, markdownit("commonmark", { html: false }), markdownParserArgs)
+
 		const internalMarkdown = this.internalMarkdown = this.markdownValue
 
 		this.view = new EditorView(this.$refs.prosemirrorEditor, {
 			state: this.createState(internalMarkdown),
 
-			dispatchTransaction(transaction) {
+			dispatchTransaction: transaction => {
 				this.view.updateState(this.view.state.apply(transaction))
-				this.applyMarkdown(defaultMarkdownSerializer.serialize(this.view.state.doc))
+
+				if (!transaction.docChanged || transaction.steps.length === 0) return
+				// TODO maybe consider making this function debounced?
+				this.applyMarkdown(this.markdownSerializerInstance.serialize(this.view.state.doc))
+				this.syncPictures()
 			},
 		})
 
 		if (this.mode === 'prosemirror') this.view.focus()
+		else this.$refs.textareaEditor.focus()
 	},
 
 	methods: {
+		syncPictures: debounce(function() {
+			// ensure the view is up to date
+			if (this.mode !== 'prosemirror') this.rebuildProsemirror()
+
+			const foundKeys = new Set()
+			this.view.state.doc.descendants(node => {
+				// TODO some sort of filter to say if it can hold an image
+				if (node.type.name !== 'image') return node.type.isBlock
+
+				if (node.attrs.key.startsWith(managedImagePrefix))
+					foundKeys.add(node.attrs.key)
+
+				return false
+			})
+
+			const managedImages = this.managedImages
+			const newManagedImages = {}
+
+			for (const [key, value] of Object.entries(managedImages)) {
+				if (foundKeys.has(key))
+					newManagedImages[key] = value
+
+				else if (!value.uploaded)
+					URL.revokeObjectURL(value.url)
+			}
+
+			this.$emit('update:managedImages', newManagedImages)
+		}, 1000),
+
+
+		getFiles() {
+			return new Promise(resolve => {
+				this.$once('files', event => {
+					const eventFiles = event.target.files
+					const files = []
+					for (let index = eventFiles.length - 1; index >= 0; index--)
+						files.push(eventFiles[index])
+
+					this.$refs.filesInput.value = null
+					resolve(files)
+				})
+
+				this.$refs.filesInput.click()
+			})
+		},
+
+		async makeAndManageImage(file) {
+			const hash = await sampleHashFile(file)
+			const key = managedImagePrefix + hash
+			const url = URL.createObjectURL(file)
+
+			const existing = this.managedImages[key]
+			const newManagedImages = this.managedImages
+			if (existing) {
+				URL.revokeObjectURL(existing.url)
+			}
+			const newImage = { file, url, key, hash, uploaded: false }
+			newManagedImages[key] = newImage
+			this.$emit('update:managedImages', newManagedImages)
+
+			return newImage
+		},
+
+		async insertImageToTextarea() {
+			const [file,] = await this.getFiles()
+
+			const managedImage = await this.makeAndManageImage(file)
+
+			// push the string representation to the editor
+			const imageString = `![alt text](${managedImage.key} "${managedImage.file.name}")`
+			insertToElement(this.$refs.textareaEditor, imageString)
+		},
+
+		handleTextareaInput(event) {
+			this.applyMarkdown(event.target.value)
+			this.syncPictures()
+		},
+
 		applyMarkdown(newMarkdown) {
 			this.internalMarkdown = newMarkdown
 			this.$emit('markdownChange', newMarkdown)
@@ -155,43 +247,15 @@ export default {
 
 		createState(newMarkdown) {
 			return EditorState.create({
-				doc: defaultMarkdownParser.parse(newMarkdown),
-				plugins: exampleSetup({ schema }),
+				doc: this.markdownParserInstance.parse(newMarkdown),
+				plugins: exampleSetup({ schema: schema, menuContent: this.menu.fullMenu })
 			})
 		},
 
-		checkModeSwitch(currentMode, newMode) {
-			if (newMode !== currentMode && newMode === 'prosemirror') {
-				const state = this.createState(this.internalMarkdown)
-				this.view.updateState(state)
-			}
-		},
-
-		async acceptFiles(event) {
-			foundKeys = new Set()
-
-			const managedImage = await addManagedImage(event.target.files[0])
-			const parseInput = `![${managedImage.key}][${managedImage.key}]\n\n[${managedImage.key}]: ${managedImage.url} "${managedImage.name}"`
-
-			defaultMarkdownParser.parse(parseInput)
-			console.log(foundKeys)
-
-			managedImages['irrelevant'] = {}
-
-			const toRemove = Object.keys(managedImages).filter(key => !foundKeys.has(key))
-			console.log(toRemove)
-
-			// those that manangedImages has but foundKeys doesn't have
-			// managedImages / foundKeys = remove
-		},
-
-		syncPictures() {
-			// imageList
-			// diff imageList with a previous?
-			// no matter what, we need to parse, because that doesn't happen as a matter of course in either mode
-			// once we've parsed, the imageList should be in the correct state
-			// and we do the work
-		},
+		rebuildProsemirror() {
+			const state = this.createState(this.internalMarkdown)
+			this.view.updateState(state)
+		}
 	},
 
 	watch: {
@@ -200,149 +264,22 @@ export default {
 
 			this.internalMarkdown = newMarkdownValue
 
-			this.checkModeSwitch(null, this.mode)
+			if (this.mode === 'prosemirror') this.rebuildProsemirror()
 		},
 
-		mode(oldMode, newMode) {
-			this.checkModeSwitch(oldMode, newMode)
+		managedImages(newManagedImages) {
+			if (isEqual(newManagedImages, this.managedImages)) return
+			if (this.mode === 'prosemirror') this.rebuildProsemirror()
+		},
+
+		mode(newMode, oldMode) {
+			if (newMode !== oldMode && newMode === 'prosemirror') {
+				this.rebuildProsemirror()
+			}
 		}
 	}
 }
 
-
-// schema.spec.nodes.update("image", newNodeSpec)
-
-// const defaultMarkdownSerializer = new MarkdownSerializer({
-// 	blockquote(state, node) {
-// 		state.wrapBlock("> ", null, node, () => state.renderContent(node))
-// 	},
-// 	code_block(state, node) {
-// 		state.write("```" + (node.attrs.params || "") + "\n")
-// 		state.text(node.textContent, false)
-// 		state.ensureNewLine()
-// 		state.write("```")
-// 		state.closeBlock(node)
-// 	},
-// 	heading(state, node) {
-// 		state.write(state.repeat("#", node.attrs.level) + " ")
-// 		state.renderInline(node)
-// 		state.closeBlock(node)
-// 	},
-// 	horizontal_rule(state, node) {
-// 		state.write(node.attrs.markup || "---")
-// 		state.closeBlock(node)
-// 	},
-// 	bullet_list(state, node) {
-// 		state.renderList(node, "  ", () => (node.attrs.bullet || "*") + " ")
-// 	},
-// 	ordered_list(state, node) {
-// 		let start = node.attrs.order || 1
-// 		let maxW = String(start + node.childCount - 1).length
-// 		let space = state.repeat(" ", maxW + 2)
-// 		state.renderList(node, space, i => {
-// 			let nStr = String(start + i)
-// 			return state.repeat(" ", maxW - nStr.length) + nStr + ". "
-// 		})
-// 	},
-// 	list_item(state, node) {
-// 		state.renderContent(node)
-// 	},
-// 	paragraph(state, node) {
-// 		state.renderInline(node)
-// 		state.closeBlock(node)
-// 	},
-
-// 	image(state, node) {
-// 		state.write("![" + state.esc(node.attrs.alt || "") + "](" + state.esc(node.attrs.src) +
-// 								(node.attrs.title ? " " + state.quote(node.attrs.title) : "") + ")")
-// 	},
-// 	hard_break(state, node, parent, index) {
-// 		for (let i = index + 1; i < parent.childCount; i++)
-// 			if (parent.child(i).type != node.type) {
-// 				state.write("\\\n")
-// 				return
-// 			}
-// 	},
-// 	text(state, node) {
-// 		state.text(node.text)
-// 	}
-// }, {
-// 	em: { open: "*", close: "*", mixable: true, expelEnclosingWhitespace: true },
-// 	strong: { open: "**", close: "**", mixable: true, expelEnclosingWhitespace: true },
-// 	link: {
-// 		open: "[",
-// 		close(state, mark) {
-// 			return "](" + state.esc(mark.attrs.href) + (mark.attrs.title ? " " + state.quote(mark.attrs.title) : "") + ")"
-// 		}
-// 	},
-// 	code: { open: "`", close: "`", escape: false },
-// })
-
-// function insertImageItem(nodeType) {
-// 	return new MenuItem({
-// 		title: "Insert image",
-// 		label: "Image",
-// 		enable(state) { return canInsert(state, nodeType) },
-// 		run(state, _, view) {
-// 			let {from, to} = state.selection, attrs = null
-// 			if (state.selection instanceof NodeSelection && state.selection.node.type == nodeType)
-// 				attrs = state.selection.node.attrs
-// 			openPrompt({
-// 				title: "Insert image",
-// 				fields: {
-// 					src: new TextField({label: "Location", required: true, value: attrs && attrs.src}),
-// 					title: new TextField({label: "Title", value: attrs && attrs.title}),
-// 					alt: new TextField({label: "Description",
-// 															value: attrs ? attrs.alt : state.doc.textBetween(from, to, " ")})
-// 				},
-// 				callback(attrs) {
-// 					view.dispatch(view.state.tr.replaceSelectionWith(nodeType.createAndFill(attrs)))
-// 					view.focus()
-// 				}
-// 			})
-// 		}
-// 	})
-// }
-
-// // https://stackoverflow.com/questions/11076975/insert-text-into-textarea-at-cursor-position-javascript
-// function insertAtCursor(el, value) {
-// 	// IE support
-// 	if (document.selection) {
-// 		el.focus()
-// 		const sel = document.selection.createRange()
-// 		sel.text = value
-// 	}
-// 	// Microsoft Edge, Mozilla, others
-// 	else if (el.selectionStart || el.selectionStart == '0') {
-// 		const startPos = el.selectionStart
-// 		const endPos = el.selectionEnd
-
-// 		el.value = el.value.substring(0, startPos)
-// 			+ value
-// 			+ el.value.substring(endPos, el.value.length)
-
-// 		const pos = startPos + value.length
-// 		el.focus()
-// 		el.setSelectionRange(pos, pos)
-// 	}
-// 	else {
-// 		el.value += value
-// 	}
-
-// 	const eventType = 'input'
-// 	if ('createEvent' in document) {
-// 		// modern browsers, IE9+
-// 		const e = document.createEvent('HTMLEvents')
-// 		e.initEvent(eventType, false, true)
-// 		el.dispatchEvent(e)
-// 	}
-// 	else {
-// 		// IE 8
-// 		const e = document.createEventObject()
-// 		e.eventType = eventType
-// 		el.fireEvent('on' + e.eventType, e)
-// 	}
-// }
 </script>
 
 <style lang="sass">

@@ -7,6 +7,12 @@ import (
 	"github.com/blainehansen/goqu"
 )
 
+type ProjectCategoryType string
+const (
+	COMPUTER_HARDWARE ProjectCategoryType = "COMPUTER_HARDWARE"
+	COMPUTER_SOFTWARE ProjectCategoryType = "COMPUTER_SOFTWARE"
+)
+
 var _ r = route(GET, "/projects", func(c *gin.Context) {
 	projectFilters := struct {
 		Search string `form:"q"`
@@ -14,20 +20,22 @@ var _ r = route(GET, "/projects", func(c *gin.Context) {
 	}{}
 	c.ShouldBindQuery(&projectFilters)
 
-	projectQuery := Projects.Table.Join(
-		goqu.I("users"), goqu.On(goqu.Ex{ "projects.user_id": goqu.I("users.id") }),
+	projectQuery := db.From("project").Join(
+		goqu.I("person"), goqu.On(goqu.Ex{ "projects.person_id": goqu.I("person.id") }),
 	).Select(
-		Projects.UrlSlug.I(), Projects.Name.I(), Projects.Description.I(),
-		Users.UrlSlug.As("user_url_slug"),
-		Users.Name.As("user_name"),
+		goqu.I("project.slug"), goqu.I("project.name"), goqu.I("project.description"),
+		goqu.I("person.slug").As("person_slug"),
+		goqu.I("person.name").As("person_name"),
 	)
 
 	var filterExpressions []goqu.Expression
 	if projectFilters.Search != "" {
-		filterExpressions = append(filterExpressions, Projects.GeneralSearchVector.Search(projectFilters.Search))
+		filterExpressions = append(filterExpressions, goqu.L(`person.general_search_vector @@ to_tsquery('pg_catalog.english', ?)`, projectFilters.Search))
+		// filterExpressions = append(filterExpressions, Projects.GeneralSearchVector.Search(projectFilters.Search))
 	}
 	if projectFilters.UserId != 0 {
-		filterExpressions = append(filterExpressions, Projects.UserId.Eq(projectFilters.UserId))
+		filterExpressions = append(filterExpressions, goqu.I("project.person_id").Eq(projectFilters.UserId))
+		// filterExpressions = append(filterExpressions, Projects.UserId.Eq(projectFilters.UserId))
 	}
 	if len(filterExpressions) > 0 {
 		projectQuery = projectQuery.Where(filterExpressions...)
@@ -35,10 +43,10 @@ var _ r = route(GET, "/projects", func(c *gin.Context) {
 
 
 	type PublicProject struct {
-		UrlSlug string
+		Slug string
 		Name string
 		Description string
-		UserUrlSlug string
+		UserSlug string
 		UserName string
 	}
 	var projects []PublicProject
@@ -53,17 +61,17 @@ var _ r = route(GET, "/projects", func(c *gin.Context) {
 })
 
 
-var _ r = authRoute(GET, "/projects/check-url-slug/:urlSlug", func(c *gin.Context) {
-	urlSlug := c.Param("urlSlug")
+var _ r = authRoute(GET, "/projects/check-slug/:slug", func(c *gin.Context) {
+	slug := c.Param("slug")
 
-	count, err := Projects.Query.Where(
-		Projects.UrlSlug.Eq(urlSlug),
+	count, err := db.From("project").Where(
+		goqu.I("slug").Eq(slug),
 	).Count()
 
 	if err != nil {
 		c.AbortWithError(500, err); return
 	} else if count > 1 {
-		c.AbortWithError(500, fmt.Errorf("a urlSlug count had more than one? %s", urlSlug)); return
+		c.AbortWithError(500, fmt.Errorf("a slug count had more than one? %s", slug)); return
 	}
 
 	response := count == 1
@@ -71,59 +79,61 @@ var _ r = authRoute(GET, "/projects/check-url-slug/:urlSlug", func(c *gin.Contex
 })
 
 var _ r = authRoute(POST, "/projects", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
+	userId := c.MustGet("userId").(string)
 
 	project := struct {
 		Name string
 		Description string
-		UrlSlug string
 		Category ProjectCategoryType
 	}{}
 	if err := c.ShouldBindJSON(&project); err != nil {
 		c.AbortWithError(422, err); return
 	}
 
-	var projectSlug string
-	found, err := Projects.Query.Returning(Projects.Slug).Insert(
-		Projects.Name.Set(project.Name),
-		Projects.Description.Set(project.Description),
-		Projects.UrlSlug.Set(project.UrlSlug),
-		Projects.UserId.Set(userId),
-		Projects.Category.Set(project.Category),
-	).ScanVal(&projectSlug)
+	var projectId string
+
+	found, err := db.From("project").Returning(goqu.I("id")).Insert(
+		goqu.Record{
+			"person_id": userId,
+			"name": project.Name,
+			"description": project.Description,
+			"category": project.Category,
+		},
+	).ScanVal(&projectId)
+
 	if err != nil {
 		c.AbortWithError(500, err); return
 	}
 	if !found {
-		c.AbortWithError(500, fmt.Errorf("projectSlug not found? %s", projectSlug)); return
+		c.AbortWithError(500, fmt.Errorf("projectId not found? %s", projectId)); return
 	}
 
-	c.JSON(200, &projectSlug)
+	c.JSON(200, &projectId)
 })
 
 
-var _ r = authRoute(PATCH, "/projects/:projectSlug", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
+// var _ r = authRoute(PATCH, "/projects/:projectSlug", func(c *gin.Context) {
+// 	userId := c.MustGet("userId").(string)
 
-	projectSlug := c.Param("projectSlug")
-	projectId, decodeError := decodeSlug(projectSlug)
-	if decodeError != nil {
-		c.AbortWithStatus(400); return
-	}
+// 	projectSlug := c.Param("projectSlug")
+// 	projectId, decodeError := decodeSlug(projectSlug)
+// 	if decodeError != nil {
+// 		c.AbortWithStatus(400); return
+// 	}
 
-	var projectMap map[string]interface{}
-	if err := c.ShouldBindJSON(&projectMap); err != nil {
-		c.AbortWithError(422, err); return
-	}
+// 	var projectMap map[string]interface{}
+// 	if err := c.ShouldBindJSON(&projectMap); err != nil {
+// 		c.AbortWithError(422, err); return
+// 	}
 
-	patchQuery := Projects.Query.Where(
-		Projects.Id.Eq(projectId), Projects.UserId.Eq(userId),
-	).Patch(projectMap)
+// 	// patchQuery := Projects.Query.Where(
+// 	// 	Projects.Id.Eq(projectId), Projects.UserId.Eq(userId),
+// 	// ).Patch(projectMap)
 
-	if !doPatch(c, patchQuery) { return }
+// 	if !doPatch(c, patchQuery) { return }
 
-	c.Status(204)
-})
+// 	c.Status(204)
+// })
 
 
 // they can vote:
@@ -146,83 +156,87 @@ type projectConfirmation struct {
 	Commentary string `binding:"-"`
 }
 
-// what should the table structure be?
-// everything gets way more complex if we don't inline
-//
 
 
-// this route will take the feedback of a particular user in about a project
-var _ r = authRoute(POST, "/projects/:projectSlug/confirmation", func(c *gin.Context) {
-	userId := c.MustGet("userId").(int64)
+// // this route will take the feedback of a particular user in about a project
+// var _ r = authRoute(POST, "/projects/:projectSlug/confirmation", func(c *gin.Context) {
+// 	userId := c.MustGet("userId").(string)
 
-	projectSlug := c.Param("projectSlug")
-	projectId, decodeError := decodeSlug(projectSlug)
-	if decodeError != nil {
-		c.AbortWithStatus(400); return
-	}
+// 	projectSlug := c.Param("projectSlug")
+// 	projectId, decodeError := decodeSlug(projectSlug)
+// 	if decodeError != nil {
+// 		c.AbortWithStatus(400); return
+// 	}
 
-	var confirmation projectConfirmation
-	if err := c.ShouldBindJSON(&confirmation); err != nil {
-		c.AbortWithError(422, err); return
-	}
+// 	var confirmation projectConfirmation
+// 	if err := c.ShouldBindJSON(&confirmation); err != nil {
+// 		c.AbortWithError(422, err); return
+// 	}
 
-	fmt.Println(confirmation)
-
-
-	fulfills := confirmation.Fulfills
-	lenAlmostPromises := len(fulfills.AlmostPromises)
-	fulfillsHas := fulfills.Proceed || lenAlmostPromises != 0
-
-	unacceptable := confirmation.Unacceptable
-	lenBrokenPromises := len(unacceptable.BrokenPromises)
-	unacceptableHas := unacceptable.FraudulentFlag || lenBrokenPromises != 0
-
-	// if they are both full or both not full
-	if fulfillsHas == unacceptableHas {
-		c.AbortWithError(422, fmt.Errorf("can't both or neither fulfill and unacceptable %s", confirmation)); return
-	}
-
-	lenCommentary := len(confirmation.Commentary)
-	if fulfills.Proceed && lenAlmostPromises == 0 && lenCommentary != 0 {
-		c.AbortWithError(422, fmt.Errorf("can't simply proceed and give commentary", confirmation)); return
-	}
-
-	sets := []SetExpression {
-		ProjectConfirmations.Proceed.Set(fulfills.Proceed),
-		ProjectConfirmations.FraudulentFlag.Set(unacceptable.FraudulentFlag),
-	}
+// 	fmt.Println(confirmation)
 
 
-	if lenAlmostPromises != 0 {
-		sets = append(sets, ProjectConfirmations.AlmostPromises.Set(fulfills.AlmostPromises))
-	} else {
-		sets = append(sets, ProjectConfirmations.AlmostPromises.Empty())
-	}
-	if lenBrokenPromises != 0 {
-		sets = append(sets, ProjectConfirmations.BrokenPromises.Set(unacceptable.BrokenPromises))
-	} else {
-		sets = append(sets, ProjectConfirmations.BrokenPromises.Empty())
-	}
-	if lenCommentary != 0 {
-		sets = append(sets, ProjectConfirmations.Commentary.Set(confirmation.Commentary))
-	} else {
-		sets = append(sets, ProjectConfirmations.Commentary.Clear())
-	}
-	updateRecord := makeRecord(sets)
+// 	fulfills := confirmation.Fulfills
+// 	lenAlmostPromises := len(fulfills.AlmostPromises)
+// 	fulfillsHas := fulfills.Proceed || lenAlmostPromises != 0
 
-	sets = append(sets, ProjectConfirmations.ProjectId.Set(projectId))
-	sets = append(sets, ProjectConfirmations.UserId.Set(userId))
-	insertRecord := makeRecord(sets)
+// 	unacceptable := confirmation.Unacceptable
+// 	lenBrokenPromises := len(unacceptable.BrokenPromises)
+// 	unacceptableHas := unacceptable.FraudulentFlag || lenBrokenPromises != 0
 
-	exec := ProjectConfirmations.Table.InsertConflict(
-		goqu.DoUpdate("ON CONSTRAINT project_confirmations_unique_project_user", updateRecord).Where(
-			ProjectConfirmations.ProjectId.Eq(projectId),
-			ProjectConfirmations.UserId.Eq(userId),
-		),
-		insertRecord,
-	)
+// 	// if they are both full or both not full
+// 	if fulfillsHas == unacceptableHas {
+// 		c.AbortWithError(422, fmt.Errorf("can't both or neither fulfill and unacceptable %s", confirmation)); return
+// 	}
 
-	if !doExec(c, exec) { return }
+// 	lenCommentary := len(confirmation.Commentary)
+// 	if fulfills.Proceed && lenAlmostPromises == 0 && lenCommentary != 0 {
+// 		c.AbortWithError(422, fmt.Errorf("can't simply proceed and give commentary", confirmation)); return
+// 	}
 
-	c.Status(204)
-})
+// 	sets := []SetExpression {
+// 		ProjectConfirmations.Proceed.Set(fulfills.Proceed),
+// 		ProjectConfirmations.FraudulentFlag.Set(unacceptable.FraudulentFlag),
+// 	}
+
+// 	updateRecord := goqu.Record{}
+// 	insertRecord := goqu.Record{}
+// 	if lenAlmostPromises != 0 {
+// 		// sets = append(sets, ProjectConfirmations.AlmostPromises.Set(fulfills.AlmostPromises))
+// 		updateRecord["almost_promises"] = fulfills.AlmostPromises
+// 	} else {
+// 		// sets = append(sets, ProjectConfirmations.AlmostPromises.Empty())
+// 		updateRecord["almost_promises"] = fulfills.AlmostPromises
+// 	}
+// 	if lenBrokenPromises != 0 {
+// 		// sets = append(sets, ProjectConfirmations.BrokenPromises.Set(unacceptable.BrokenPromises))
+// 	} else {
+// 		// sets = append(sets, ProjectConfirmations.BrokenPromises.Empty())
+// 	}
+// 	if lenCommentary != 0 {
+// 		// sets = append(sets, ProjectConfirmations.Commentary.Set(confirmation.Commentary))
+// 	} else {
+// 		// sets = append(sets, ProjectConfirmations.Commentary.Clear())
+// 	}
+// 	updateRecord := makeRecord(sets)
+
+// 	for key, value := range updateRecord { insertRecord[key] = value }
+
+// 	insertRecord["project_id"] = projectId
+// 	insertRecord["person_id"] = userId
+// 	// sets = append(sets, ProjectConfirmations.ProjectId.Set(projectId))
+// 	// sets = append(sets, ProjectConfirmations.UserId.Set(userId))
+// 	// insertRecord := makeRecord(sets)
+
+// 	exec := db.From("project_confirmations").InsertConflict(
+// 		goqu.DoUpdate("ON CONSTRAINT project_confirmations_unique_project_user", updateRecord).Where(
+// 			ProjectConfirmations.ProjectId.Eq(projectId),
+// 			ProjectConfirmations.UserId.Eq(userId),
+// 		),
+// 		insertRecord,
+// 	)
+
+// 	if !doExec(c, exec) { return }
+
+// 	c.Status(204)
+// })
