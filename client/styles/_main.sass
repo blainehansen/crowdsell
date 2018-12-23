@@ -1,9 +1,42 @@
+@import url('https://fonts.googleapis.com/css?family=Oxygen+Mono')
+@import url('https://fonts.googleapis.com/css?family=Hind')
+
+// @import "~bootstrap/scss/bootstrap-reboot"
 @import "~bootstrap/scss/bootstrap"
 
 @import '~styles/flex'
 
-.content-tile
-	height: 100vh
-	@extend %center-both
+@mixin display-font
+	font-family: 'Oxygen Mono', monospace
 
-	@extend .container
+h1, h2, h3, h4, h5, h6, .display-font
+	+display-font
+
+body
+	font-family: 'Hind', sans-serif
+
+.full-height
+	height: 100vh
+
+.normal-tile
+	height: 70vh
+
+.text-center
+	text-align: center
+
+$sizes: (less: 0.5rem, base: 1rem, small: 2rem, medium: 4rem, large: 6rem, huge: 8rem)
+
+@each $class-name, $operation in (pad: padding, push: margin)
+	.#{$class-name}
+		@each $direction in (top, bottom, right, left)
+			&-#{$direction}
+
+				@each $name, $value in $sizes
+					&-#{$name}
+						#{$operation}-#{$direction}: $value
+
+
+.limit
+	@each $num in 10, 20, 30, 40, 50, 60, 70
+		&-#{$num}
+			max-width: $num * 1%

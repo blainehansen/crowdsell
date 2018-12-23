@@ -25,11 +25,8 @@ export default {
 <style lang="sass">
 
 #app
-	// font-family: 'Avenir', Helvetica, Arial, sans-serif
-	position: relative
 	-webkit-font-smoothing: antialiased
 	-moz-osx-font-smoothing: grayscale
-	// text-align: center
 
 @import './styles/main'
 

@@ -8,6 +8,16 @@ Vue.use(BootstrapVue)
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 
+import { library } from '@fortawesome/fontawesome-svg-core'
+// import { faFistRaised } from '@fortawesome/free-solid-svg-icons'
+import { faDove } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faDove)
+
+Vue.component('fa-icon', FontAwesomeIcon)
+
+
 import router from './router'
 
 // import Cookies from 'js-cookie'
