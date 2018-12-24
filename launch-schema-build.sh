@@ -1,0 +1,3 @@
+source .env.launch.dev.sh
+
+PGPASSWORD=$ADMIN_DATABASE_PASSWORD psql -U $ADMIN_DATABASE_USER -h $SYSTEM_DATABASE_HOST $DATABASE_DB_NAME -f launch/schema.sql

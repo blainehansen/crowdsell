@@ -30,9 +30,8 @@ yarn-error.log*
 
 *.pem
 
-server/vendor
-server-bin
-server/.env
+vendor/
+.env
 
 .env.*.sh
 

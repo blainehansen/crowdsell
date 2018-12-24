@@ -27,4 +27,5 @@ curl $GRAPHILE/graphql/Or27CPXH319u1hnCSF5ck0nTVMXBYfHztg4TbB2AG4Y
 # curl $SERVER/secure/user -H "$AUTH"
 
 
-
+curl http://localhost:5050/new-email -d '{ "email": "dude@gmail.com" }'
+curl http://localhost:5050/validate -d '{ "validationToken": "24ugPcHPzKSS5vQuYT18zF8xokWupSWxOJvkOd1i1833_gnPXQba5vi_fWYWP1t22c-yobxhH_SWe5d8ENNXmQ" }'
