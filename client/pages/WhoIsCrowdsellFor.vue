@@ -1,6 +1,6 @@
 <template lang="pug">
 
-#who-is-crowdsell-for
+#who-is-crowdsell-for.container
 
 	h2 Crowdsell can be used for any creative work that exists primarily as information.
 
@@ -11,12 +11,12 @@
 	ul
 		li Open Source Software Libraries. Software already has a strong open source tradition, but we hope for this Crowdsell model to supercharge open source and make it the norm. Anything software can do could be made available to the world, all the way from new relational databases to decentralized protocols.
 
-		li Artistic works like Film, Music, Digital Art, Books, or Video Games
+		li Artistic works like Film, Music, Digital Art, Books, or Video Games.
 
 		li Apps for Desktop, Mobile, or even the Browser.
 
 		li
-			| Basic Research or more "technical" books. Obviously research that is currently funded with public money
+			| Basic Research or more "technical" books. Obviously research that is funded with public money
 			a(href="https://paywallthemovie.com/") should be available to the public
 			| , but the Crowdsell model could fill in the gaps to make other types of research openly available while still being properly compensated.
 

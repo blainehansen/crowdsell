@@ -1,6 +1,11 @@
 <template lang="pug">
 
-#faq
+#faq.container.pad-top-huge
+
+	h1 stuff
+
+	//- you say all thought work should be freely available. do you think people shouldn't get any credit?
+	//- no, but we think having the right to *ownership* is different than having the right to *authorship*
 
 	//- why is crowdsell a centralized service?
 

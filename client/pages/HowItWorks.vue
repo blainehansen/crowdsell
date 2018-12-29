@@ -1,6 +1,6 @@
 <template lang="pug">
 
-#how-it-works
+#how-it-works.container
 	//- future ideas:
 	//- crowdfund investment for ideas that aren't up
 	//- torrent hosting
@@ -23,7 +23,7 @@
 	quote
 		p
 			b Example: An App
-		p The preview material might be screencasts of the app being used, screenshots of every page, a light version with some important features removed, and ideally the full suite of software unit tests.
+		p The preview material might be screencasts of the app being used, screenshots of every page, a "lite" version with some important features removed, and ideally the full suite of software unit tests.
 		p The promises could be a list of every feature the app has, a guarantee that all the provided unit tests pass, and perhaps even a description of the full file tree of the app's source code.
 
 	quote
@@ -39,7 +39,7 @@
 
 	ul
 		li With all of the project information ready to be shown to the world, the creator submits the project to be reviewed by Crowdsell (to make sure it isn't doing any illegal or horrifying).
-		li Once it's approved, it's published on the site, ready to be contributed to.
+		li Once it's approved, it's published on the site, ready for contributions.
 
 		li
 			| On Crowdsell, when someone pledges to a project, they are charged immediately and the money goes into escrow. To read more about this,

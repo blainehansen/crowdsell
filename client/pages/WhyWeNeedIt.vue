@@ -1,6 +1,6 @@
 <template lang="pug">
 
-#why-we-need-it
+#why-we-need-it.container
 
 	//- intellectual property doesn't empower creators, it empowers publishers
 	//- it forces the organizational coupling of creativity and manufacturing and legal enforcement

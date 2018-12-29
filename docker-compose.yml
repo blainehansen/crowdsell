@@ -1,5 +1,15 @@
 version: '3'
 services:
+  database:
+    image: postgres:11-alpine
+    environment:
+      - POSTGRES_DB=dev_database
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=asdf
+    ports:
+      - "5432:5432"
+    command: postgres -c 'max_wal_size=2GB'
+
   go-api:
     image: go-anywhere
     links:
@@ -12,16 +22,6 @@ services:
     working_dir: /go/src/main
     command: reflex -g '*.go' -G '*_test.go' --start-service=true -- sh -c "go run -tags=jsoniter *.go"
     tty: true
-
-  database:
-    image: postgres:11-alpine
-    environment:
-      - POSTGRES_DB=dev_database
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=asdf
-    ports:
-      - "5432:5432"
-    command: postgres -c 'max_wal_size=2GB'
 
   node:
     image: postgraphile

@@ -1,6 +1,6 @@
 <template lang="pug">
 
-#why-is-crowdsell-different
+#why-is-crowdsell-different.container
 
 	p
 		| Crowdsell has a few very important differences with other crowdfunding systems. Those differences are intentional, because Crowdsell is designed to add
@@ -70,10 +70,6 @@
 
 	p Since Crowdsell is designed to add rigor and dependability to the process of crowdfunding, we also wanted to give creators a guarantee that the entire goal amount they set will be raised. If the backers can expect guarantees, so can the creators.
 
-	//- This is different from other crowdfunding systems where they simply "promise" to pay once the campaign is successful. This ensures that some percentage of the raised money isn't lost due to failed charges. We thought this was reasonable, since on Crowdsell the work is already expected to be finished, the creator has pledged to release the work, and they've made promises about it. When someone pledges on Crowdsell, the only scenario their money won't be given to the creator is if the project
-		i never
-		| reaches its goal, or if it does reach the goal but turns out to have broken the promises it made. Both of these we hope will be very very rare.
-
 
 	h3 Creators make promises and guarantees
 
@@ -86,7 +82,7 @@
 		| This whole idea of guarantees makes it possible for an entire community of excited people to safely participate in bringing something amazing into the world. You don't have to know or trust the creator of a project, you just have to be excited about what they've built and the promises they've made about it.
 
 	p
-		| It also means that anyone, even if they don't have any existing media exposure or an established community or credentials, can create projects and be measured simply by the quality of the work they product. It even means that someone could create a project and put it forward
+		| It also means that anyone, even if they don't have any existing media exposure or an established community or credentials, can create projects and be measured simply by the quality of the work they produce. It even means that someone could create a project and put it forward
 		i anonymously
 		| , and that anonymity wouldn't need to set off any red flags of fraud or abuse.
 
@@ -103,6 +99,11 @@
 	h3 Projects have a "Blind Period"
 
 	p The Blind Period is designed to protect creators from being too modest about what they've produced. If their work is a genuinely amazing contribution to society, and many people are thrilled for it to exist, the campaign ought to represent that enthusiasm, no matter what amount the creators ask for.
+
+	p
+		| This way, people who have the capability to create truly incredible things will have the resources to do
+		i even more
+		| incredible things.
 
 	//- This is so that if a creator underestimates how much excitement and willingness to contribute to a project there is, they will still get to benefit from that excitement, and use the money raised for future pursuits. We didn't want people to miss out on the opportunity to be rewarded properly for work that people are very willing to pay for. The creator can decide when setting up the project how long they want this period to be. Creators will be encouraged to offer some special recognition to those who contributed during the blind period.
 

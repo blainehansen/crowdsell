@@ -1,35 +1,38 @@
 <template lang="pug">
 
-#sign-up.content-tile
+#sign-up.full-height.container.flex.align-center.justify-evenly
 
-	h1 Join the Private Beta to be one of the first to launch a project, or to contribute
+	.text-box.limit-40
+		h2.display-4 Mailing List
 
-	h3 We're trying to make
+		p.display-paragraph Join the Private Beta to be one of the first to launch a project, or to contribute
 
-	.form-group(@keyup.enter="submit")
-		label(for="sign-up-email")
-		input(type="email", placeholder="Enter email", aria-describedby="email-assurance", v-model="email")#sign-up-email.form-control
-		small#email-assurance.form-text.text-muted
-			| Your email will never be shared.
+		p.display-paragraph We're trying to make
 
-		button(type="submit", @click="submit").btn.btn-dark Submit
+	#email-form
+		.form-group(@keyup.enter="submitEmail")
+			label(for="sign-up-email")
+			input#sign-up-email.form-control(
+				type="email",
+				placeholder="Enter email",
+				aria-describedby="email-assurance",
+				v-model="email",
+				:class="{ 'is-invalid': emailInvalid }",
+			)
+			.invalid-feedback(v-if="emailInvalid") Email Invalid!
+			small(v-else)#email-assurance.form-text.text-muted
+				| Your email will never be shared.
+
+		button(type="submit", @click="submitEmail").btn.btn-dark Submit
 
 </template>
 
 <script>
 
-export default {
-	data() {
-		return {
-			email: "",
-		}
-	},
+import launchEmailMixin from '@/launchEmailMixin'
 
-	methods: {
-		submit() {
-			console.log(this.email)
-		}
-	},
+export default {
+	mixins: [launchEmailMixin],
 }
 
 </script>
