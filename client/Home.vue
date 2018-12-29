@@ -70,14 +70,14 @@
 
 		.feature-box.limit-40.flex.reverse.align-center.justify-between.push-bottom-medium
 			.text-box.limit-50.item
-				p When the amount is raised, the budget is released month by month, and the community has oversight as the project progresses.
+				p When the amount is raised, the budget is released month by month, and the backers have oversight as the project progresses.
 				p When the work is complete and meets the original promises, the creator is also given the reward amount.
 			.picture-box.item
 				fa-icon(icon="dove").fa-3x
 
 		.feature-box.limit-40.flex.align-center.justify-between.push-bottom-medium
 			.text-box.limit-50.item
-				p The creator has been rewarded for their creativity and skill, and the community has access to valuable work free of legal restrictions.
+				p The creator has been rewarded for their creativity and skill, and the world has access to valuable work free of legal restrictions.
 				p It belongs to everyone now.
 			.picture-box.item
 				fa-icon(icon="dove").fa-3x
