@@ -39,6 +39,15 @@
 	//- when someone is looking to compete with you, they have to convince the entire world *not* to support your crowdsell and instead support theirs, which means they have to be legitimately better able to deliver on the promises.
 	//- and the existence of the crowdsell tells people what they shouldn't bother working on, because it's already being handled. this allows them to clearly just transition to something else, or do *further* research that builds on yours (which they're now legally allowed to do because you didn't pointlessly lock up the innovation)
 
+
+	//- p Creators make promises about their work, standards that is has to live up to, and backers will vote to decide if it does.
+	//- p This removes a lot of risk from crowdfunding, and makes it possible for less known creators to make bold ideas happen.
+
+	//- p Crowdsell is a viable alternative to patent and copyright, since anything "secret" about the work can be hidden until a campaign has reached its financial goal.
+	//- p The combination of previews, promises, and the voting system, make it possible for creators to sell to the entire world all at once.
+
+
+
 	//- everyone's so blindly adherent to the current way we think about organizing this kind of work, that no one is even slightly stopping to consider what *other* methods could achieve the same results without all these negative consequences
 
 	//- intellectual property doesn't empower creators, it empowers publishers
