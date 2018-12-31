@@ -15,17 +15,6 @@ h1, h2, h3, h4, h5, h6, .display-font
 body
 	font-family: 'Hind', sans-serif
 
-.full-height
-	height: 100vh
-
-.normal-tile
-	height: 70vh
-
-.text-center
-	text-align: center
-
-.display-paragraph
-	font-size: 1.2rem
 
 $sizes: (less: 0.5rem, base: 1rem, small: 2rem, medium: 4rem, large: 6rem, huge: 8rem)
 
@@ -43,3 +32,21 @@ $sizes: (less: 0.5rem, base: 1rem, small: 2rem, medium: 4rem, large: 6rem, huge:
 	@each $num in 10, 20, 30, 40, 50, 60, 70
 		&-#{$num}
 			max-width: $num * 1%
+
+
+
+.full-height
+	height: 100vh
+
+.normal-tile
+	height: 70vh
+
+.text-center
+	text-align: center
+
+.display-paragraph
+	font-size: 1.2rem
+
+.page-container
+	@extend .container
+	@extend .pad-top-huge

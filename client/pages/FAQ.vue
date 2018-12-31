@@ -1,8 +1,11 @@
 <template lang="pug">
 
-#faq.container.pad-top-huge
+#faq.page-container
 
 	h1 stuff
+
+	//- I have some creative work I've already finished. Can I still use crowdsell?
+	//- absolutely, in fact that was the entire original concept. When you're putting together your project, make the proof of concept some preview of your work, make the promises a list of things that are already true about it, and make the monthly and upfront budget all $0. Then people will simply be raising whatever reward amount you choose, and the release and voting process will happen immediately once you're funded.
 
 	//- you say all thought work should be freely available. do you think people shouldn't get any credit?
 	//- no, but we think having the right to *ownership* is different than having the right to *authorship*
@@ -13,7 +16,7 @@
 
 	//- does crowdsell host a torrentable version of the projects?
 
-	//- why does crowdsell only charge 2.5%?
+	//- why does crowdsell only charge 2%?
 
 	//- can I do investment crowdfunding on Crowdsell?
 

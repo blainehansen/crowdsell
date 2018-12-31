@@ -1,6 +1,6 @@
 <template lang="pug">
 
-#who-is-crowdsell-for.container
+#who-is-crowdsell-for.page-container
 
 	h2 Crowdsell can be used for any creative work that exists primarily as information.
 

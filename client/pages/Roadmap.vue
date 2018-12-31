@@ -1,6 +1,6 @@
 <template lang="pug">
 
-#roadmap.container
+#roadmap.page-container
 
 	h1 The Crowdsell roadmap
 
@@ -10,18 +10,12 @@
 
 	p For types of projects where it makes sense to (basically ones that aren't software transmitted with git).
 
-	h3 Doing the Crowdsell Start campaign.
 
-	p Crowdsell is a big idea, and its primary goal is not to make money, but to change our culture. In order to do that, we need to make it our full-time job.
+	//- h3 Adding Equity Crowdfunding
 
-	h3 Adding Equity Crowdfunding
+	//- p We'll start with Regulation Crowdfunding, since that's legally simpler to get going.
 
-	p We'll start with Regulation Crowdfunding, since that's legally simpler to get going.
-
-	p Then once that's working and proven itself and we will move on to doing all the broker-dealer stuff and adding Regulation A+
-
-
-	h3 Experimenting with more complex funding formats, like "hold-out" amounts or monthly backing.
+	//- p Then once that's working and proven itself and we will move on to doing all the broker-dealer stuff and adding Regulation A+
 
 
 	h3 Making Crowdsell a completely decentralized service.

@@ -1,6 +1,6 @@
 <template lang="pug">
 
-#why-is-crowdsell-different.container
+#why-is-crowdsell-different.page-container
 
 	p
 		| Crowdsell has a few very important differences with other crowdfunding systems. Those differences are intentional, because Crowdsell is designed to add

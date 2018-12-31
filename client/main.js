@@ -9,7 +9,6 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-// import { faFistRaised } from '@fortawesome/free-solid-svg-icons'
 import { faDove } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -17,6 +16,11 @@ library.add(faDove)
 
 Vue.component('fa-icon', FontAwesomeIcon)
 
+import SignUpForm from '@/components/SignUpForm'
+Vue.component('SignUpForm', FontAwesomeIcon)
+
+import OutLink from '@/components/OutLink'
+Vue.component('out-link', OutLink)
 
 import router from './router'
 

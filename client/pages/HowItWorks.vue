@@ -1,10 +1,6 @@
 <template lang="pug">
 
-#how-it-works.container
-	//- future ideas:
-	//- crowdfund investment for ideas that aren't up
-	//- torrent hosting
-
+#how-it-works.page-container
 	h1 How Does Crowdsell Work Exactly?
 
 	p Crowdsell is all about making crowdfunding rigorous and dependable.
@@ -13,12 +9,15 @@
 
 	ul
 		li
-			| The creator puts together the project on the site. They write the title and the description, choose a funding amount, and give their banking information where they will receive the raise money.
+			| The creator puts together the project on the site. They write the title and the description, choose a funding amount, and provide the information for the bank account they will use to receive the raise money.
 		li
 			| Then they upload the very important
 			i preview material
 			| to showcase to the whole world what exactly their project is, why it's worth contributing to, and to give a taste of the quality of the work. They also make a list of promises about the work, which are expected to be objective true or false statements about the work being offered. After the project closes, the work will be evaluated against these promises. These are just meant to act as a way to assure the community of what they're being offered.
 			p It's important to note that at this point, the work is still basically a secret, and only the creator and their team has access to it.
+
+		//- blaine, here we'd have some exceptions, and talk about the possibility of just releasing finished work instead of asking for a budgeted fundraise
+		//- also, this needs to talk about budgeted fundraises
 
 	quote
 		p

@@ -37,10 +37,10 @@
 				br
 				| New
 
-			//- Crowdsell is a crowdfunding system that allows creators to sell their intellectual work to the whole world
-			//- p Crowdsell is a new crowdfunding system that adds binding promises to protect backers. Now creators can sell their intellectual work to the whole world, rewarding them for contributing to the commons and the public good.
 			p.display-paragraph Crowdsell is a new crowdfunding system that allows creators to fund and sell their intellectual work to the whole world.
-			p.display-paragraph By adding binding promises and oversight to protect backers, communities can reward creators for contributing to the commons and the public good.
+			p.display-paragraph
+				| By adding binding promises and oversight to protect backers, communities can reward creators for contributing to the
+				out-link(href="https://creativecommonsusa.org/index.php/open-culture/") commons and the public good.
 
 		.picture-box
 			fa-icon(icon="dove").fa-5x
@@ -48,30 +48,58 @@
 	.container.flex.column.align-center.pad-top-large
 		h2.center-text.push-bottom-large.display-3 So how does it work?
 
+		//- the basic steps of Crowdsell are:
+		//- - previews and promises
+		//- - fundraising
+		//- - voting
+		//- - release
+
 		.feature-box.limit-40.flex.align-center.justify-between.push-bottom-medium
 			.text-box.limit-50.item
-				p A creator has a big idea for valuable intellectual work, like code, art, or designs, and needs support and resources to make it happen.
+				p Crowdsell is for valuable intellectual work, like code, art or designs.
+				p Creators can either sell finished work, or fundraise a budget for a big idea.
+
+				//- p A creator has a big idea for valuable intellectual work, like code, art, or designs, and needs support and resources to make it happen.
 			.picture-box.item
 				fa-icon(icon="dove").fa-3x
 
 		.feature-box.limit-40.flex.reverse.align-center.justify-between.push-bottom-medium
 			.text-box.limit-50.item
-				p First they create a proof of concept to show the work is possible.
-				p Then they make a detailed list of promises about the intended work's nature and quality, and choose an open culture license.
+				p
+					| First they create a proof of concept or a preview, to show the work is the real deal, and choose an
+					out-link(href="https://creativecommons.org/share-your-work/public-domain/freeworks/") open culture license
+					| .
+				p Then they make a detailed list of promises about the work that the backers will expect it to live up to.
+
+				//- p Creators show previews and proofs-of-concept of their work to let potential backers know that this is the real deal.
+
+				//- p Creators make promises about their work, standards that is has to live up to, and backers will vote to decide if it does.
+				//- p This removes a lot of risk from crowdfunding, and makes it possible for less known creators to make bold ideas happen.
+
+				//- p Crowdsell is a viable alternative to patent and copyright, since anything "secret" about the work can be hidden until a campaign has reached its financial goal.
+				//- p The combination of previews, promises, and the voting system, make it possible for creators to sell to the entire world all at once.
+
+
+				//- p First they create a proof of concept to show the work is possible.
+				//- p Then they make a detailed list of promises about the intended work's nature and quality, and choose an open culture license.
 			.picture-box.item
 				fa-icon(icon="dove").fa-3x
 
 		.feature-box.limit-40.flex.align-center.justify-between.push-bottom-medium
 			.text-box.limit-50.item
-				p They make a budget for the project, and choose an amount to act as a reward once it's complete.
-				p The whole world can contribute to raise the budget and the reward.
+				//- p They make a monthly budget for the project, and choose an amount to act as a reward once it's complete.
+
+				p They choose a reward amount, and make a monthly budget if the work isn't complete yet.
+				p Anyone in the world can contribute to raise the budget and the reward.
 			.picture-box.item
 				fa-icon(icon="dove").fa-3x
 
 		.feature-box.limit-40.flex.reverse.align-center.justify-between.push-bottom-medium
 			.text-box.limit-50.item
-				p When the amount is raised, the budget is released month by month, and the backers have oversight as the project progresses.
-				p When the work is complete and meets the original promises, the creator is also given the reward amount.
+				p If needed, the budget is released month by month as the backers give oversight.
+				p Once the backers decide that the work keeps the original promises, then the creator is also given the reward amount.
+				//- p When the amount is raised, the budget is released month by month, and the backers have oversight as the project progresses.
+				//- p When the work is complete and meets the original promises, the creator is also given the reward amount.
 			.picture-box.item
 				fa-icon(icon="dove").fa-3x
 
@@ -114,7 +142,7 @@
 
 		.page-box
 			router-link(to="/how-it-works")
-				h4 How does Crowdsell work exactly?
+				h4 How does Crowdsell work in detail?
 
 		.page-box
 			router-link(to="/why-is-crowdsell-different")
