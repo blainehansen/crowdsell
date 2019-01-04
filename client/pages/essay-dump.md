@@ -61,3 +61,13 @@ It's very difficult for people to improve their governments, both because the go
 Since so much of our existing techological innovation, from electronics to medical equipment to pharmaceuticals to solar panels, all rely on the coercive and restrictive system of patents and copyrights, huge amounts of important and valuable technological progress is made artificially more expensive and unavailable. People die every year because a handful of companies own the "right" to produce and sell these things.
 
 Crowdsell makes it possible for the researchers and engineers who develop these technologies to be directly rewarded by the communities who need them, allowing those technologies to be produced and distributed for nothing more than the cost to make them. They could even be produced and distributed by the democratically owned means mentioned earlier.
+
+
+
+<!-- [Ricky Rouse and Monald Muck](https://comb.io/qtuAG1) -->
+
+We strongly recommend you make your licenses "share-alike". To understand why, imagine you've created some short stories, featuring some completely original characters.
+
+Then some hypothetical "big evil corporation" (let's give it a competely fictional name, like the Bizney Corporation), comes along. They realize that your characters are completely free for commercial use (as they should be), but they decide they're going to create a saga of movies featuring your characters, but license them in the old draconian and controlling way. Of course, they can't take the characters away from the world (your license prevents that), but they *can* lock up any story they tell, and all their specific interpretive details will now be closed off and vulnerable to expensive lawsuits by their team of legal assassins. There are some corporations who have actually done things like this, taking stories in the public domain (various fairy tales, probably ones you've never heard of), telling their own specific versions of them, and then aggressively prosecuting anyone else who uses those public domain stories in a way that's close enough to get away with.
+
+We believe that sort of behavior should simply not be allowed under any circumstances, and by making your license a share-alike, you ensure that those kinds of abusive practices will have no leg to stand on. If someone wants to use your work, they have to make it as open as you have, and are free to financially support themselves in the process.

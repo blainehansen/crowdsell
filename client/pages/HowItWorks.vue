@@ -9,7 +9,7 @@
 
 	ul
 		li
-			| The creator puts together the project on the site. They write the title and the description, choose a funding amount, and provide the information for the bank account they will use to receive the raise money.
+			| The creator puts together the project on the site. They write the title and the description, choose a funding amount, and provide the information for the bank account they will use.
 		li
 			| Then they upload the very important
 			i preview material

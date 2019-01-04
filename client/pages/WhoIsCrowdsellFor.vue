@@ -17,15 +17,17 @@
 
 		li
 			| Basic Research or more "technical" books. Obviously research that is funded with public money
-			a(href="https://paywallthemovie.com/") should be available to the public
+			out-link(href="https://paywallthemovie.com/") should be available to the public
 			| , but the Crowdsell model could fill in the gaps to make other types of research openly available while still being properly compensated.
+
+		li Textbooks and educational materials of any kind.
 
 		li Designs for physical objects, like new solar panels, phones, cars, even recipes for food or products like shampoo.
 
-		li Books or studies documenting new processes or techniques, like business management strategies or a new construction method.
+		li Books or studies documenting new processes or techniques, like a business management strategy, a manufacturing process, or a new construction method.
 
 		li
-			a(href="http://www.openlawlab.com/2014/08/05/githubbing-law/") Open Source Legal Contracts and Documents
+			out-link(href="http://www.openlawlab.com/2014/08/05/githubbing-law/") Open Source Legal Contracts and Documents
 
 	h3 And anything else you can imagine!
 

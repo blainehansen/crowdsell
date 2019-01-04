@@ -76,7 +76,7 @@
 		.feature-box.limit-40.flex.reverse.align-center.justify-between.push-bottom-medium
 			.text-box.limit-50.item
 				p If needed, the budget is released month by month as the backers give oversight.
-				p Once the backers decide that the work is true to the original promises, then the creator is also given the reward amount.
+				p Once the backers decide that the work fulfills the original promises, then the creator is given the reward amount.
 			.picture-box.item
 				fa-icon(icon="dove").fa-3x
 

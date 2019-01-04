@@ -42,15 +42,13 @@
 			b Crowdsell will simplify and automate the process.
 			| We want creators to focus on what they're good at and what matters: the creative work they do. So, Crowdsell will over time find types of rewards where all the creator has to do is provide some assets like designs or source, and the process of actually making and fulfilling them can be handled entirely by Crowdsell.
 			| So for example, if we learn that t-shirts and stickers are things that backers love, or if they love tickets to project celebration parties, or if they love
-			a(href="https://craigmod.com/journal/digital_physical/") beautiful books that document the project's creation
+			out-link(href="https://craigmod.com/journal/digital_physical/") beautiful books that document the project's creation
 			| , we'll find ways to make offering those rewards simple and automated for the creator, while still being delightful for backers. We'll find partners to provide them at reasonable prices, build features into the site that make pricing and offering those rewards simple, and ensure that the whole thing allows the creator to focus on what they do best.
 			| This simplification and streamlining will also mean that all projects and creators will have the same opportunities to offer rewards, so the thing that will make a project stand out will be the creative work itself, just as it should be.
 
 		li
 			b Rewards will be priced to contribute to the project, not to buy a thing.
-			| To echo the last point, backers on crowdsell aren't buying rewards, they're buying the thought work. We want to shift the discussion in crowdfunding away from a project being a "pre-order" or simply a shop for people to buy things, and towards a method where the
-			i thought work
-			| is itself what people are excited about. That means that when someone pledges, their money is mostly going to the creator, not to a manufacturing company that makes t-shirts. The pledge amounts will reflect this.
+			| To echo the last point, backers on crowdsell aren't buying rewards, they're buying the thought work. We want to shift the discussion in crowdfunding away from a project being a "pre-order" or simply a shop for people to buy things, and towards a method where the thought work itself is what people are excited about. That means that pledges should almost entirely go to the creator, not to a manufacturing company that makes t-shirts. The pledge amounts will reflect this.
 
 		li
 			b Rewards will only be available during the Blind Period.
@@ -63,7 +61,7 @@
 		| On other crowdfunding sites, the backers are charged
 		i at the end
 		| of the campaign, which means that
-		a(href="https://www.backerkit.com/blog/dealing-with-failed-payments/") some percentage of the charges will fail
+		out-link(href="https://www.backerkit.com/blog/dealing-with-failed-payments/") some percentage of the charges will fail
 		| . This is actually pretty reasonable, since those campaigns aren't guaranteed to successfully reach their funding amount and actually result in the project happening. On Crowdsell though, the project being offered is expected to be already done, and the project will have as much time as necessary to reach its goal. The creators can even choose to accept the currently raised amount at any time and close the project. The only circumstances where the creators
 		i won't
 		| be given the money is if the project never reaches its goal and the creators never accept the current amount, or if it does reach the goal but turns out to have broken the promises it made. Both of these we hope will be very very rare.
@@ -75,7 +73,7 @@
 
 	p
 		| Again echoing the idea of rigor and dependability, every project has a list of promises and guarantees that it makes about the work being offered. This is necessary since the work is being kept a secret during the campaign, these promises and the preview material are the only way the backers can have a clear idea of exactly what they're buying. It also ensures that someone doesn't just
-		a(href="http://nymag.com/intelligencer/2018/01/prodeum-scam-cryptocurrency-for-produce-disappears.html") invent some exciting idea and then disappear with the raised money
+		out-link(href="http://nymag.com/intelligencer/2018/01/prodeum-scam-cryptocurrency-for-produce-disappears.html") invent some exciting idea and then disappear with the raised money
 		| .
 
 	p
