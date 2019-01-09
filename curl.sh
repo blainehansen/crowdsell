@@ -10,7 +10,7 @@ GRAPHILE='http://localhost:5555'
 # curl -X POST $SERVER/login \
 # 	-d '{"email": "dude@gmail.com", "password": "pass"}'
 
-curl $GRAPHILE/graphql/Or27CPXH319u1hnCSF5ck0nTVMXBYfHztg4TbB2AG4Y
+# curl $GRAPHILE/graphql/Or27CPXH319u1hnCSF5ck0nTVMXBYfHztg4TbB2AG4Y
 
 # curl -X POST $SERVER/secure/projects -H "$AUTH" -H "$JSON" \
 # 	-d '{"name": "Dude Stuff", "description": "Various Dude Stuff"}'
@@ -27,5 +27,5 @@ curl $GRAPHILE/graphql/Or27CPXH319u1hnCSF5ck0nTVMXBYfHztg4TbB2AG4Y
 # curl $SERVER/secure/user -H "$AUTH"
 
 
-curl http://localhost:5050/new-email -d '{ "email": "dude@gmail.com" }'
-curl http://localhost:5050/validate -d '{ "validationToken": "24ugPcHPzKSS5vQuYT18zF8xokWupSWxOJvkOd1i1833_gnPXQba5vi_fWYWP1t22c-yobxhH_SWe5d8ENNXmQ" }'
+curl $SERVER/new-email -d '{ "email": "DUDE@gmail.com" }'
+# curl $SERVER/validate -d '{ "validationToken": "ZCn5OWEsdNNF1TAKbOS79PD1RR9C98CucgX5N1bF_BTvv8iEp_aGxUo99ROrZgP8AD0JO392qCah-dgl7T8TlQ" }'

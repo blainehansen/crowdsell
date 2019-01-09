@@ -1,10 +1,12 @@
 package main
 
+// docker build -f ../Dockerfile-crowdsell-go -t crowdsell-go .
+
 import (
-	// "os"
 	// "log"
 	"fmt"
 	"time"
+	"strings"
 	"unicode"
 
 	"database/sql"
@@ -31,7 +33,7 @@ import (
 
 
 var environment map[string]string = func() map[string]string {
-	env, err := godotenv.Read()
+	env, err := godotenv.Read("/config/.env")
 	if err != nil {
 		fmt.Println("error reading .env file")
 		panic(err)
@@ -144,7 +146,6 @@ func main() {
 	router.Use(cors.New(config))
 
 
-	// sudo docker-compose -f docker-compose-launch.yml up
 	router.POST("/new-email", func(c *gin.Context) {
 		input := struct {
 			Email string
@@ -167,6 +168,11 @@ func main() {
 			goqu.Record{ "email": input.Email, "validation_token": validationToken },
 		)
 		if _, err := insert.Exec(); err != nil{
+			// in the event that a duplicate email comes in, we just pretend like everything's okay
+			if strings.Contains(err.Error(), `unique constraint "emails_email_key"`) {
+				c.Status(204); return
+			}
+
 			c.AbortWithError(500, err); return
 		}
 

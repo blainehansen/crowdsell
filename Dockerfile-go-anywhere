@@ -6,4 +6,4 @@ WORKDIR $GOPATH/src/main
 
 RUN go get github.com/cespare/reflex
 
-# sudo docker build -f Dockerfile-go-anywhere -t go-anywhere .
+# docker build -f Dockerfile-go-anywhere -t go-anywhere .
