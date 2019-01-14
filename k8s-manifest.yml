@@ -1,0 +1,106 @@
+# go api
+apiVersion: v1
+kind: Service
+metadata:
+  name: crowdsell
+  labels:
+    app: crowdsell
+spec:
+  type: LoadBalancer
+  selector:
+    app: crowdsell
+    tier: go-api
+  ports:
+  - port: 5050
+    targetPort: 5050
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-api
+  labels:
+    app: crowdsell
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crowdsell
+      tier: go-api
+  template:
+    metadata:
+      labels:
+        app: crowdsell
+        tier: go-api
+    spec:
+      containers:
+      - image: localhost:32000/crowdsell-go
+        name: crowdsell-go
+        ports:
+        - containerPort: 5050
+
+# database
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+  labels:
+    app: crowdsell
+spec:
+  type: NodePort
+  selector:
+    app: crowdsell
+    tier: database
+  ports:
+  - port: 5432
+    targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database
+  labels:
+    app: crowdsell
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crowdsell
+      tier: database
+  template:
+    metadata:
+      labels:
+        app: crowdsell
+        tier: database
+    spec:
+      containers:
+      - name: crowdsell
+        image: postgres:10-alpine
+        # volumeMounts:
+        # - name: postgres-data-mount
+        #   mountPath: "/var/lib/postgresql/data"
+        env:
+        - name: POSTGRES_DB
+          value: database
+        - name: POSTGRES_USER
+          value: database_admin
+        - name: POSTGRES_PASSWORD
+          value: asdf
+        ports:
+        - containerPort: 5432
+      # volumes:
+      # - name: postgres-data-mount
+      #   persistentVolumeClaim:
+      #     claimName: postgres-data-pvc
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: postgres-data-pvc
+# spec:
+#   accessModes:
+#   - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 5Gi
+#   storageClassName: do-block-storage

@@ -208,4 +208,9 @@
 	//- p Creators should set their reward amounts higher than they probably think
 
 
+
+	//- the intellectual property system applies to everyone, whether they agree to participate or not. If someone has a patent, they can use legal force to extract damges or apply injuctions. The consiequenes of this are that profiting from intellectual property is less a matter of contributing valuable intellectual work than having the means to maneuver the intellectual property sytem itself. This kind of phenomenon is a well stuided idea in econmics, called rent seeking, where middlemen who add no value to society are able to coopt a coercive system for their own purposes.
+
+
+
 </template>

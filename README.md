@@ -1,3 +1,13 @@
+```bash
+# turns off microk8s
+snap disable microk8s
+
+# turns on microk8s
+snap enable microk8s
+```
+
+
+
 # go-http-parser-bot
 
 > A bot for parsing http

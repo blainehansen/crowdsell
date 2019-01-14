@@ -48,12 +48,17 @@ var db *goqu.Database = func() *goqu.Database {
 		"postgres",
 		fmt.Sprintf(
 			"host=%s port=%s dbname=%s user=%s password=%s sslmode=%s",
-			environment["DOCKER_DATABASE_HOST"],
-			environment["DATABASE_PORT"],
-			environment["DATABASE_DB_NAME"],
+			// environment["DOCKER_DATABASE_HOST"],
+			"database",
+			// environment["DATABASE_PORT"],
+			"5432",
+			// environment["DATABASE_DB_NAME"],
+			"database"
 			"golang_server_user",
-			environment["GOLANG_DATABASE_PASSWORD"],
-			environment["DATABASE_SSL"],
+			// environment["GOLANG_DATABASE_PASSWORD"],
+			"",
+			// environment["DATABASE_SSL"],
+			"disable",
 		),
 	)
 	if connectionError != nil {
@@ -87,6 +92,11 @@ func encodeBase64(data []byte) []byte {
 	return encodedData
 }
 
+
+// TODO, the ci build scripts can kubectl apply/create different config maps
+// use apply with multiple file switches depending on the environment
+
+
 func generateRandomToken() ([]byte, error) {
 	tokenBytes := make([]byte, 64)
 	_, err := rand.Read(tokenBytes)
@@ -109,6 +119,7 @@ var shouldMail bool = func() bool {
 }()
 
 var domain string = environment["SERVER_DOMAIN"]
+var serverProtocol string = environment["SERVER_PROTOCOL"]
 var privateAPIKey string = environment["MAIL_PRIVATE_API_KEY"]
 var publicValidationKey string = environment["MAIL_PUBLIC_KEY"]
 
@@ -176,7 +187,7 @@ func main() {
 			c.AbortWithError(500, err); return
 		}
 
-		validationUrl := fmt.Sprintf(`%s%s/recover-password?t=%s`, environment["SERVER_PROTOCOL"], environment["SERVER_DOMAIN"], validationToken)
+		validationUrl := fmt.Sprintf(`%s%s/recover-password?t=%s`, serverProtocol, domain, validationToken)
 
 		body := "Hello! Thank you for signing up to join the Crowdsell private beta.\n\n" +
 			"Click this link to validate your email: \n" +
@@ -218,5 +229,5 @@ func main() {
 	})
 
 
-	router.Run(fmt.Sprintf(":%s", environment["API_PORT"]))
+	router.Run(fmt.Sprintf(":%s", "5050"))
 }
