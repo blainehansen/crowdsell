@@ -16,7 +16,6 @@
 # envsubst < ${HOME}/project/k8s.yml > ${HOME}/patched_k8s.yml
 # sed -e '/{{REPLACE}}/{r content.txt' -e 'd;}' template.txt
 
-
 # go api
 apiVersion: v1
 kind: Service
