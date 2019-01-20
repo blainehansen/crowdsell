@@ -32,13 +32,11 @@ yarn-error.log*
 
 vendor/
 
-.env
-.env.*.sh
-.env.admin.sh
-k8s-cluster-config.yml
+k8s-cluster.yml
 
 .keys.*.yml
 .keys.*.sh
+.keys.*.txt
 
 
 client/queries/*.json

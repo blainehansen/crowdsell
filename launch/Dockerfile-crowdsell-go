@@ -1,3 +1,5 @@
+# docker build -f Dockerfile-crowdsell-go -t blainehansen/crowdsell .
+
 FROM golang:1-stretch AS builder
 
 # RUN apk update && apk add --no-cache git

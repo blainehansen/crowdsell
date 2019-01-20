@@ -1,7 +1,5 @@
 package main
 
-// docker build -f ../Dockerfile-crowdsell-go -t crowdsell-go .
-
 import (
 	// "log"
 	"fmt"
