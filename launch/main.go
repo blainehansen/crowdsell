@@ -44,7 +44,7 @@ var env map[string]string = readEnvFile("/env/.env")
 var keys map[string]string = readEnvFile("/keys/.keys")
 
 var db *goqu.Database = func() *goqu.Database {
-	bytesGolangDatabasePassword, readErr := ioutil.ReadFile("/keys/.keys.go-db")
+	bytesGolangDatabasePassword, readErr := ioutil.ReadFile("/keys/.db-key")
 	if readErr != nil {
 		panic(readErr)
 	}
@@ -147,7 +147,13 @@ func main() {
 	router := gin.Default()
 
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{env["ALLOW_ORIGIN"]}
+	allowOrigin := env["ALLOW_ORIGIN"]
+	if allowOrigin == "*" {
+		config.AllowAllOrigins = true
+		fmt.Println("allowing all origins")
+	} else {
+		config.AllowOrigins = []string{allowOrigin}
+	}
 	config.AllowMethods = []string{"OPTIONS", "POST"}
 	config.MaxAge = 24 * time.Hour
 
@@ -190,7 +196,10 @@ func main() {
 			"Click this link to validate your email: \n" +
 			validationUrl
 
-		sendMessage("no-reply@crowdsell.io", "Crowdsell - Validation Email", body, input.Email)
+		sendErr := sendMessage("no-reply@crowdsell.io", "Crowdsell - Validation Email", body, input.Email)
+		if sendErr != nil {
+			c.AbortWithError(500, sendErr); return
+		}
 
 		c.Status(204)
 	})

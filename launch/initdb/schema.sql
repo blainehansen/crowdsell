@@ -1,6 +1,6 @@
 create extension citext;
 
-\set golang_server_password `sed 's/^[ \t]*//;s/[ \t]*$//' < /keys/.keys.go-db`
+\set golang_server_password `sed 's/^[ \t]*//;s/[ \t]*$//' < /keys/.go-db-key`
 create role golang_server_user login password :'golang_server_password';
 
 

@@ -2,13 +2,13 @@
 # kubectl config --kubeconfig=.configs/k8s-cluster.yml use-context do-sfo2-crowdsell
 
 # kubectl apply -f .configs/.keys.db.yml -f .configs/.keys.docker.yml
-# kubectl create configmap env.go --from-file=.configs/.env.launch.prod.sh
-# kubectl create secret generic keys.go --from-file=.configs/.keys.go.sh
+# kubectl create configmap env.go --from-file=.env=.configs/.env.launch.dev.sh
+# kubectl create secret generic keys.go --from-file=.keys=.configs/.keys.go.sh --from-file=.db-key=.configs/.keys.go-db.txt
 # kubectl apply -f .configs/k8s-manifest.yml
 # then psql into the database and apply the first root migration, which will use .keys.go-db.txt
 
 # dev version
-# kubectl create configmap .env.go --from-file=.configs/.env.launch.dev.sh
+# kubectl create configmap env.go --from-file=.env=.configs/.env.launch.prod.sh
 
 # this will ensure that the build fails if the deployment fails
 # kubectl rollout status deployment/deployment-name
@@ -17,64 +17,65 @@
 # sed -e '/{{REPLACE}}/{r content.txt' -e 'd;}' template.txt
 
 
-# # go api
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: crowdsell
-#   labels:
-#     app: crowdsell
-# spec:
-#   type: LoadBalancer
-#   selector:
-#     app: crowdsell
-#     tier: go-api
-#   ports:
-#   - port: 5050
-#     targetPort: 5050
-# ---
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: go-api
-#   labels:
-#     app: crowdsell
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: crowdsell
-#       tier: go-api
-#   template:
-#     metadata:
-#       labels:
-#         app: crowdsell
-#         tier: go-api
-#     spec:
-#       containers:
-#       - image: blainehansen/crowdsell
-#         name: crowdsell-go
-#         ports:
-#         - containerPort: 5050
+# go api
+apiVersion: v1
+kind: Service
+metadata:
+  name: crowdsell
+  labels:
+    app: crowdsell
+spec:
+  type: LoadBalancer
+  selector:
+    app: crowdsell
+    tier: go-api
+  ports:
+  - port: 5050
+    targetPort: 5050
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-api
+  labels:
+    app: crowdsell
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crowdsell
+      tier: go-api
+  template:
+    metadata:
+      labels:
+        app: crowdsell
+        tier: go-api
+    spec:
+      containers:
+      - image: blainehansen/crowdsell
+        imagePullPolicy: Always
+        name: crowdsell-go
+        ports:
+        - containerPort: 5050
 
-#         volumeMounts:
-#         - name: keys.go
-#           mountPath: "/keys/"
-#           readOnly: true
-#         - name: env.go
-#           mountPath: "/env/"
-#           readOnly: true
+        volumeMounts:
+        - name: keys
+          mountPath: "/keys/"
+          readOnly: true
+        - name: env
+          mountPath: "/env/"
+          readOnly: true
 
-#       imagePullSecrets:
-#       - name: keys.docker
+      imagePullSecrets:
+      - name: keys.docker
 
-#       volumes:
-#       - name: keys.go
-#         secret:
-#           secretName: keys.go
-#       - name: env.go
-#         configMap:
-#           name: env.go
+      volumes:
+      - name: keys
+        secret:
+          secretName: keys.go
+      - name: env
+        configMap:
+          name: env.go
 
 # database
 ---

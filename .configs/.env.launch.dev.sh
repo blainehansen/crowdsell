@@ -1,4 +1,4 @@
-ALLOW_ORIGIN='http://localhost:8080'
+ALLOW_ORIGIN='*'
 
 SHOULD_MAIL='false'
 

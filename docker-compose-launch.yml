@@ -7,10 +7,10 @@ services:
     ports:
       - "5050:5050"
     volumes:
-      - .configs/.env.launch.dev.sh:/env/.env
-      - .configs/.keys.go.sh:/keys/.keys
-      - .configs/.keys.go-db.sh:/keys/.keys.go-db
-      - launch:/go/src/main
+      - ./.configs/.env.launch.dev.sh:/env/.env
+      - ./.configs/.keys.go.sh:/keys/.keys
+      - ./.configs/.keys.go-db.txt:/keys/.db-key
+      - ./launch:/go/src/main
     working_dir: /go/src/main
     command: reflex -g '*.go' -G '*_test.go' --start-service=true -- sh -c "go run -tags=jsoniter *.go"
     tty: true
@@ -24,6 +24,6 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - launch/initdb:/docker-entrypoint-initdb.d/
-      - .configs/.keys.go-db.sh:/keys/.keys.go-db
+      - ./launch/initdb:/docker-entrypoint-initdb.d/
+      - ./.configs/.keys.go-db.txt:/keys/.go-db-key
     command: postgres -c 'max_wal_size=2GB'
