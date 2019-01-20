@@ -1,3 +1,8 @@
+# kubectl apply -f k8s-manifest.yml -f .keys.db.yml -f .keys.go.yml
+
+# envsubst < ${HOME}/project/k8s.yml > ${HOME}/patched_k8s.yml
+# sed -e '/{{REPLACE}}/{r content.txt' -e 'd;}' template.txt
+
 # go api
 apiVersion: v1
 kind: Service
@@ -38,6 +43,22 @@ spec:
         ports:
         - containerPort: 5050
 
+        volumeMounts:
+        - name: .keys
+          mountPath: "/keys/"
+          readOnly: true
+        - name: .env
+          mountPath: "/env/"
+          readOnly: true
+
+      volumes:
+      - name: .keys
+        secret:
+          secretName: .keys.go
+      - name: .env
+        configMap:
+          name: .env.go
+
 # database
 ---
 apiVersion: v1
@@ -75,19 +96,26 @@ spec:
     spec:
       containers:
       - name: crowdsell
-        image: postgres:10-alpine
-        # volumeMounts:
-        # - name: postgres-data-mount
-        #   mountPath: "/var/lib/postgresql/data"
+        image: postgres:11-alpine
         env:
         - name: POSTGRES_DB
           value: database
         - name: POSTGRES_USER
-          value: database_admin
+          valueFrom:
+            secretKeyRef:
+              name: keys.db
+              key: POSTGRES_USER
         - name: POSTGRES_PASSWORD
-          value: asdf
+          valueFrom:
+            secretKeyRef:
+              name: keys.db
+              key: POSTGRES_PASSWORD
         ports:
         - containerPort: 5432
+        # volumeMounts:
+        # - name: postgres-data-mount
+        #   mountPath: "/var/lib/postgresql/data"
+
       # volumes:
       # - name: postgres-data-mount
       #   persistentVolumeClaim:

@@ -8,6 +8,7 @@ import (
 	"time"
 	"strings"
 	"unicode"
+	"io/ioutil"
 
 	"database/sql"
 	_ "github.com/lib/pq"
@@ -32,33 +33,31 @@ import (
 )
 
 
-var environment map[string]string = func() map[string]string {
-	env, err := godotenv.Read("/config/.env")
+func readEnvFile(filename string) map[string]string {
+	env, err := godotenv.Read(filename)
 	if err != nil {
-		fmt.Println("error reading .env file")
+		fmt.Printf("error reading %s\n", filename)
 		panic(err)
 	}
 	return env
-}()
+}
 
+var env map[string]string = readEnvFile("/env/.env")
+var keys map[string]string = readEnvFile("/keys/.keys")
 
 var db *goqu.Database = func() *goqu.Database {
+	bytesGolangDatabasePassword, readErr := ioutil.ReadFile("/keys/.keys.go-db")
+	if readErr != nil {
+		panic(readErr)
+	}
+
 	// CONNECTING TO DATABASE
 	pgDb, connectionError := sql.Open(
 		"postgres",
 		fmt.Sprintf(
-			"host=%s port=%s dbname=%s user=%s password=%s sslmode=%s",
-			// environment["DOCKER_DATABASE_HOST"],
-			"database",
-			// environment["DATABASE_PORT"],
-			"5432",
-			// environment["DATABASE_DB_NAME"],
-			"database"
-			"golang_server_user",
-			// environment["GOLANG_DATABASE_PASSWORD"],
-			"",
-			// environment["DATABASE_SSL"],
-			"disable",
+			"host=database port=5432 dbname=database user=golang_server_user password=%s sslmode=%s",
+			strings.TrimSpace(string(bytesGolangDatabasePassword)),
+			env["DATABASE_SSL"],
 		),
 	)
 	if connectionError != nil {
@@ -94,7 +93,7 @@ func encodeBase64(data []byte) []byte {
 
 
 // TODO, the ci build scripts can kubectl apply/create different config maps
-// use apply with multiple file switches depending on the environment
+// use apply with multiple file switches depending on the env
 
 
 func generateRandomToken() ([]byte, error) {
@@ -110,7 +109,7 @@ func generateRandomToken() ([]byte, error) {
 
 
 var shouldMail bool = func() bool {
-	innerBool, parseError := strconv.ParseBool(environment["SHOULD_MAIL"])
+	innerBool, parseError := strconv.ParseBool(env["SHOULD_MAIL"])
 	if parseError != nil {
 		panic(parseError)
 	}
@@ -118,12 +117,13 @@ var shouldMail bool = func() bool {
 	return innerBool
 }()
 
-var domain string = environment["SERVER_DOMAIN"]
-var serverProtocol string = environment["SERVER_PROTOCOL"]
-var privateAPIKey string = environment["MAIL_PRIVATE_API_KEY"]
-var publicValidationKey string = environment["MAIL_PUBLIC_KEY"]
+var serverDomain string = env["SERVER_DOMAIN"]
+var serverProtocol string = env["SERVER_PROTOCOL"]
 
-var mailgunClient mailgun.Mailgun = mailgun.NewMailgun(domain, privateAPIKey, publicValidationKey)
+var mailPrivateAPIKey string = keys["MAIL_PRIVATE_API_KEY"]
+var mailPublicKey string = keys["MAIL_PUBLIC_KEY"]
+
+var mailgunClient mailgun.Mailgun = mailgun.NewMailgun(serverDomain, mailPrivateAPIKey, mailPublicKey)
 
 func sendMessage(sender string, subject string, body string, recipient string) error {
 	message := mailgunClient.NewMessage(sender, subject, body, recipient)
@@ -149,8 +149,7 @@ func main() {
 	router := gin.Default()
 
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:8080"}
-	// config.AllowMethods = []string{"HEAD", "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE"}
+	config.AllowOrigins = []string{env["ALLOW_ORIGIN"]}
 	config.AllowMethods = []string{"OPTIONS", "POST"}
 	config.MaxAge = 24 * time.Hour
 
@@ -187,7 +186,7 @@ func main() {
 			c.AbortWithError(500, err); return
 		}
 
-		validationUrl := fmt.Sprintf(`%s%s/recover-password?t=%s`, serverProtocol, domain, validationToken)
+		validationUrl := fmt.Sprintf(`%s%s/recover-password?t=%s`, serverProtocol, serverDomain, validationToken)
 
 		body := "Hello! Thank you for signing up to join the Crowdsell private beta.\n\n" +
 			"Click this link to validate your email: \n" +

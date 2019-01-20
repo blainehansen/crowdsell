@@ -1,26 +1,29 @@
 version: '3'
 services:
-  launch-go-api:
+  api:
     image: go-anywhere
     links:
-      - launch-database
+      - database
     ports:
       - "5050:5050"
     volumes:
-      - .env.launch.dev.sh:/config/.env
-      - ./launch/go:/go/src/main
+      - .configs/.env.launch.dev.sh:/env/.env
+      - .configs/.keys.go.sh:/keys/.keys
+      - .configs/.keys.go-db.sh:/keys/.keys.go-db
+      - launch:/go/src/main
     working_dir: /go/src/main
     command: reflex -g '*.go' -G '*_test.go' --start-service=true -- sh -c "go run -tags=jsoniter *.go"
     tty: true
 
-  launch-database:
+  database:
     image: postgres:11-alpine
     environment:
-      - POSTGRES_DB=dev_database
+      - POSTGRES_DB=database
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=asdf
     ports:
       - "5432:5432"
     volumes:
-      - ./launch/initdb:/docker-entrypoint-initdb.d/
+      - launch/initdb:/docker-entrypoint-initdb.d/
+      - .configs/.keys.go-db.sh:/keys/.keys.go-db
     command: postgres -c 'max_wal_size=2GB'

@@ -27,5 +27,5 @@ GRAPHILE='http://localhost:5555'
 # curl $SERVER/secure/user -H "$AUTH"
 
 
-curl $SERVER/new-email -d '{ "email": "DUDE@gmail.com" }'
-# curl $SERVER/validate -d '{ "validationToken": "ZCn5OWEsdNNF1TAKbOS79PD1RR9C98CucgX5N1bF_BTvv8iEp_aGxUo99ROrZgP8AD0JO392qCah-dgl7T8TlQ" }'
+curl $SERVER/new-email -d '{ "email": "dude@gmail.com" }'
+# curl $SERVER/validate -d '{ "validationToken": "7FlQWXSDq2MgmUoD75kY1x5WWHda-nOxkdsGN6jrod8NMk6TMZEGW_MG787zYcmNdUbF09DQwiQHexmR55VN-w" }'

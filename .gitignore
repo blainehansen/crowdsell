@@ -31,11 +31,14 @@ yarn-error.log*
 *.pem
 
 vendor/
-.env
 
+.env
 .env.*.sh
 .env.admin.sh
 k8s-cluster-config.yml
+
+.keys.*.yml
+.keys.*.sh
 
 
 client/queries/*.json

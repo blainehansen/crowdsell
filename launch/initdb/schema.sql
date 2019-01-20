@@ -1,7 +1,7 @@
 create extension citext;
 
--- TODO not secure
-create role golang_server_user login password 'golang';
+\set golang_server_password `sed 's/^[ \t]*//;s/[ \t]*$//' < /keys/.keys.go-db`
+create role golang_server_user login password :'golang_server_password';
 
 
 create table emails (
