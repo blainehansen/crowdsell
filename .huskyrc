@@ -1,0 +1,5 @@
+{
+  "hooks": {
+    "pre-commit": "git secret hide && git add -A"
+  }
+}
