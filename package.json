@@ -1,15 +1,11 @@
 {
-	"name": "go-http-parser-bot",
+	"name": "crowdsell",
 	"version": "1.0.0",
-	"description": "A bot for parsing http",
+	"description": "Destroying intellectual property, and creating a world of open culture and information.",
 	"author": "blainehansen <faichenshing@gmail.com>",
 	"private": true,
-	"pre-commit": [
-		"hide"
-	],
 	"scripts": {
 		"get-promisepay": "wget -O client/libs/prelive-promisepay.js https://js.prelive.promisepay.com/PromisePay.js && wget -O client/libs/promisepay.js https://js.promisepay.com/PromisePay.js",
-		"hide": "git secret hide",
 		"serve": "npm run persist && vue-cli-service serve",
 		"build": "npm run get-promisepay && npm run persist && vue-cli-service build",
 		"lint": "vue-cli-service lint",
