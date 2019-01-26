@@ -1,17 +1,17 @@
 <template lang="pug">
 
 #home
-	#banner.container.full-height.flex.align-center.justify-between
+	#banner.container.full-height.flex.align-center.justify-center
 		.text-box
-			h1#banner-header.display-2
+			h1#banner-header.display-4
 				| Freeing
 				br
 				| Intellectual
 				br
 				| Property
 
-		.picture-box
-			fa-icon(icon="dove").fa-5x
+		.picture-box.big
+			img(src="@/assets/illustrations/large-scenes/freeing-intellectual-property.svg")
 
 	.normal-tile.container.flex.reverse.justify-evenly.pad-top-huge
 		.text-box.limit-40.text-right
@@ -26,7 +26,7 @@
 			p.display-paragraph Big corporations have the power to create monopolies, trap us all in echo chambers, and extract wealth from society.
 
 		.picture-box
-			fa-icon(icon="dove").fa-5x
+			img(src="@/assets/illustrations/large-scenes/intellectual-property-is-broken.svg")
 
 	.normal-tile.container.flex.align-center.justify-evenly
 		.text-box.limit-40
@@ -39,12 +39,12 @@
 
 			p.display-paragraph Crowdsell is a new crowdfunding system that allows creators to fund and sell their intellectual work to the whole world.
 			p.display-paragraph
-				| By adding binding promises and oversight to protect backers, communities can reward creators for contributing to the
+				| By adding binding promises and oversight to protect backers, communities can reward creators for contributing to the&nbsp;
 				out-link(href="https://creativecommonsusa.org/index.php/open-culture/") commons and the public good
 				| .
 
 		.picture-box
-			fa-icon(icon="dove").fa-5x
+			img(src="@/assets/illustrations/large-scenes/we-need-something-new.svg")
 
 	.container.flex.column.align-center.pad-top-large
 		h2.center-text.push-bottom-large.display-3 So how does it work?
@@ -54,38 +54,38 @@
 				p Crowdsell is for valuable intellectual work, like code, art or designs.
 				p Creators can either sell finished work, or fundraise a budget for a big idea.
 			.picture-box.item
-				fa-icon(icon="dove").fa-3x
+				img(src="@/assets/illustrations/feature-panels/completed-parchment.svg")
 
 		.feature-box.limit-40.flex.reverse.align-center.justify-between.push-bottom-medium
 			.text-box.limit-50.item
 				p
-					| First they create a proof of concept or a preview to show they are capable, and choose an
+					| First they create a proof of concept or a preview to show they are capable, and choose an&nbsp;
 					out-link(href="https://creativecommons.org/share-your-work/public-domain/freeworks/") open culture license
 					| .
 				p Then they make a detailed list of promises about the work that the backers will expect it to live up to.
 			.picture-box.item
-				fa-icon(icon="dove").fa-3x
+				img(src="@/assets/illustrations/feature-panels/a-plaque-previewing-the-parchment.svg")
 
 		.feature-box.limit-40.flex.align-center.justify-between.push-bottom-medium
 			.text-box.limit-50.item
 				p They choose a reward amount, and make a monthly budget if the work isn't complete yet.
 				p Anyone in the world can contribute to fundraise the total amount.
 			.picture-box.item
-				fa-icon(icon="dove").fa-3x
+				img(src="@/assets/illustrations/feature-panels/accounting-paper-with-a-tip-jar.svg")
 
 		.feature-box.limit-40.flex.reverse.align-center.justify-between.push-bottom-medium
 			.text-box.limit-50.item
 				p If needed, the budget is released month by month as the backers give oversight.
 				p Once the backers decide that the work fulfills the original promises, then the creator is given the reward amount.
 			.picture-box.item
-				fa-icon(icon="dove").fa-3x
+				img(src="@/assets/illustrations/feature-panels/the-accounting-paper-inspected-with-a-ballot-box.svg")
 
 		.feature-box.limit-40.flex.align-center.justify-between.push-bottom-medium
 			.text-box.limit-50.item
 				p The creator has been rewarded for their creativity and skill, and the world has access to valuable work free of legal restrictions.
 				p It belongs to everyone now.
 			.picture-box.item
-				fa-icon(icon="dove").fa-3x
+				img(src="@/assets/illustrations/feature-panels/the-parchment-flies-away.svg")
 
 
 	.normal-tile.container.flex.align-center.justify-evenly
@@ -95,7 +95,7 @@
 			router-link(to="/sign-up", tag="a").btn.btn-dark Join the Private Beta
 
 		.picture-box
-			fa-icon(icon="dove").fa-5x
+			img(src="@/assets/illustrations/small-scenes/how-could-crowdsell-change-society.svg")
 
 
 	.container.pad-top-large.pad-bottom-huge
@@ -144,7 +144,15 @@ export default {
 // 	font-size: 2rem
 
 .picture-box
-	font-size: 3rem
+	&.big
+		width: 70%
+
+	img
+		width: 100%
+		height: auto
+
+#home
+	background: linear-gradient(to bottom, #a09ad6 0%, rgba(255,255,255,0) 800px)
 
 #banner-header
 	line-height: 1.6
