@@ -133,8 +133,8 @@
 <script>
 
 import FreeingIntellectualProperty from "@/assets/illustrations/large-scenes/freeing-intellectual-property.svg"
-import IntellectualPropertyIsBroken from "@/assets/illustrations/large-scenes/intellectual-property-is-broken_touched.svg"
-import WeNeedSomethingNew from "@/assets/illustrations/large-scenes/we-need-something-new_touched.svg"
+import IntellectualPropertyIsBroken from "@/assets/illustrations/large-scenes/intellectual-property-is-broken.svg"
+import WeNeedSomethingNew from "@/assets/illustrations/large-scenes/we-need-something-new.svg"
 import CompletedParchment from "@/assets/illustrations/feature-panels/completed-parchment.svg"
 import APlaquePreviewingTheParchment from "@/assets/illustrations/feature-panels/a-plaque-previewing-the-parchment.svg"
 import AccountingPaperWithATipJar from "@/assets/illustrations/feature-panels/accounting-paper-with-a-tip-jar.svg"
