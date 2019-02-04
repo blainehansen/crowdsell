@@ -15,7 +15,7 @@
 	p
 		| Basically all crowdfunding sites have some concept of "rewards", or things that the backers receive to thank them for contributing. We will always encourage creators to put some acknowledgement of their backers into the work itself, and Crowdsell will always post (optionally anonymous) lists of who contributed and how much, but we don't have a system for anything beyond that.
 	p
-		| Although we are considering adding a more typical rewards system, we'll tell you our philsophy for why we've decided not to for now, and how that philosophy would influence how we
+		| Although we are considering adding a more typical rewards system, we'll tell you our philosophy for why we've decided not to for now, and how that philosophy would influence how we
 		i would
 		| make a rewards system.
 
@@ -64,7 +64,7 @@
 		out-link(href="https://www.backerkit.com/blog/dealing-with-failed-payments/") some percentage of the charges will fail
 		| . This is actually pretty reasonable, since those campaigns aren't guaranteed to successfully reach their funding amount and actually result in the project happening. On Crowdsell though, the project being offered is expected to be already done, and the project will have as much time as necessary to reach its goal. The creators can even choose to accept the currently raised amount at any time and close the project. The only circumstances where the creators
 		i won't
-		| be given the money is if the project never reaches its goal and the creators never accept the current amount, or if it does reach the goal but turns out to have broken the promises it made. Both of these we hope will be very very rare.
+		| be given the money is if the project never reaches its goal and the creators never accept the current amount, or if it does reach the goal but turns out to have broken the promises it made. We hope both of these situations will be very very rare.
 
 	p Since Crowdsell is designed to add rigor and dependability to the process of crowdfunding, we also wanted to give creators a guarantee that the entire goal amount they set will be raised. If the backers can expect guarantees, so can the creators.
 
@@ -91,7 +91,7 @@
 
 	p Crowdsell is designed to restore what we call "the buyer's imperative" to intellectual property. When you want a physical object the person selling that physical object can restrict your access to it until you pay them for creating and bringing it to you.
 
-	p Our society has had a difficult time applying this idea to intellectual property though, even before the digital age, and the only frankly terrible solution we've come up with is intellectual property law. We think the Crowdsell method of simply not releasing the work to the world in any form before the creators have been compensated for it is the only way you could ever apply the buyer's imperative to intellectual property, since the only way to truly control information is to keep it a true secret for a time.
+	p Our society has had a difficult time applying this idea to intellectual property though, even before the digital age, and the only solution we've come up with is intellectual property law (which is a frankly terrible solution). We think the Crowdsell method of simply not releasing the work to the world in any form before the creators have been compensated for it is the only way you could ever apply the buyer's imperative to intellectual property, since the only way to truly control information is to keep it a true secret for a time.
 
 
 	h3 Projects have a "Blind Period"

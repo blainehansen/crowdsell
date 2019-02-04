@@ -62,7 +62,7 @@
 	p
 		| Patents often
 		out-link(href="https://www.the-scientist.com/bio-business/do-patents-promote-or-stall-innovation-33443") stop researchers and engineers
-		| from pursuing ideas or using certain methods. It is obvious that limiting these thinkers from doing valuable work that they're capable of doing is counterproductive and slows down society as a whole.
+		| from pursuing ideas or using certain methods. It is obvious that limiting these thinkers from doing valuable work that they would otherwise do is counterproductive and slows down society as a whole.
 
 	p
 		| Twenty years is the typical patent duration in the United States, and thanks to the

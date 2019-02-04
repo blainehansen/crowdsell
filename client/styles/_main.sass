@@ -1,20 +1,25 @@
-@import url('https://fonts.googleapis.com/css?family=Oxygen+Mono')
+@import url('https://fonts.googleapis.com/css?family=Arvo');
 @import url('https://fonts.googleapis.com/css?family=Hind')
 
 // @import "~bootstrap/scss/bootstrap-reboot"
 @import "~bootstrap/scss/bootstrap"
 
-@import '~styles/flex'
+@import "./variables"
+
+@import './flex'
 
 @mixin display-font
-	font-family: 'Oxygen Mono', monospace
+	font-family: 'Arvo', serif;
+
+@mixin normal-font
+	font-family: 'Hind', sans-serif
 
 h1, h2, h3, h4, h5, h6, .display-font
 	+display-font
 
 body
-	font-family: 'Hind', sans-serif
-
+	+normal-font
+	color: $black
 
 $sizes: (less: 0.5rem, base: 1rem, small: 2rem, medium: 4rem, large: 6rem, huge: 8rem)
 
@@ -33,39 +38,60 @@ $sizes: (less: 0.5rem, base: 1rem, small: 2rem, medium: 4rem, large: 6rem, huge:
 		&-#{$num}
 			max-width: $num * 1%
 
+.justify-content-evenly
+	justify-content: space-evenly
 
-svg
-	[class$="__st0"]
-		opacity: 0.2
-		fill: #96b5e3
-	[class$="__st1"]
-		opacity: 0.3
-		fill: #FFFFFF
-	[class$="__st2"]
-		opacity: 0.5
-		fill: #FFFFFF
-	[class$="__st3"]
-		opacity: 0.8
-		fill: #96b5e3
-
-	// .st3{fill:#E86060
-	// in the intellectual property is broken one
-	path
-		fill: #542752
-
+.fill-width
+	width: 100%
 
 .full-height
 	height: 100vh
 
-.normal-tile
-	height: 70vh
+.fill-height
+	height: 100%
 
 .text-center
 	text-align: center
 
-.display-paragraph
-	font-size: 1.2rem
-
 .page-container
 	@extend .container
 	@extend .pad-top-huge
+
+
+svg
+	[class$="__st0"]
+		opacity: 0.2
+		fill: $color-primary-0
+	[class$="__st1"]
+		opacity: 0.3
+		fill: $true-white
+	[class$="__st2"]
+		opacity: 0.9
+		fill: $true-white
+	[class$="__st3"]
+		opacity: 0.8
+		fill: $color-primary-0
+
+	path
+		fill: $black
+		stroke: transparent
+
+
+#broken
+	svg
+		[class$="__st0"]
+			opacity: 0.2
+			fill: $black
+		[class$="__st1"]
+			opacity: 0.3
+			fill: $color-complement-1
+		[class$="__st2"]
+			opacity: 0.9
+			fill: $true-white
+		[class$="__st3"]
+			opacity: 0.8
+			fill: $black
+
+		path
+			fill: $black
+			stroke: transparent

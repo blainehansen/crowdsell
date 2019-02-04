@@ -17,11 +17,17 @@
 	&.justify-evenly
 		justify-content: space-evenly
 
+	&.justify-around
+		justify-content: space-around
+
 	&.align-center
 		align-items: center
 
 	&.align-start
 		align-items: flex-start
+
+	&.align-base
+		align-items: baseline
 
 	&.all-center
 		justify-content: center
@@ -30,6 +36,8 @@
 
 
 .item
+	flex: 0 1 auto
+
 	&.self-start
 		align-self: flex-start
 	&.self-end

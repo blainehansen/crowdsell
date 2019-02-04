@@ -1,7 +1,10 @@
 <template lang="pug">
 
-b-navbar(toggleable="md")#navbar.fixed-top
-	router-link.navbar-brand(to="/") Crowdsell
+b-navbar(toggleable="md")#navbar.fixed-top.display-font
+	router-link.navbar-brand.flex.justify-evenly.align-center(to="/")
+		.logo-box.item.push-right-less.self-start
+			Logo
+		span.item Crowdsell
 
 	b-navbar-toggle(target="nav-collapse")
 
@@ -38,8 +41,14 @@ b-navbar(toggleable="md")#navbar.fixed-top
 <script>
 // import { mapGetters, mapMutations } from 'vuex'
 
-// export default {
-// 	name: 'Header',
+import Logo from "@/assets/illustrations/logo_touched.svg"
+
+export default {
+	name: 'Header',
+
+	components: {
+		Logo,
+	},
 
 // 	computed: {
 // 		...mapGetters('auth', [
@@ -52,14 +61,23 @@ b-navbar(toggleable="md")#navbar.fixed-top
 // 			logout: 'auth/logout'
 // 		})
 // 	},
-// }
+}
 
 </script>
 
 
 <style lang="sass" scoped>
 
+#navbar
+	background-color: white
+	box-shadow: 0 2px 5px 0 rgba(0,0,0,0.2)
+	height: 4.5rem
+
 .navbar-brand
 	font-size: 1.2rem
+
+.logo-box svg
+	width: 2rem
+	height: auto
 
 </style>
