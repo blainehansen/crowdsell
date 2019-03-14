@@ -1,7 +1,8 @@
 <template lang="pug">
 
 footer
-	h1 Footer
+	.container
+		h1 Footer
 
 </template>
 
@@ -14,7 +15,11 @@ export default {
 </script>
 
 
-<style lang="sass">
+<style lang="sass" scoped>
 
+@import "~styles/variables"
+
+footer
+	background-color: $gray
 
 </style>

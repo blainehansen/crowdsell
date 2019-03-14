@@ -2,13 +2,14 @@
 
 #home
 	#banner.full-height.container-fluid.color-background
-		CloudSpecies1.cloud.one
-		//- CloudSpecies2
-		//- CloudSpecies3
-		//- CloudSpecies4
-		//- CloudSpecies5
-		//- CloudSpecies6
-		//- CloudSpecies7
+		CloudSpecies1.cloud(style="left: 30%; top: 20%; width: 20%;")
+		CloudSpecies2.cloud(style="left: 15%; bottom: 10%; width: 30%;")
+		//- CloudSpecies3.cloud(style="right: 20%; bottom: 15%; width: 22%;")
+		//- CloudSpecies4.cloud(style="right: 20%; bottom: 10%; width: 22%;")
+		CloudSpecies5.cloud(style="right: 6%; bottom: 6%; width: 22%;")
+		//- CloudSpecies6.cloud(style="right: 20%; bottom: 10%; width: 22%;")
+		//- CloudSpecies7.cloud(style="right: 20%; bottom: 10%; width: 22%;")
+
 		.row.align-items-center.justify-content-evenly.fill-height
 			.text-box.col-md-4
 				h1#banner-header.display-3
@@ -24,6 +25,14 @@
 				FreeingIntellectualProperty
 
 	#broken.normal-tile
+		CloudSpecies1.cloud(style="left: 6%; top: 20%; width: 30%;")
+		CloudSpecies2.cloud(style="left: 4%; bottom: 10%; width: 28%;")
+		//- CloudSpecies3.cloud(style="right: 20%; bottom: 15%; width: 22%;")
+		//- CloudSpecies4.cloud(style="right: 20%; bottom: 10%; width: 22%;")
+		CloudSpecies6.cloud(style="right: 14%; top: 10%; width: 35%;")
+		CloudSpecies5.cloud(style="right: 6%; bottom: 6%; width: 38%;")
+		//- CloudSpecies7.cloud(style="right: 20%; bottom: 10%; width: 22%;")
+
 		.container.fill-height
 			.row.flex-row-reverse.align-items-center.justify-content-around.fill-height
 				.text-box.col-md-5
@@ -221,11 +230,12 @@ export default {
 #banner svg.cloud
 	path
 		fill: $true-white
-	&.one
-		left: 30%
-		top: 20%
-		width: 20%
 
+#broken
+	position: relative
+	svg.cloud path
+		fill: $black
+		opacity: 0.07
 
 .feature-box
 	font-size: 1.1rem
