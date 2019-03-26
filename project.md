@@ -1,12 +1,31 @@
-# postgraphile refactor
+# launch
 
-- http caching in client
-- http caching in server
+## style things
+- X footer
+	- X creative commons
+	- X mailing address
+	- need good coloring for links (universally)
+- putting svg's on pages that need them
+- give essay pages have better headers
+- make general fonts bigger
+- mobile version
+	- homepage
+	- essay page
+	- signup page
+	- realigning clouds on homepage
+	- make svg sizes correct
+- finish failure of IP essay
+- tune and correct all other words
+- get forms and buttons looking nice
+
+## technical things
+- move to nuxt
+- purgecss
+- get micro-chimp deployed for this (and blog)
+- figure out new secrets system for docker-compose and micro-chimp
 
 
-
-
-
+##### old
 What's the mvp?
 
 People can create (very bare) profiles.

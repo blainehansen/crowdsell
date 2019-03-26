@@ -38,7 +38,7 @@
 
 	p It is uncontroversial to say that people are growing unsatisfied with the centralized nature of the internet, and with the behavior of the tech giants.
 	p Crowdsell creates a simple economic model for people to create new systems that replace the old centralized services with open source systems, ones that don't need to harvest data or manipulate people to make money in advertising-based models.
-	p In such an open source world, maybe we can build systems that reward honesty, quality, and consistency, rather than sensationalism and noise. Then perhaps we can put our society back together, and heal the polarization these echo chambers have created.
+	p In such an open source world, maybe we can build systems that reward honesty, quality, and consistency, rather than sensationalism and noise. Then perhaps we can put our society back together, and heal the polarization the twenty-four hour news cycle and social media echo chambers have created.
 
 
 	h4 Technology that improves real life, rather than replacing it.

@@ -82,8 +82,10 @@
 			.text-box.feature-box.col-md-4
 				h4 Previews and Promises
 				p
-					| First they create a proof of concept or a preview to show they are capable, and choose an&nbsp;
+					| First they create a proof of concept or a preview to show they are capable, and choose any kind of&nbsp;
 					out-link(href="https://creativecommons.org/share-your-work/public-domain/freeworks/") open culture license
+					| &nbsp;that is&nbsp;
+					out-link(href="https://opensource.org/licenses") appropriate for their project
 					| .
 				p Then they make a detailed list of promises about the work that the backers will expect it to live up to.
 			.picture-box.col-md-3

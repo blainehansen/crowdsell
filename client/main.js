@@ -16,6 +16,9 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 // Vue.component('fa-icon', FontAwesomeIcon)
 
+import twitter from '@/components/twitter'
+Vue.component('twitter', twitter)
+
 import SignUpForm from '@/pages/SignUpForm'
 Vue.component('SignUpForm', SignUpForm)
 
