@@ -16,11 +16,11 @@ export default {
 		submitEmail() {
 			this.attemptedSubmit = true
 
-			if (this.emailInvalid) console.log('nope')
-			else {
-				this.attemptedSubmit = false
-				console.log(this.email)
-			}
+			// if (this.emailInvalid) console.log('nope')
+			// else {
+			// 	this.attemptedSubmit = false
+			// 	console.log(this.email)
+			// }
 		}
 	},
 }
