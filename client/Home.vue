@@ -149,12 +149,12 @@
 						h4 How could Crowdsell change society?
 
 				.page-box
-					router-link(to="/who-is-crowdsell-for")
-						h4 Who is Crowdsell for? And what can they do with it?
-
-				.page-box
 					router-link(to="/how-it-works")
 						h4 How does Crowdsell work in detail?
+
+				.page-box
+					router-link(to="/who-is-crowdsell-for")
+						h4 Who is Crowdsell for? And what can they do with it?
 
 				.page-box
 					router-link(to="/why-is-crowdsell-different")

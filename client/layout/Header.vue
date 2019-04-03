@@ -14,6 +14,8 @@ b-navbar(toggleable="md")#navbar.fixed-top.display-font
 				a.nav-link The Problem
 			router-link.nav-item(to="/the-mission", tag="li")
 				a.nav-link The Mission
+			router-link.nav-item(to="/how-it-works", tag="li")
+				a.nav-link How It Works
 
 		ul.navbar-nav
 			router-link.nav-item(to="/faq", tag="li")

@@ -21,13 +21,13 @@ footer.pad-top-small.pad-bottom-small
 						span How could Crowdsell change society?
 
 				.page-box
-					router-link(to="/who-is-crowdsell-for")
-						span Who is Crowdsell for? And what can they do with it?
+					router-link(to="/how-it-works")
+						span How does Crowdsell work in detail?
 
 			.col-md-5
 				.page-box
-					router-link(to="/how-it-works")
-						span How does Crowdsell work in detail?
+					router-link(to="/who-is-crowdsell-for")
+						span Who is Crowdsell for? And what can they do with it?
 
 				.page-box
 					router-link(to="/why-is-crowdsell-different")
