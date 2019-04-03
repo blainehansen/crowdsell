@@ -70,3 +70,7 @@ https://dribbble.com/shots/3920371-Draco-Free-PSD-HTML-Resume-Template
 https://dribbble.com/shots/4621907-Pencakdoor-2
 https://dribbble.com/shots/5244018-Headless-Landing-Page
 https://dribbble.com/shots/4317658-Invoice-Landing-Page-Exploration
+https://dribbble.com/shots/4934772-Artisan-Talent
+https://dribbble.com/shots/4750367-Didofa-Header
+https://dribbble.com/shots/5807726-The-Agora-Companies
+https://dribbble.com/shots/5841653-Teamweek-Newsletter
