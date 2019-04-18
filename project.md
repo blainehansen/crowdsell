@@ -1,26 +1,30 @@
-https://dribbble.com/afnizarnur
-https://dribbble.com/riandarma
-https://dribbble.com/uixanwar
-https://dribbble.com/uigeek
-https://dribbble.com/nerisson
-https://dribbble.com/arnasjonikas
-https://dribbble.com/ElWexicano
-https://dribbble.com/paulaborowska
-https://dribbble.com/iamsourabh
-https://dribbble.com/maxive
-https://dribbble.com/seanehalpin
-https://dribbble.com/SimonMcCade
-https://dribbble.com/interfaces
-https://dribbble.com/Shakib402
-https://dribbble.com/pdscunha
-https://dribbble.com/aydaoz
+Hello!
 
-https://dribbble.com/berincatic
+I'm working on a small fixed price project, and this piece of your work stood out to me:
+https://dribbble.com/shots/5900942-Parking-Landing
 
-https://dribbble.com/JuliaPackana
-https://dribbble.com/Afterglow-studio
-https://dribbble.com/iftikharshaikh
-https://dribbble.com/bartekmarzec
+I've put together my design brief in the form of a github gist:
+
+https://gist.github.com/blainehansen/44ce832290ec5091085e5a26fde7c897
+
+Let me know if you have any questions!
+
+Blaine Hansen
+
+X https://dribbble.com/berincatic
+
+XX https://dribbble.com/afnizarnur
+X https://dribbble.com/riandarma
+X https://dribbble.com/uixanwar
+X https://dribbble.com/nerisson
+X https://dribbble.com/arnasjonikas
+X https://dribbble.com/paulaborowska
+X https://dribbble.com/iamsourabh
+X https://dribbble.com/Shakib402
+X https://dribbble.com/aydaoz
+
+XX https://dribbble.com/JuliaPackana
+X https://dribbble.com/Afterglow-studio
 https://dribbble.com/cadabra
 https://dribbble.com/Blessed21
 https://dribbble.com/divanraj
