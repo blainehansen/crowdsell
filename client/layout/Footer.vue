@@ -38,6 +38,8 @@ footer.pad-top-small.pad-bottom-small
 			//- 			span How does Crowdsell make money?
 			//- two columns
 			.col-12
+				h3 Join the Mailing List
+
 				SignUpForm
 
 			.col-12.flex.justify-between.align-center.push-top-small
