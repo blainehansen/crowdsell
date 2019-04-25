@@ -4,45 +4,52 @@
 footer.pad-top-small.pad-bottom-small
 	.container
 		.links.text-muted.row
-			.col-12
-				h5 Resources
+			//- .col-12
+			//- 	h5 Resources
 
-			.col-md-5
-				.page-box
-					router-link(to="/faq")
-						span Frequently Asked Questions
+			//- .col-md-5
+			//- 	.page-box
+			//- 		router-link(to="/faq")
+			//- 			span Frequently Asked Questions
 
-				.page-box
-					router-link(to="/why-we-need-it")
-						span Is there really a problem with Intellectual Property?
+			//- 	.page-box
+			//- 		router-link(to="/why-we-need-it")
+			//- 			span Is there really a problem with Intellectual Property?
 
-				.page-box
-					router-link(to="/the-mission")
-						span How could Crowdsell change society?
+			//- 	.page-box
+			//- 		router-link(to="/the-mission")
+			//- 			span How could Crowdsell change society?
 
-				.page-box
-					router-link(to="/how-it-works")
-						span How does Crowdsell work in detail?
+			//- 	.page-box
+			//- 		router-link(to="/how-it-works")
+			//- 			span How does Crowdsell work in detail?
 
-			.col-md-5
-				.page-box
-					router-link(to="/who-is-crowdsell-for")
-						span Who is Crowdsell for? And what can they do with it?
+			//- .col-md-5
+			//- 	.page-box
+			//- 		router-link(to="/who-is-crowdsell-for")
+			//- 			span Who is Crowdsell for? And what can they do with it?
 
-				.page-box
-					router-link(to="/why-is-crowdsell-different")
-						span How is Crowdsell different than other crowdfunding systems?
+			//- 	.page-box
+			//- 		router-link(to="/why-is-crowdsell-different")
+			//- 			span How is Crowdsell different than other crowdfunding systems?
 
-				.page-box
-					router-link(to="/how-does-crowdsell-make-money")
-						span How does Crowdsell make money?
-
+			//- 	.page-box
+			//- 		router-link(to="/how-does-crowdsell-make-money")
+			//- 			span How does Crowdsell make money?
 			//- two columns
+			.col-12
+				SignUpForm
+
 			.col-12.flex.justify-between.align-center.push-top-small
+
 				.item
 					out-link.push-right-less(href="https://twitter.com/crowdsell_io")
 						twitter(width="1.25rem", height="1.25rem", href="")
 					a(href="mailto:contact@crowdsell.io") contact@crowdsell.io
+
+				.item
+					router-link(to="/faq")
+						span FAQ and Resources
 
 				.item.license.text-right.text-muted
 					| All content licensed as
