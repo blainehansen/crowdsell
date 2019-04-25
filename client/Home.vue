@@ -21,6 +21,11 @@
 
 				p.display-paragraph Using crowdfunding to change the way we think about intellectual work, and how people are compensated for it.
 
+				p
+					h3.push-bottom-less Join the Mailing List
+
+					SignUpForm
+
 			#hero-picture.picture-box.col-md-5
 				FreeingIntellectualProperty
 
@@ -125,7 +130,10 @@
 						| We're on a mission to make&nbsp;
 						out-link(href="https://creativecommonsusa.org/index.php/open-culture/") open knowledge, open culture, and intellectual collaboration
 						| &nbsp;the norm.
-					router-link(to="/sign-up", tag="a").btn.btn-dark Join the Private Beta
+					p.display-paragraph.push-bottom-less
+						| Join the mailing list to hear from us and become a part of this new movement.
+					//- router-link(to="/sign-up", tag="a").btn.btn-dark Join the Private Beta
+					SignUpForm
 
 				.picture-box.col-md-5
 					HowCouldCrowdsellChangeSociety
