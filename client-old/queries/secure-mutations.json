@@ -1,0 +1,1 @@
+{"Bt-Fdw9HwkPD8Q2KuwwSboAed0yRgq7WvNsTU-HehfM":"mutation createProject($input: CreateProjectInput!) { createProject(input: $input) { project { id } } }","bj8yqzpnTKhdkVe_nC25Q0u2RLWoXe5HhtHAWzTmWGc":"mutation updateProject($input: UpdateProjectByIdInput!) { updateProjectById(input: $input) { project { id } } }"}

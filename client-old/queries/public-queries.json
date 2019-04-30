@@ -1,0 +1,1 @@
+{"Or27CPXH319u1hnCSF5ck0nTVMXBYfHztg4TbB2AG4Y":"query firstPeople { people(first: 3) { nodes { slug, name } } }"}
