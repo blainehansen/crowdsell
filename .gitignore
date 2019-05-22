@@ -43,3 +43,5 @@ client/queries/*.json
 .gitsecret/keys/random_seed
 
 client/libs/*promisepay.js
+
+.nuxt

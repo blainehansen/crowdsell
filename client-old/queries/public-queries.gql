@@ -1,7 +1,0 @@
-query firstPeople {
-  people(first: 3) {
-    nodes {
-      slug, name
-    }
-  }
-}
