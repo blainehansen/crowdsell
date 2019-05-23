@@ -3,14 +3,18 @@ function rem(px) {
 	return `${px / baseFontSize}rem`
 }
 
-const spacings = [...Array(105 / 5).keys()].map(i => i * 5).concat([...Array(50 / 2).keys()].map(i => i * 2))
+const spacings =
+	[...Array(105 / 5).keys()].map(i => i * 5)
+	.concat([...Array(50 / 2).keys()].map(i => i * 2))
+	.concat([...Array(400 / 25).keys()].map(i => i * 25))
+
 const rems = spacings.reduce((acc, cur) => { acc[`${cur}`] = rem(cur); return acc}, {})
 const percentages = spacings.reduce((acc, cur) => { acc[`${cur}p`] = `${cur}%`; return acc }, {})
 
 module.exports = {
 	prefix: '',
 	important: false,
-	separator: ':',
+	separator: '_',
 	theme: {
 		screens: {
 			sm: '640px',
@@ -161,6 +165,7 @@ module.exports = {
 			'big-header': rem(49),
 			header: rem(40),
 			'tricky-logo': rem(31),
+			'tricky-big-logo': rem(49),
 			heavy: rem(30),
 			lead: rem(25),
 			base: rem(20),
@@ -178,6 +183,7 @@ module.exports = {
 			...theme('spacing'),
 			...percentages,
 			full: '100%',
+			tile: '70vh',
 			banner: '110vh',
 			'banner-bottom': '10vh',
 			screen: '100vh',
@@ -198,9 +204,11 @@ module.exports = {
 		lineHeight: {
 			none: '1',
 			tight: '1.2',
+			'tight-kinda': '1.25',
 			normal: '1.4',
 			relaxed: '1.43',
 			loose: '1.5',
+			airy: '1.88',
 		},
 		listStyleType: {
 			none: 'none',
@@ -210,6 +218,7 @@ module.exports = {
 		margin: (theme, { negative }) => ({
 			auto: 'auto',
 			...theme('spacing'),
+			...percentages,
 			...negative(theme('spacing')),
 		}),
 		maxHeight: {
@@ -282,6 +291,7 @@ module.exports = {
 			auto: 'auto',
 			...theme('spacing'),
 			...percentages,
+			'tricky-big-logo': rem(53.1),
 			full: '100%',
 			screen: '100vw',
 		}),

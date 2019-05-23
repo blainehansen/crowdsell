@@ -15,7 +15,7 @@
 
 	#email-assurance.mt-20.text-pastel-red.text-tiny(v-if="emailInvalid") Email Invalid!
 	//- .text-white not necessary, just letting the default of the container take over?
-	#email-assurance.mt-20.text-tiny(v-else)
+	#email-assurance.mt-20.text-tiny(v-else, :class="[`text-${assuranceColor}`]")
 		| Your email will never be shared.
 
 </template>
@@ -26,6 +26,13 @@
 export default {
 	// TODO accept props that can change the colors of things
 	// TODO accept a prop for the button text
+
+	props: {
+		assuranceColor: {
+			type: String,
+			required: false,
+		}
+	},
 
 	data() {
 		return {

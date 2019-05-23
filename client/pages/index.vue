@@ -32,148 +32,156 @@
 
 		img#banner-wave(src="@/assets/images/download.svg").absolute.bottom--1
 
-	#broken
-		.container
-			div
-				#broken-text
-					h2.text-header.text-dark-blue-grey
-						| Intellectual Property is Broken
+	#broken.mt-175
+		.container.flex.flex-row.flex-no-wrap.justify-between.items-center.h-full
+			#broken-text.w-50p
+				h2.text-header.text-dark-blue-grey.font-bold.leading-tight-kinda.w-60p.mb-40
+					| Intellectual Property is Broken
 
-					p.text-lead.text-blue-grey
-						| It's stifled our culture and strangled innovation.
-						//- In the world today, the one that's driven by Intellectual Property, the only way to make money doing creative work is with coercion, control, and walled gardens.
-						//- That status quo has produced countless harmful businesses that focus more on controlling people than contributing to the public good.
-					p.text-lead.text-blue-grey
-						| Powerful platforms built on Intellectual Property have the power to create monopolies, trap us all in echo chambers, and extract wealth from society.
+				p.text-lead.text-blue-grey.leading-tight.mb-30
+					| It's stifled our culture and strangled innovation.
+					//- In the world today, the one that's driven by Intellectual Property, the only way to make money doing creative work is with coercion, control, and walled gardens.
+					//- That status quo has produced countless harmful businesses that focus more on controlling people than contributing to the public good.
+				p.text-lead.text-blue-grey.leading-tight
+					| Powerful platforms built on Intellectual Property have the power to create monopolies, trap us all in echo chambers, and extract wealth from society.
 
-				#broken-picture
-					//- IntellectualPropertyIsBroken
+			#broken-picture.w-40p
+				img(src="@/assets/images/intellectual-property-is-broken_touched.svg")
 
-	#something-new
-		.container
-			div
-				#something-new-text
-					h2.text-header.text-dark-blue-grey
-						| We Need Something New
+	#something-new.mt-175.mb-300
+		.container.flex.flex-row-reverse.flex-no-wrap.justify-between.items-center.h-full
+			#something-new-text.w-50p
+				h2.text-header.text-dark-blue-grey.font-bold.leading-tight-kinda.w-60p.mb-40
+					| We Need Something New
 
-					p.text-lead.text-blue-grey
-						| Crowdsell is a crowdfunding system that allows creators to fund and sell their intellectual work to the whole world.
-					p.text-lead.text-blue-grey
-						| By adding binding promises and oversight to protect backers, communities can safely and predictably reward creators for contributing to the commons and the public good.
+				p.text-lead.text-blue-grey.leading-tight.mb-30
+					| Crowdsell is a crowdfunding system that allows creators to fund and sell their intellectual work to the whole world.
+				p.text-lead.text-blue-grey.leading-tight
+					| By adding binding promises and oversight to protect backers, communities can safely and predictably reward creators for contributing to the commons and the public good.
 
-				#something-new-picture
-					//- WeNeedSomethingNew
+			#something-new-picture.w-40p
+				img(src="@/assets/images/we-need-something-new_touched.svg")
 
 
 	#how-does-it-work.bg-white-two
 		.container.tight
-			h2.text-center.text-dark-blue-grey So how does Crowdsell work?
+			h2.text-center.text-header.text-dark-blue-grey.font-heavy.mb-125 So how does Crowdsell work?
 
-			.explain-box
-				.explain-box-text
-					h3 The Work
-					p Crowdsell is for valuable intellectual work, like code, art or designs.
-					p Creators can either sell finished work, or fundraise a budget for a big idea.
+			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-100
+				.explain-box-text.w-50p
+					h3.text-lead.text-dark-blue-grey.mb-10
+						| The Work
+					p.text-tiny.text-blue-grey.leading-airy.mb-15
+						| Crowdsell is for valuable intellectual work, like code, art or designs.
+					p.text-tiny.text-blue-grey.leading-airy
+						| Creators can either sell finished work, or fundraise a budget for a big idea.
 
-				.explain-box-picture
-					//- CompletedParchment
+				img.explain-box-picture.w-35p(src="@/assets/images/completed-parchment_touched.svg")
 
-			.explain-box
-				.explain-box-text
-					h3 Previews and Promises
-					p
+			.explain-box.flex.flex-row-reverse.flex-no-wrap.justify-between.items-center.mb-100
+				.explain-box-text.w-50p
+					h3.text-lead.text-dark-blue-grey.mb-10
+						| Previews and Promises
+					p.text-tiny.text-blue-grey.leading-airy.mb-15
 						| First they create a proof of concept or a preview to show they are capable, and choose any kind of&nbsp;
 						out-link(href="https://creativecommons.org/share-your-work/public-domain/freeworks/") open culture license
 						| &nbsp;that is&nbsp;
 						out-link(href="https://opensource.org/licenses") appropriate for their project
 						| .
-					p Then they make a detailed list of promises about the work that the backers will expect it to live up to.
+					p.text-tiny.text-blue-grey.leading-airy
+						| Then they make a detailed list of promises about the work that the backers will expect it to live up to.
 
-				.explain-box-picture
-					//- APlaquePreviewingTheParchment
+				img.explain-box-picture.w-35p(src="@/assets/images/a-plaque-previewing-the-parchment_touched.svg")
 
-			.explain-box
-				.explain-box-text
-					h3 Budget and Reward
-					p They choose a reward amount, and make a monthly budget if the work isn't complete yet.
-					p Anyone in the world can contribute to fundraise the total.
+			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-100
+				.explain-box-text.w-50p
+					h3.text-lead.text-dark-blue-grey.mb-10
+						| Budget and Reward
+					p.text-tiny.text-blue-grey.leading-airy.mb-15
+						| They choose a reward amount, and make a monthly budget if the work isn't complete yet.
+					p.text-tiny.text-blue-grey.leading-airy
+						| Anyone in the world can contribute to fundraise the total.
 
-				.explain-box-picture
-					//- AccountingPaperWithATipJar
+				img.explain-box-picture.w-35p(src="@/assets/images/accounting-paper-with-a-tip-jar_touched.svg")
 
-			.explain-box
-				.explain-box-text
-					h3 The Backers Decide
-					p If needed, the budget is released month by month as the backers give oversight.
-					p Once the backers decide that the work fulfills the original promises, then the creator is given the reward amount.
+			.explain-box.flex.flex-row-reverse.flex-no-wrap.justify-between.items-center.mb-100
+				.explain-box-text.w-50p
+					h3.text-lead.text-dark-blue-grey.mb-10
+						| The Backers Decide
+					p.text-tiny.text-blue-grey.leading-airy.mb-15
+						| If needed, the budget is released month by month as the backers give oversight.
+					p.text-tiny.text-blue-grey.leading-airy
+						| Once the backers decide that the work fulfills the original promises, then the creator is given the reward amount.
 
-				.explain-box-picture
-					//- TheAccountingPaperInspectedWithABallotBox
+				img.explain-box-picture.w-35p(src="@/assets/images/the-accounting-paper-inspected-with-a-ballot-box_touched.svg")
 
-			.explain-box
-				.explain-box-text
-					h3 The Work is Set Free
-					p The creator has been rewarded for their creativity and skill, and the world has access to valuable work free of legal restrictions.
-					p It belongs to everyone now.
+			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-200
+				.explain-box-text.w-50p
+					h3.text-lead.text-dark-blue-grey.mb-10
+						| The Work is Set Free
+					p.text-tiny.text-blue-grey.leading-airy.mb-15
+						| The creator has been rewarded for their creativity and skill, and the world has access to valuable work free of legal restrictions.
+					p.text-tiny.text-blue-grey.leading-airy
+						| It belongs to everyone now.
 
-				.explain-box-picture
-					//- TheParchmentFliesAway
+				img.explain-box-picture.w-35p(src="@/assets/images/the-parchment-flies-away_touched.svg")
 
 
-	#join-us.bg-bright-blue
-		.container.tight.text-center.text-white
-			h2.text-header Join Us
-			p.text-heavy
+	#join-us.bg-dark-blue-grey
+		.container.really-tight.text-white.pt-90.pb-100
+			h2.text-center.text-header.font-heavy.mb-30
+				| Join Us
+			p.text-base.leading-loose.mb-20
 				| We're on a mission to make&nbsp;
 				out-link(href="https://creativecommonsusa.org/index.php/open-culture/") open knowledge, open culture, and intellectual collaboration
 				| &nbsp;the norm.
-			p.text-heavy
+			p.text-base.leading-loose.mb-40
 				| Join the mailing list to hear from us and become a part of this new movement.
 
 			//- SignUpForm(:center, submitText="Submit", assuranceColor="bluey-grey")
-			SignUpForm
+			SignUpForm(assuranceColor="bluey-grey")
 
 
-	#faq.bg-pale-grey-two
+	#faq.bg-pale-grey-two.pt-100.pb-100
 		.container.medium
-			h2.text-center.text-header.text-dark-blue-grey
+			h2.text-center.text-header.text-dark-blue-grey.font-heavy.mb-20
 				| FAQ and Resources
-			p.text-center.text-lead.text-blue-grey
+			p.text-center.text-base.text-blue-grey.mb-50
 				| Something not clear? Want to learn more? Check out these links.
 
-			nuxt-link(to="/faq", tag="div").bg-white.rounded-more
-				span.text-base.font-bold.text-dark-blue-grey
+			nuxt-link(to="/faq").faq-link
+				span
 					| Frequently Asked Questions
 				//- the arrow svg
 				//- .text-bright-blue .fill-current
 
-			nuxt-link(to="/why-we-need-it", tag="div").bg-white.rounded-more
-				span.text-base.font-bold.text-dark-blue-grey
+			nuxt-link(to="/why-we-need-it").faq-link
+				span
 					| Is there really a problem with Intellectual Property?
 				//- the arrow svg
 
-			nuxt-link(to="/the-mission", tag="div").bg-white.rounded-more
-				span.text-base.font-bold.text-dark-blue-grey
+			nuxt-link(to="/the-mission").faq-link
+				span
 					| How could Crowdsell change society?
 				//- the arrow svg
 
-			nuxt-link(to="/how-it-works", tag="div").bg-white.rounded-more
-				span.text-base.font-bold.text-dark-blue-grey
+			nuxt-link(to="/how-it-works").faq-link
+				span
 					| How does Crowdsell work in detail?
 				//- the arrow svg
 
-			nuxt-link(to="/who-is-crowdsell-for", tag="div").bg-white.rounded-more
-				span.text-base.font-bold.text-dark-blue-grey
+			nuxt-link(to="/who-is-crowdsell-for").faq-link
+				span
 					| Who is Crowdsell for? And what can they do with it?
 				//- the arrow svg
 
-			nuxt-link(to="/why-is-crowdsell-different", tag="div").bg-white.rounded-more
-				span.text-base.font-bold.text-dark-blue-grey
+			nuxt-link(to="/why-is-crowdsell-different").faq-link
+				span
 					| How is Crowdsell different than other crowdfunding systems?
 				//- the arrow svg
 
-			nuxt-link(to="/how-does-crowdsell-make-money", tag="div").bg-white.rounded-more
-				span.text-base.font-bold.text-dark-blue-grey
+			nuxt-link(to="/how-does-crowdsell-make-money").faq-link
+				span
 					| How does Crowdsell make money?
 				//- the arrow svg
 
@@ -205,16 +213,16 @@
 			width: 100vw
 			max-width: initial
 
-
-	.explain-box
-		// @apply
-		.explain-box-text
-			h3
-				@apply text-lead text-dark-blue-grey
-			p
-				@apply text-base text-blue-grey
+	.faq-link
+		@apply bg-white rounded-more px-38 py-30 mb-20 text-dark-blue-grey cursor-pointer block
+		&:hover
+			@apply bg-white-two text-blue-grey no-underline
+		span
+			@apply text-base font-bold leading-none
 
 	// #join-us
-		// the decorative background
+	// 	background-image:
+	// 		linear-gradient(color(theme('colors.navy-blue') alpha(90%)), color(theme('colors.navy-blue') alpha(90%))),
+	// 		url('../assets/images/5c2e1a72715e560022a8f031_optimized_1232.jpg')
 
 </style>
