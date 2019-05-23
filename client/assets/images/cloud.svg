@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   height="66.677994"
+   width="182.90001"
+   xml:space="preserve"
+   viewBox="0 0 182.90001 66.677994"
+   y="0px"
+   x="0px"
+   id="Layer_1"
+   version="1.1"><metadata
+   id="metadata962"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+   id="defs960" />
+
+<defs>
+	<linearGradient id="cloud-gradient" gradientTransform="rotate(-75deg)">
+    <stop stop-color="#224bc5" offset="0%"/>
+    <stop stop-color="#0ab3e4" offset="100%"/>
+  </linearGradient>
+</defs>
+
+<g
+   transform="translate(-285.86539,-230.0062)"
+   id="g955">
+
+	<path
+		fill="url(#cloud-gradient)"
+   id="path823"
+   d="M 285.86539,296.68419 H 468.7654 c 0,0 -22.60001,-46 -53.30001,-32.2 -57,25.7 -42.8,-11.9 -49.6,-26.1 -12.9,-26.5 -57.2,14.5 -80,58.3 z"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</g>
+</svg>

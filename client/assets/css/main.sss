@@ -1,4 +1,128 @@
 @import './tailwind.css'
 
+
+@font-face
+	font-family: 'avenir'
+	src: url('../fonts/AvenirLTStd-Black.woff') format('woff')
+	font-weight: 900
+
+@font-face
+	font-family: 'avenir'
+	src: url('../fonts/AvenirLTStd-BlackOblique.woff') format('woff')
+	font-weight: 900
+	font-style: italic
+
+
+@font-face
+	font-family: 'avenir'
+	src: url('../fonts/AvenirLTStd-Heavy.woff') format('woff')
+	font-weight: 700
+
+@font-face
+	font-family: 'avenir'
+	src: url('../fonts/AvenirLTStd-HeavyOblique.woff') format('woff')
+	font-weight: 700
+	font-style: italic
+
+
+@font-face
+	font-family: 'avenir'
+	src: url('../fonts/AvenirLTStd-Medium.woff') format('woff')
+	font-weight: 500
+
+@font-face
+	font-family: 'avenir'
+	src: url('../fonts/AvenirLTStd-MediumOblique.woff') format('woff')
+	font-weight: 500
+	font-style: italic
+
+
+@font-face
+	font-family: 'avenir'
+	src: url('../fonts/AvenirLTStd-Roman.woff') format('woff')
+	font-weight: 400
+
+// @font-face
+// 	font-family: 'avenir'
+// 	src: url('../fonts/AvenirLTStd-RomanOblique.woff') format('woff')
+// 	font-weight: 400
+// 	font-style: italic
+
+
+.rotate
+	&-little
+		transform: rotate(-10deg)
+	&-more
+		transform: rotate(-20deg)
+
+.cloud
+	opacity: 0.2
+	// background-image: linear-gradient(75deg, theme('colors.blue-blue'), theme('colors.azure'))
+// .cloud-gradient-stop-1
+// 	stop-color: theme('colors.blue-blue')
+// .cloud-gradient-stop-2
+// 	stop-color: theme('colors.azure')
+
+.mirror
+	transform: scale(-1, 1)
+
+
+.bottom--1
+	bottom: -1px
+
+html
+	font-family: 'avenir'
+	font-weight: 500
+	font-size: 20px
+	line-height: 1.4
+	@apply text-blue-grey
+
+
+
 a
-	color: purple
+	text-decoration: none
+	@apply text-bright-blue
+	&:hover
+		text-decoration: underline
+		@apply text-blue-blue
+
+.text-white a
+	@apply text-azure
+	&:hover
+		@apply text-sky-blue
+
+
+.container
+	// TODO need to have a rem function
+	&.tight
+		padding-left: 222px
+		padding-right: 222px
+
+	&.medium
+		padding-left: 180px
+		padding-right: 180px
+
+
+// .text-blue-grey
+// 	a
+// 		@apply text-bright-blue
+
+// @property size $height $width
+// 	height: $height
+// 	width: $width
+
+// .rectangle
+// 	+size: 50px 100px
+
+
+// ul
+// 	list-style-type: disc
+// 	padding-left: theme('padding.4')
+
+// ol
+// 	list-style-type: decimal
+// 	padding-left: theme('padding.4')
+
+
+/*@import url('https://fonts.googleapis.com/css?family=Nunito:300,300i,400,400i,600,600i,800,800i,900,900i&display=swap')*/
+/*font-family: 'Nunito', sans-serif*/

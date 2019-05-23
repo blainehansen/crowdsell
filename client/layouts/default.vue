@@ -1,6 +1,6 @@
 <template lang="pug">
 
-#app.antialiased.bg-azure
+#app.antialiased.overflow-x-hidden
 	Header
 
 	nuxt

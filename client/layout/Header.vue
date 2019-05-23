@@ -1,6 +1,26 @@
 <template lang="pug">
 
-div
+//- .content-between
+nav.absolute.top-0.right-0.left-0.bg-transparent.w-full.z-50
+	.container.flex.flex-row.flex-no-wrap.items-center
+		.logo.my-30.flex.flex-row.flex-no-wrap.justify-start.items-center
+			img(src="@/assets/images/logo_touched.svg").mr-10
+			span.text-white.font-bold.leading-none.text-tricky-logo.mt-10 Crowdsell
+
+
+		nuxt-link(to="/why-we-need-it").ml-auto.text-white.font-heavy.my-25.mx-30
+			| The Problem
+		nuxt-link(to="/the-mission").text-white.font-heavy.my-25.mx-30
+			| The Mission
+		nuxt-link(to="/how-it-works").text-white.font-heavy.my-25.mx-30
+			| How It Works
+		nuxt-link(to="/faq").text-white.font-heavy.my-25.mx-30
+			| FAQ
+
+		nuxt-link(to="/sign-up", tag="button").bg-greenish-teal.rounded-very.text-white.font-heavy.my-25.mx-30.py-15.px-30.leading-none.mr-0
+			| Join us
+
+
 //- b-navbar(toggleable="md")#navbar.fixed-top.display-font
 //- 	nuxt-link.navbar-brand.flex.justify-evenly.align-center(to="/")
 //- 		.logo-box.item.push-right-less.self-start
@@ -10,20 +30,7 @@ div
 //- 	b-navbar-toggle(target="nav-collapse")
 
 //- 	b-collapse#nav-collapse(is-nav)
-//- 		ul.navbar-nav.mr-auto
-//- 			nuxt-link.nav-item(to="/why-we-need-it", tag="li")
-//- 				a.nav-link The Problem
-//- 			nuxt-link.nav-item(to="/the-mission", tag="li")
-//- 				a.nav-link The Mission
-//- 			nuxt-link.nav-item(to="/how-it-works", tag="li")
-//- 				a.nav-link How It Works
-
-//- 		ul.navbar-nav
-//- 			nuxt-link.nav-item(to="/faq", tag="li")
-//- 				a.nav-link FAQ
-
-//- 			nuxt-link.nav-item(to="/sign-up", tag="li")
-//- 				a.nav-link Join the Private Beta
+//-
 
 			//- template(v-if="userLoggedIn")
 			//- 	nuxt-link.nav-item(:to="{ name: 'userProfile' }", tag="li")

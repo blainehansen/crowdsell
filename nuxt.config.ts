@@ -94,7 +94,7 @@ export default {
 			}
 
 			config.module.rules.push({
-				test: /\.sss$/,
+				test: /\.s(a)?ss$/,
 				oneOf: [
 					{ resourceQuery: /module/, use: [vueStyle, cssModule, postcss] },
 					{ use: [vueStyle, css, postcss] },
