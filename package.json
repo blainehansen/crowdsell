@@ -7,8 +7,7 @@
 	"scripts": {
 		"get-promisepay": "wget -O client/libs/prelive-promisepay.js https://js.prelive.promisepay.com/PromisePay.js && wget -O client/libs/promisepay.js https://js.promisepay.com/PromisePay.js",
 		"dev": "nuxt dev",
-		"generate": "nuxt generate --modern",
-		"build": "nuxt build",
+		"build": "nuxt generate --modern",
 		"build:old": "npm run get-promisepay && vue-cli-service build && cp _redirects dist",
 		"lint": "vue-cli-service lint"
 	},
