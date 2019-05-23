@@ -1,19 +1,26 @@
 <template lang="pug">
 
-#the-mission
-	.header.container-fluid.flex.row.align-items-center.justify-content-around.normal-tile.color-background.top-box
-		h1.display-4
-			| How Could
-			br
-			| Crowdsell
-			br
-			| Change
-			br
-			| Society?
+#the-mission.bg-white
+	#banner.feature-banner
+		.container.feature-container
+			#banner-text.feature-text
+				h1 How Could Crowdsell Change Society?
 
-		//- HowCouldCrowdsellChangeSociety
+			#banner-picture.w-45p.h-60p.flex.justify-center.items-center.relative
+				img(src="@/assets/images/how-could-crowdsell-change-society_touched.svg").w-55p.absolute.mx-auto.bottom-15p.z-20
+				img(src="@/assets/images/scroll-big-split.svg").absolute.bottom-25p.left-10p.h-22p.z-20
+				img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-18p.right-8p.h-22p.z-20
+				img(src="@/assets/images/scroll-small.svg").rotate-little.absolute.top-15p.left-15p.z-20.h-12p
+				img(src="@/assets/images/scroll-small.svg").rotate-more.absolute.top-10p.right-40p.h-10p.z-20
 
-	.page-container
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-5p.right-5p.h-8p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-15p.left-0.h-6p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-40p.left-6p.h-8p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-50p.right-5p.h-6p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.bottom-12p.left-15p.h-8p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.bottom-2p.right-0.h-10p
+
+	main.container.tight.blog-content
 
 		p Crowdsell is based on one very powerful idea:
 
@@ -67,11 +74,3 @@
 		SignUpForm.push-top-small.push-bottom-medium
 
 </template>
-
-
-<script>
-
-export default {
-}
-
-</script>

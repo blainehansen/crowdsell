@@ -152,38 +152,37 @@
 			nuxt-link(to="/faq").faq-link
 				span
 					| Frequently Asked Questions
-				//- the arrow svg
-				//- .text-bright-blue .fill-current
+				arrow-right-long.arrow
 
 			nuxt-link(to="/why-we-need-it").faq-link
 				span
 					| Is there really a problem with Intellectual Property?
-				//- the arrow svg
+				arrow-right-long.arrow
 
 			nuxt-link(to="/the-mission").faq-link
 				span
 					| How could Crowdsell change society?
-				//- the arrow svg
+				arrow-right-long.arrow
 
 			nuxt-link(to="/how-it-works").faq-link
 				span
 					| How does Crowdsell work in detail?
-				//- the arrow svg
+				arrow-right-long.arrow
 
 			nuxt-link(to="/who-is-crowdsell-for").faq-link
 				span
 					| Who is Crowdsell for? And what can they do with it?
-				//- the arrow svg
+				arrow-right-long.arrow
 
 			nuxt-link(to="/why-is-crowdsell-different").faq-link
 				span
 					| How is Crowdsell different than other crowdfunding systems?
-				//- the arrow svg
+				arrow-right-long.arrow
 
 			nuxt-link(to="/how-does-crowdsell-make-money").faq-link
 				span
 					| How does Crowdsell make money?
-				//- the arrow svg
+				arrow-right-long.arrow
 
 </template>
 
@@ -214,11 +213,17 @@
 			max-width: initial
 
 	.faq-link
-		@apply bg-white rounded-more px-38 py-30 mb-20 text-dark-blue-grey cursor-pointer block
-		&:hover
-			@apply bg-white-two text-blue-grey no-underline
+		@apply bg-white rounded-more px-38 py-30 mb-20 text-dark-blue-grey cursor-pointer
+		@apply flex flex-row flex-no-wrap justify-between items-center
 		span
 			@apply text-base font-bold leading-none
+		.arrow
+			@apply text-bright-blue
+
+		&:hover
+			@apply bg-white-two text-blue-grey no-underline
+			.arrow
+				@apply text-violet-blue
 
 	// #join-us
 	// 	background-image:

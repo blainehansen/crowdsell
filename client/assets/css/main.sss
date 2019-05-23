@@ -91,6 +91,61 @@ a
 	&:hover
 		@apply text-sky-blue
 
+.blog-content
+	@apply py-100
+
+	h2
+		@apply text-header text-dark-blue-grey mb-50
+
+	h3
+		@apply text-heavy text-dark-blue-grey mb-30 mt-50
+
+	p
+		@apply leading-loose mb-30
+
+	ul
+		@apply pl-40
+		list-style: none
+		& > li
+			@apply mb-20
+			clear: left
+			&:before
+				background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23596A89" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>')
+				content: ""
+				height: 1rem
+				width: 1rem
+				display: block
+				float: left
+				@apply mt-4
+				@apply -ml-40
+				background-position: bottom center
+				background-repeat: no-repeat
+				background-size: 100%
+
+		@apply mb-30
+
+.feature-banner
+	@apply h-tile bg-blue-blue
+
+	background-image: url('../images/ornament.svg')
+	background-repeat: no-repeat
+	background-position: 0% 50%
+	background-size: 80% 85%
+
+	.feature-container
+		@apply h-full flex flex-row flex-no-wrap justify-between items-center text-white
+
+		.feature-text
+			@apply text-white w-55p pr-4
+
+			h1
+				@apply text-hero font-bold mb-20 leading-relaxed
+
+			p
+				@apply text-heavy mb-20
+				&:last-child
+					@apply mb-0
+
 
 .container
 	&.tight

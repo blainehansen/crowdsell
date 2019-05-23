@@ -1,28 +1,47 @@
 <template lang="pug">
 
-#why-we-need-it
+#why-we-need-it.bg-white
+	#banner.feature-banner
+		.container.feature-container
+			#banner-text.feature-text
+				h1 The Failure of Intellectual Property
 
-	.header.container-fluid.flex.row.align-items-center.justify-content-around.normal-tile.color-background.top-box
-		h1.display-4
-			| The Failure
-			br
-			| of Intellectual
-			br
-			| Property
+				p It's very important to incentivize creative work and protect the rights of those who do it.
 
-	.page-container
+				p But a poorly considered solution can cause just as many problems as it solves.
+
+			#banner-picture.w-45p.h-60p.flex.justify-center.items-center.relative
+				img(src="@/assets/images/the-failure-of-intellectual-property_touched.svg").w-55p.absolute.mx-auto.bottom-15p.z-20
+				img(src="@/assets/images/scroll-big-split.svg").absolute.bottom-25p.left-10p.h-22p.z-20
+				img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-18p.right-8p.h-22p.z-20
+				img(src="@/assets/images/scroll-small.svg").rotate-little.absolute.top-15p.left-15p.z-20.h-12p
+				img(src="@/assets/images/scroll-small.svg").rotate-more.absolute.top-10p.right-40p.h-10p.z-20
+
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-5p.right-5p.h-8p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-15p.left-0.h-6p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-40p.left-6p.h-8p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-50p.right-5p.h-6p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.bottom-12p.left-15p.h-8p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.bottom-2p.right-0.h-10p
+
+				//- we have dots!
+				//- img(src="@/assets/images/dots.svg").cloud.z-10.absolute.bottom-2p.right-0.h-50p
+
+	main.container.tight.blog-content
+		h2
+			| We believe the Crowdsell model can incentivize creative work, while also maximizing the public good over private profits, and allowing much more innovation, progress, and freedom than the current Intellectual Property system.
 
 		p
 			| In the United States, the basis of intellectual property law is the&nbsp;
 			out-link(href="https://en.wikipedia.org/wiki/Copyright_Clause") copyright clause of the U.S. Constitution
-			| . That clause was drafted with good intentions, to "promote the Progress of Science and useful Arts." And it's difficult to argue that if thought workers had no economic support or incentive to pursue intellectual labor, they either wouldn't be motivated to, or they wouldn't be able to.
+			| . That clause was drafted with good intentions, to "promote the Progress of Science and useful Arts." It's difficult to argue that if thought workers had no economic support or incentive to pursue intellectual labor, they either wouldn't be motivated to, or they wouldn't be able to.
 
 		p
 			| But there's a very large difference between&nbsp;
 			i no system
 			| &nbsp;for supporting intellectual labor, and&nbsp;
 			i any system
-			| . We believe the system that has developed over history to gain almost worldwide adoption, is not only a terrible system for actually supporting and promoting progress, but is actively harmful&nbsp;
+			| . We believe the current system, that was originally invented by monarchs, and has been spread around the world as a result of the United States' and British Empire's power and dominance, is not only a terrible system for actually supporting and promoting progress, but is actively harmful&nbsp;
 			i
 				| when compared with a&nbsp;
 				b good
@@ -213,10 +232,3 @@
 		//- the intellectual property system applies to everyone, whether they agree to participate or not. If someone has a patent, they can use legal force to extract damges or apply injuctions. The consiequenes of this are that profiting from intellectual property is less a matter of contributing valuable intellectual work than having the means to maneuver the intellectual property sytem itself. This kind of phenomenon is a well stuided idea in econmics, called rent seeking, where middlemen who add no value to society are able to coopt a coercive system for their own purposes.
 
 </template>
-
-<script>
-
-export default {
-}
-
-</script>

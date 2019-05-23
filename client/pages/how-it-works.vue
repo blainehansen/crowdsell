@@ -1,16 +1,26 @@
 <template lang="pug">
 
-#how-it-works
+#how-it-works.bg-white
+	#banner.feature-banner
+		.container.feature-container
+			#banner-text.feature-text
+				h1 How Does Crowdsell Work Exactly?
 
-	.header.container-fluid.flex.row.align-items-center.justify-content-around.normal-tile.color-background.top-box
-		h1.display-4
-			| How Does
-			br
-			| Crowdsell
-			br
-			| Work Exactly?
+			#banner-picture.w-45p.h-60p.flex.justify-center.items-center.relative
+				img(src="@/assets/images/how-does-crowdsell-work_touched.svg").w-55p.absolute.mx-auto.bottom-15p.z-20
+				img(src="@/assets/images/scroll-big-split.svg").absolute.bottom-25p.left-10p.h-22p.z-20
+				img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-18p.right-8p.h-22p.z-20
+				img(src="@/assets/images/scroll-small.svg").rotate-little.absolute.top-15p.left-15p.z-20.h-12p
+				img(src="@/assets/images/scroll-small.svg").rotate-more.absolute.top-10p.right-40p.h-10p.z-20
 
-	.page-container
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-5p.right-5p.h-8p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-15p.left-0.h-6p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-40p.left-6p.h-8p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-50p.right-5p.h-6p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.bottom-12p.left-15p.h-8p
+				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.bottom-2p.right-0.h-10p
+
+	main.container.tight.blog-content
 
 		p Crowdsell is all about making crowdfunding rigorous, dependable, and making the world an open culture place.
 
@@ -97,11 +107,3 @@
 			li But, if the votes come back positive, then the project funds will be paid to the creator and everyone can celebrate a success! The commons is richer now, and the whole world has a free and open new work to enjoy.
 
 </template>
-
-
-<script>
-
-export default {
-}
-
-</script>
