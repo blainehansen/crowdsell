@@ -214,7 +214,7 @@
 		#banner-wave
 			margin-left: -10px
 			margin-right: -10px
-			width: 100vw
+			width: 110vw
 			max-width: initial
 
 	.faq-link
