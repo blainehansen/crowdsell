@@ -8,7 +8,7 @@ const plugins = [
 	require('postcss-advanced-variables')({
 		disable: ['@import'],
 	}),
-	require('postcss-nested'),
+	require('postcss-nested')({ bubble: ['screen'] }),
 
 	require('postcss-strip-inline-comments'),
 
