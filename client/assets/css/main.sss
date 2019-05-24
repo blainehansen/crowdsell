@@ -84,8 +84,6 @@ html
 		font-size: 18px
 	@screen lg
 		font-size: 20px
-	// @screen xl
-	// 	font-size: 24px
 
 	@apply text-blue-grey
 
@@ -136,72 +134,105 @@ a
 
 		@apply mb-30
 
-	.content-banner
-		@apply bg-pale-grey-two px-80 py-50 mb-30
+.content-banner
+	@apply bg-pale-grey-two px-50 py-15 mb-30
+	h3, p
+		@apply text-dark-blue-grey
+
+	&.azure, &.blue, &.red
 		h3, p
-			@apply text-dark-blue-grey
+			@apply text-white
 
-		&.azure, &.blue, &.red
-			h3, p
-				@apply text-white
+	&.azure
+		@apply bg-azure
 
-		&.azure
-			@apply bg-azure
+	&.blue
+		@apply bg-blue-blue
 
-		&.blue
-			@apply bg-blue-blue
+	&.red
+		@apply bg-pastel-red
 
-		&.red
-			@apply bg-pastel-red
+	h3
+		@apply text-header font-bold leading-tight-kinda
+	p
+		@apply text-lead
+@screen md
+	.content-banner
+		@apply px-80 py-50
 
-		h3
-			@apply text-header font-bold leading-tight-kinda
-		p
-			@apply text-lead
+.header-adjacent
+	@apply pt-125
+@screen md
+	.header-adjacent
+		@apply pt-0
+
 
 .feature-banner
-	@apply h-tile bg-blue-blue
+	@apply bg-blue-blue
 
 	background-image: url('../images/ornament.svg')
 	background-repeat: no-repeat
 	background-position: 0% 50%
 	background-size: 80% 85%
+@screen md
+	.feature-banner
+		@apply h-tile
 
+.feature-container
+	@apply h-full text-white
+@screen md
 	.feature-container
-		@apply h-full flex flex-row flex-no-wrap justify-between items-center text-white
+		@apply flex flex-row flex-no-wrap justify-between items-center
 
-		.feature-text
-			@apply text-white w-55p pr-4
+.feature-text
+	@apply text-white
 
-			h1
-				@apply text-hero font-bold mb-20 leading-relaxed
+	h1
+		@apply text-hero font-bold mb-20 leading-relaxed
 
-			p
-				@apply text-heavy mb-20
-				&:last-child
-					@apply mb-0
+	p
+		@apply text-heavy mb-20
+		&:last-child
+			@apply mb-0
+@screen md
+	.feature-text
+		@apply w-55p pr-4
+
+.feature-picture
+	@apply h-small-tile relative
+@screen md
+	.feature-picture
+		@apply w-45p h-60p
+
 
 .essay-banner
-	@apply h-essay-tile bg-navy-blue
+	@apply bg-navy-blue pb-60
 
 	background-image: url('../images/ornament.svg')
 	background-repeat: no-repeat
 	// background-position: 0% 50%
 	background-size: cover
+@screen md
+	.essay-banner
+		@apply h-essay-tile pb-0
 
+.essay-container
+	@apply h-full text-white
+@screen md
 	.essay-container
-		@apply h-full flex flex-row flex-no-wrap justify-between items-center text-white
+		@apply flex flex-row flex-no-wrap justify-between items-center
 
-		.essay-text
-			@apply text-white
+.essay-text
+	@apply text-white
 
-			h1
-				@apply text-hero font-bold mb-20 leading-relaxed
+	h1
+		@apply text-hero font-bold mb-20 leading-relaxed
 
-			p
-				@apply text-heavy mb-20
-				&:last-child
-					@apply mb-0
+	p
+		@apply text-heavy mb-20
+		&:last-child
+			@apply mb-0
+
 
 .container
 	@apply px-30

@@ -1,14 +1,14 @@
 <template lang="pug">
 
 #the-mission.bg-white
-	#banner.feature-banner
+	#banner.feature-banner.header-adjacent
 		.container.feature-container
 			#banner-text.feature-text
 				h1 How Could Crowdsell Change Society?
 
 				p By giving communities a system to incentivize people to contribute to their shared good, we can finally wrestle power away from corporations.
 
-			#banner-picture.w-45p.h-60p.flex.justify-center.items-center.relative
+			#banner-picture.feature-picture
 				img(src="@/assets/images/how-could-crowdsell-change-society_touched.svg").w-full.absolute.mx-auto.bottom-15p.z-20
 				//- img(src="@/assets/images/scroll-big-split.svg").absolute.bottom-25p.left-10p.h-22p.z-20
 				//- img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-18p.right-8p.h-22p.z-20
@@ -73,6 +73,6 @@
 
 		p Please join the Mailing List and the Private Beta to hear about what we have going on, including any future essays.
 
-		SignUpForm.push-top-small.push-bottom-medium
+		SignUpForm
 
 </template>

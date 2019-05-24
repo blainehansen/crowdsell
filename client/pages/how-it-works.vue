@@ -1,7 +1,7 @@
 <template lang="pug">
 
 #how-it-works.bg-white
-	#banner.feature-banner
+	#banner.feature-banner.header-adjacent
 		.container.feature-container
 			#banner-text.feature-text
 				h1 How Does Crowdsell Work Exactly?
@@ -10,8 +10,8 @@
 
 				p To make crowdfunding powerful enough to change things, first we had to improve crowdfunding itself.
 
-			#banner-picture.w-45p.h-60p.flex.justify-center.items-center.relative
-				img(src="@/assets/images/how-does-crowdsell-work_touched.svg").w-60p.absolute.mx-auto.bottom-5p.z-20
+			#banner-picture.feature-picture.flex
+				img(src="@/assets/images/how-does-crowdsell-work_touched.svg").w-60p.h-70p.m-auto.z-20
 				//- img(src="@/assets/images/scroll-big-split.svg").absolute.bottom-25p.left-10p.h-22p.z-20
 				//- img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-18p.right-8p.h-22p.z-20
 				//- img(src="@/assets/images/scroll-small.svg").rotate-little.absolute.top-15p.left-15p.z-20.h-12p

@@ -1,7 +1,7 @@
 <template lang="pug">
 
 #who-is-crowdsell-for
-	#banner.essay-banner
+	#banner.essay-banner.header-adjacent
 		.container.tight.essay-container
 			#banner-text.essay-text
 				h1 Who Is Crowdsell For?

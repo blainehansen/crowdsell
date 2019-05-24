@@ -1,7 +1,7 @@
 <template lang="pug">
 
 #why-we-need-it.bg-white
-	#banner.feature-banner
+	#banner.feature-banner.header-adjacent
 		.container.feature-container
 			#banner-text.feature-text
 				h1 The Failure of Intellectual Property
@@ -10,12 +10,12 @@
 
 				p But a poorly considered solution can cause just as many problems as it solves.
 
-			#banner-picture.w-45p.h-60p.flex.justify-center.items-center.relative
-				img(src="@/assets/images/the-failure-of-intellectual-property_touched.svg").w-55p.absolute.mx-auto.bottom-15p.z-20
-				img(src="@/assets/images/scroll-big-split.svg").absolute.bottom-25p.left-10p.h-22p.z-20
-				img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-18p.right-8p.h-22p.z-20
-				img(src="@/assets/images/scroll-small.svg").rotate-little.absolute.top-15p.left-15p.z-20.h-12p
-				img(src="@/assets/images/scroll-small.svg").rotate-more.absolute.top-10p.right-40p.h-10p.z-20
+			#banner-picture.feature-picture.flex
+				img(src="@/assets/images/the-failure-of-intellectual-property_touched.svg").w-55p.h-75p.m-auto.z-20
+				img(src="@/assets/images/scroll-big-split.svg").hidden.md_block.absolute.bottom-25p.left-10p.h-22p.z-20
+				img(src="@/assets/images/scroll-big-together.svg").hidden.md_block.mirror.absolute.top-18p.right-8p.h-22p.z-20
+				img(src="@/assets/images/scroll-small.svg").hidden.md_block.rotate-little.absolute.top-15p.left-15p.z-20.h-12p
+				img(src="@/assets/images/scroll-small.svg").hidden.md_block.rotate-more.absolute.top-10p.right-40p.h-10p.z-20
 
 				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-5p.right-5p.h-8p
 				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-15p.left-0.h-6p

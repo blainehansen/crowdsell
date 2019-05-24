@@ -1,7 +1,7 @@
 <template lang="pug">
 
 #home
-	#banner.relative.md_h-banner.pt-125.md_pt-0
+	#banner.relative.md_h-banner.header-adjacent
 		.container.h-full.md_flex.md_flex-row.md_flex-no-wrap.md_justify-between.md_items-center
 			#banner-text.text-white.md_w-55p.md_pr-4
 				h1.text-hero.font-bold.mb-20.leading-relaxed
@@ -12,7 +12,7 @@
 
 				SignUpForm#current-signup-form.md_w-85p
 
-			#banner-picture.h-tile.md_w-45p.md_h-60p.md_flex.md_justify-center.md_items-center.relative
+			#banner-picture.h-tile.md_w-45p.md_h-60p.relative
 				img(src="@/assets/images/how-could-crowdsell-change-society_touched.svg").w-full.absolute.bottom-20p.left-0.right-0.m-auto.z-20
 				img(src="@/assets/images/scroll-big-split.svg").absolute.top-25p.left-5p.h-22p.z-20
 				img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-22p.right-5p.h-22p.z-20
