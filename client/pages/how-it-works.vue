@@ -11,7 +11,7 @@
 				p To make crowdfunding powerful enough to change things, first we had to improve crowdfunding itself.
 
 			#banner-picture.feature-picture.flex
-				img(src="@/assets/images/how-does-crowdsell-work_touched.svg").w-60p.h-70p.m-auto.z-20
+				img(src="@/assets/images/how-does-crowdsell-work_touched.svg").h-90p.m-auto.z-20
 				//- img(src="@/assets/images/scroll-big-split.svg").absolute.bottom-25p.left-10p.h-22p.z-20
 				//- img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-18p.right-8p.h-22p.z-20
 				//- img(src="@/assets/images/scroll-small.svg").rotate-little.absolute.top-15p.left-15p.z-20.h-12p
