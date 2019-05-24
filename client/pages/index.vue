@@ -1,18 +1,18 @@
 <template lang="pug">
 
 #home
-	#banner.relative.lg_h-banner.pt-100.lg_pt-0
-		.container.h-full.lg_flex.lg_flex-row.lg_flex-no-wrap.lg_justify-between.lg_items-center
-			#banner-text.text-white.lg_w-55p.lg_pr-4
+	#banner.relative.md_h-banner.pt-125.md_pt-0
+		.container.h-full.md_flex.md_flex-row.md_flex-no-wrap.md_justify-between.md_items-center
+			#banner-text.text-white.md_w-55p.md_pr-4
 				h1.text-hero.font-bold.mb-20.leading-relaxed
 					| Freeing Intellectual Property
 
 				p.text-heavy.mb-50
 					| Using crowdfunding to change the way we think about intellectual work, and how people are compensated for it.
 
-				SignUpForm#current-signup-form.lg_w-85p
+				SignUpForm#current-signup-form.md_w-85p
 
-			#banner-picture.h-tile.lg_w-45p.lg_h-60p.lg_flex.lg_justify-center.lg_items-center.relative
+			#banner-picture.h-tile.md_w-45p.md_h-60p.md_flex.md_justify-center.md_items-center.relative
 				img(src="@/assets/images/how-could-crowdsell-change-society_touched.svg").w-full.absolute.bottom-20p.left-0.right-0.m-auto.z-20
 				img(src="@/assets/images/scroll-big-split.svg").absolute.top-25p.left-5p.h-22p.z-20
 				img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-22p.right-5p.h-22p.z-20
@@ -29,10 +29,10 @@
 
 		img#banner-wave(src="@/assets/images/download.svg").absolute.bottom--1
 
-	#broken.mt-100.lg_mt-175
-		.container.flex.flex-col-reverse.lg_flex-row.flex-no-wrap.lg_justify-between.lg_items-center.h-full
-			#broken-text.lg_w-50p
-				h2.text-header.text-dark-blue-grey.font-bold.leading-tight-kinda.lg_w-60p.mb-40.mt-30.lg_mt-0
+	#broken.mt-100.md_mt-175
+		.container.flex.flex-col-reverse.md_flex-row.flex-no-wrap.md_justify-between.md_items-center.h-full
+			#broken-text.md_w-50p
+				h2.text-header.text-dark-blue-grey.font-bold.leading-tight-kinda.md_w-60p.mb-40.mt-30.md_mt-0
 					| Intellectual Property is Broken
 
 				p.text-lead.text-blue-grey.leading-tight.mb-30
@@ -42,13 +42,13 @@
 				p.text-lead.text-blue-grey.leading-tight
 					| Powerful platforms built on Intellectual Property have the power to create monopolies, trap us all in echo chambers, and extract wealth from society.
 
-			#broken-picture.m-auto.lg_ml-auto.lg_mr-0.w-80p.lg_w-40p
+			#broken-picture.m-auto.md_ml-auto.md_mr-0.w-80p.md_w-40p
 				img(src="@/assets/images/intellectual-property-is-broken_touched.svg")
 
-	#something-new.mt-100.lg_mt-175.mb-150.lg_mb-300
-		.container.flex.flex-col-reverse.lg_flex-row-reverse.flex-no-wrap.lg_justify-between.lg_items-center.h-full
-			#something-new-text.lg_w-50p
-				h2.text-header.text-dark-blue-grey.font-bold.leading-tight-kinda.lg_w-60p.mb-40.mt-30.lg_mt-0
+	#something-new.mt-100.md_mt-175.mb-150.md_mb-300
+		.container.flex.flex-col-reverse.md_flex-row-reverse.flex-no-wrap.md_justify-between.md_items-center.h-full
+			#something-new-text.md_w-50p
+				h2.text-header.text-dark-blue-grey.font-bold.leading-tight-kinda.md_w-60p.mb-40.mt-30.md_mt-0
 					| We Need Something New
 
 				p.text-lead.text-blue-grey.leading-tight.mb-30
@@ -56,15 +56,15 @@
 				p.text-lead.text-blue-grey.leading-tight
 					| By adding binding promises and oversight to protect backers, communities can safely and predictably reward creators for contributing to the commons and the public good.
 
-			#something-new-picture.m-auto.lg_mr-auto.lg_ml-0.w-80p.lg_w-40p
+			#something-new-picture.m-auto.md_mr-auto.md_ml-0.w-80p.md_w-40p
 				img(src="@/assets/images/we-need-something-new_touched.svg")
 
 
 	#how-does-it-work.bg-white-two
 		.container.tight
-			h2.text-center.text-header.text-dark-blue-grey.font-heavy.mb-50.lg_mb-125 So how does Crowdsell work?
+			h2.text-center.text-header.text-dark-blue-grey.font-heavy.mb-50.md_mb-125 So how does Crowdsell work?
 
-			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-80.lg_mb-100
+			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-80.md_mb-100
 				.explain-box-text.w-60p
 					h3.text-lead.text-dark-blue-grey.mb-10
 						| The Work
@@ -75,7 +75,7 @@
 
 				img.explain-box-picture.w-30p(src="@/assets/images/completed-parchment_touched.svg")
 
-			.explain-box.flex.flex-row-reverse.flex-no-wrap.justify-between.items-center.mb-80.lg_mb-100
+			.explain-box.flex.flex-row-reverse.flex-no-wrap.justify-between.items-center.mb-80.md_mb-100
 				.explain-box-text.w-60p
 					h3.text-lead.text-dark-blue-grey.mb-10
 						| Previews and Promises
@@ -90,7 +90,7 @@
 
 				img.explain-box-picture.w-30p(src="@/assets/images/a-plaque-previewing-the-parchment_touched.svg")
 
-			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-80.lg_mb-100
+			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-80.md_mb-100
 				.explain-box-text.w-60p
 					h3.text-lead.text-dark-blue-grey.mb-10
 						| Budget and Reward
@@ -101,7 +101,7 @@
 
 				img.explain-box-picture.w-30p(src="@/assets/images/accounting-paper-with-a-tip-jar_touched.svg")
 
-			.explain-box.flex.flex-row-reverse.flex-no-wrap.justify-between.items-center.mb-80.lg_mb-100
+			.explain-box.flex.flex-row-reverse.flex-no-wrap.justify-between.items-center.mb-80.md_mb-100
 				.explain-box-text.w-60p
 					h3.text-lead.text-dark-blue-grey.mb-10
 						| The Backers Decide
@@ -112,7 +112,7 @@
 
 				img.explain-box-picture.w-30p(src="@/assets/images/the-accounting-paper-inspected-with-a-ballot-box_touched.svg")
 
-			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-100.lg_mb-200
+			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-100.md_mb-200
 				.explain-box-text.w-60p
 					h3.text-lead.text-dark-blue-grey.mb-10
 						| The Work is Set Free
