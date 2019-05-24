@@ -1,22 +1,19 @@
 <template lang="pug">
 
-#home.bg-white
-
-	//- .banner-cloud
-
-	#banner.relative.h-banner
-		.container.h-full.flex.flex-row.flex-no-wrap.justify-between.items-center
-			#banner-text.text-white.w-55p.pr-4
+#home
+	#banner.relative.lg_h-banner.pt-100.lg_pt-0
+		.container.h-full.lg_flex.lg_flex-row.lg_flex-no-wrap.lg_justify-between.lg_items-center
+			#banner-text.text-white.lg_w-55p.lg_pr-4
 				h1.text-hero.font-bold.mb-20.leading-relaxed
 					| Freeing Intellectual Property
 
 				p.text-heavy.mb-50
 					| Using crowdfunding to change the way we think about intellectual work, and how people are compensated for it.
 
-				SignUpForm.w-85p
+				SignUpForm#current-signup-form.lg_w-85p
 
-			#banner-picture.w-45p.h-60p.flex.justify-center.items-center.relative
-				img(src="@/assets/images/how-could-crowdsell-change-society_touched.svg").w-full.absolute.left-0.right-0.m-auto.z-20
+			#banner-picture.h-tile.lg_w-45p.lg_h-60p.lg_flex.lg_justify-center.lg_items-center.relative
+				img(src="@/assets/images/how-could-crowdsell-change-society_touched.svg").w-full.absolute.bottom-20p.left-0.right-0.m-auto.z-20
 				img(src="@/assets/images/scroll-big-split.svg").absolute.top-25p.left-5p.h-22p.z-20
 				img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-22p.right-5p.h-22p.z-20
 				img(src="@/assets/images/scroll-small.svg").rotate-little.absolute.top-12p.left-30p.z-20
@@ -32,10 +29,10 @@
 
 		img#banner-wave(src="@/assets/images/download.svg").absolute.bottom--1
 
-	#broken.mt-175
-		.container.flex.flex-row.flex-no-wrap.justify-between.items-center.h-full
-			#broken-text.w-50p
-				h2.text-header.text-dark-blue-grey.font-bold.leading-tight-kinda.w-60p.mb-40
+	#broken.mt-100.lg_mt-175
+		.container.flex.flex-col-reverse.lg_flex-row.flex-no-wrap.lg_justify-between.lg_items-center.h-full
+			#broken-text.lg_w-50p
+				h2.text-header.text-dark-blue-grey.font-bold.leading-tight-kinda.lg_w-60p.mb-40.mt-30.lg_mt-0
 					| Intellectual Property is Broken
 
 				p.text-lead.text-blue-grey.leading-tight.mb-30
@@ -45,13 +42,13 @@
 				p.text-lead.text-blue-grey.leading-tight
 					| Powerful platforms built on Intellectual Property have the power to create monopolies, trap us all in echo chambers, and extract wealth from society.
 
-			#broken-picture.w-40p
+			#broken-picture.m-auto.lg_ml-auto.lg_mr-0.w-80p.lg_w-40p
 				img(src="@/assets/images/intellectual-property-is-broken_touched.svg")
 
-	#something-new.mt-175.mb-300
-		.container.flex.flex-row-reverse.flex-no-wrap.justify-between.items-center.h-full
-			#something-new-text.w-50p
-				h2.text-header.text-dark-blue-grey.font-bold.leading-tight-kinda.w-60p.mb-40
+	#something-new.mt-100.lg_mt-175.mb-150.lg_mb-300
+		.container.flex.flex-col-reverse.lg_flex-row-reverse.flex-no-wrap.lg_justify-between.lg_items-center.h-full
+			#something-new-text.lg_w-50p
+				h2.text-header.text-dark-blue-grey.font-bold.leading-tight-kinda.lg_w-60p.mb-40.mt-30.lg_mt-0
 					| We Need Something New
 
 				p.text-lead.text-blue-grey.leading-tight.mb-30
@@ -59,16 +56,16 @@
 				p.text-lead.text-blue-grey.leading-tight
 					| By adding binding promises and oversight to protect backers, communities can safely and predictably reward creators for contributing to the commons and the public good.
 
-			#something-new-picture.w-40p
+			#something-new-picture.m-auto.lg_mr-auto.lg_ml-0.w-80p.lg_w-40p
 				img(src="@/assets/images/we-need-something-new_touched.svg")
 
 
 	#how-does-it-work.bg-white-two
 		.container.tight
-			h2.text-center.text-header.text-dark-blue-grey.font-heavy.mb-125 So how does Crowdsell work?
+			h2.text-center.text-header.text-dark-blue-grey.font-heavy.mb-50.lg_mb-125 So how does Crowdsell work?
 
-			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-100
-				.explain-box-text.w-50p
+			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-80.lg_mb-100
+				.explain-box-text.w-60p
 					h3.text-lead.text-dark-blue-grey.mb-10
 						| The Work
 					p.text-tiny.text-blue-grey.leading-airy.mb-15
@@ -76,10 +73,10 @@
 					p.text-tiny.text-blue-grey.leading-airy
 						| Creators can either sell finished work, or fundraise a budget for a big idea.
 
-				img.explain-box-picture.w-35p(src="@/assets/images/completed-parchment_touched.svg")
+				img.explain-box-picture.w-30p(src="@/assets/images/completed-parchment_touched.svg")
 
-			.explain-box.flex.flex-row-reverse.flex-no-wrap.justify-between.items-center.mb-100
-				.explain-box-text.w-50p
+			.explain-box.flex.flex-row-reverse.flex-no-wrap.justify-between.items-center.mb-80.lg_mb-100
+				.explain-box-text.w-60p
 					h3.text-lead.text-dark-blue-grey.mb-10
 						| Previews and Promises
 					p.text-tiny.text-blue-grey.leading-airy.mb-15
@@ -91,10 +88,10 @@
 					p.text-tiny.text-blue-grey.leading-airy
 						| Then they make a detailed list of promises about the work that the backers will expect it to live up to.
 
-				img.explain-box-picture.w-35p(src="@/assets/images/a-plaque-previewing-the-parchment_touched.svg")
+				img.explain-box-picture.w-30p(src="@/assets/images/a-plaque-previewing-the-parchment_touched.svg")
 
-			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-100
-				.explain-box-text.w-50p
+			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-80.lg_mb-100
+				.explain-box-text.w-60p
 					h3.text-lead.text-dark-blue-grey.mb-10
 						| Budget and Reward
 					p.text-tiny.text-blue-grey.leading-airy.mb-15
@@ -102,10 +99,10 @@
 					p.text-tiny.text-blue-grey.leading-airy
 						| Anyone in the world can contribute to fundraise the total.
 
-				img.explain-box-picture.w-35p(src="@/assets/images/accounting-paper-with-a-tip-jar_touched.svg")
+				img.explain-box-picture.w-30p(src="@/assets/images/accounting-paper-with-a-tip-jar_touched.svg")
 
-			.explain-box.flex.flex-row-reverse.flex-no-wrap.justify-between.items-center.mb-100
-				.explain-box-text.w-50p
+			.explain-box.flex.flex-row-reverse.flex-no-wrap.justify-between.items-center.mb-80.lg_mb-100
+				.explain-box-text.w-60p
 					h3.text-lead.text-dark-blue-grey.mb-10
 						| The Backers Decide
 					p.text-tiny.text-blue-grey.leading-airy.mb-15
@@ -113,10 +110,10 @@
 					p.text-tiny.text-blue-grey.leading-airy
 						| Once the backers decide that the work fulfills the original promises, then the creator is given the reward amount.
 
-				img.explain-box-picture.w-35p(src="@/assets/images/the-accounting-paper-inspected-with-a-ballot-box_touched.svg")
+				img.explain-box-picture.w-30p(src="@/assets/images/the-accounting-paper-inspected-with-a-ballot-box_touched.svg")
 
-			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-200
-				.explain-box-text.w-50p
+			.explain-box.flex.flex-row.flex-no-wrap.justify-between.items-center.mb-100.lg_mb-200
+				.explain-box-text.w-60p
 					h3.text-lead.text-dark-blue-grey.mb-10
 						| The Work is Set Free
 					p.text-tiny.text-blue-grey.leading-airy.mb-15
@@ -124,10 +121,10 @@
 					p.text-tiny.text-blue-grey.leading-airy
 						| It belongs to everyone now.
 
-				img.explain-box-picture.w-35p(src="@/assets/images/the-parchment-flies-away_touched.svg")
+				img.explain-box-picture.w-30p(src="@/assets/images/the-parchment-flies-away_touched.svg")
 
 
-	#join-us.bg-dark-blue-grey
+	#join-us.bg-dark-blue-grey.relative
 		.container.really-tight.text-white.pt-90.pb-100
 			h2.text-center.text-header.font-heavy.mb-30
 				| Join Us
@@ -140,6 +137,14 @@
 
 			//- SignUpForm(:center, submitText="Submit", assuranceColor="bluey-grey")
 			SignUpForm(assuranceColor="bluey-grey")
+
+		img(src="@/assets/images/cloud.svg").cloud.faded.z-10.absolute.top-22p.right-30p.h-8p
+		img(src="@/assets/images/cloud.svg").cloud.faded.z-10.absolute.top-24p.left-25p.h-6p
+		//- img(src="@/assets/images/cloud.svg").cloud.faded.z-10.absolute.top-40p.left-6p.h-8p
+		img(src="@/assets/images/cloud.svg").cloud.faded.z-10.absolute.bottom-12p.left-6p.h-8p
+		//- img(src="@/assets/images/cloud.svg").cloud.faded.z-10.absolute.top-20p.right-20p.h-8p
+		img(src="@/assets/images/cloud.svg").cloud.faded.z-10.absolute.bottom-8p.right-30p.h-6p
+		img(src="@/assets/images/cloud.svg").cloud.faded.z-10.absolute.bottom-25p.right-12p.h-8p
 
 
 	#faq.bg-pale-grey-two.pt-100.pb-100
@@ -214,10 +219,12 @@
 
 	.faq-link
 		@apply bg-white rounded-more px-38 py-30 mb-20 text-dark-blue-grey cursor-pointer
-		@apply flex flex-row flex-no-wrap justify-between items-center
+		@apply flex flex-row flex-no-wrap items-center
 		span
 			@apply text-base font-bold leading-none
+			@apply w-80p
 		.arrow
+			@apply ml-auto w-10p
 			@apply text-bright-blue
 
 		&:hover
@@ -225,9 +232,9 @@
 			.arrow
 				@apply text-violet-blue
 
-	// #join-us
-	// 	background-image:
-	// 		linear-gradient(color(theme('colors.navy-blue') alpha(90%)), color(theme('colors.navy-blue') alpha(90%))),
-	// 		url('../assets/images/5c2e1a72715e560022a8f031_optimized_1232.jpg')
+	#join-us
+		background-image:
+			url('../assets/images/ornament.svg'),
+			linear-gradient(153deg, theme('colors.navy-blue'), theme('colors.dark-blue-grey'))
 
 </style>

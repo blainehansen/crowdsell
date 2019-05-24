@@ -56,6 +56,7 @@ export default {
 	},
 
 	plugins: ['@/plugins/main.js'],
+	// modules: ['vue-scrollto/nuxt'],
 
 	css: [
 		'@/assets/css/main.sss',

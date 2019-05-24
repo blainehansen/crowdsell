@@ -6,12 +6,16 @@
 			#banner-text.feature-text
 				h1 How Does Crowdsell Work Exactly?
 
+				p Crowdsell is mostly like other crowdfunding systems, but with some added guarantees.
+
+				p To make crowdfunding powerful enough to change things, first we had to improve crowdfunding itself.
+
 			#banner-picture.w-45p.h-60p.flex.justify-center.items-center.relative
-				img(src="@/assets/images/how-does-crowdsell-work_touched.svg").w-55p.absolute.mx-auto.bottom-15p.z-20
-				img(src="@/assets/images/scroll-big-split.svg").absolute.bottom-25p.left-10p.h-22p.z-20
-				img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-18p.right-8p.h-22p.z-20
-				img(src="@/assets/images/scroll-small.svg").rotate-little.absolute.top-15p.left-15p.z-20.h-12p
-				img(src="@/assets/images/scroll-small.svg").rotate-more.absolute.top-10p.right-40p.h-10p.z-20
+				img(src="@/assets/images/how-does-crowdsell-work_touched.svg").w-60p.absolute.mx-auto.bottom-5p.z-20
+				//- img(src="@/assets/images/scroll-big-split.svg").absolute.bottom-25p.left-10p.h-22p.z-20
+				//- img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-18p.right-8p.h-22p.z-20
+				//- img(src="@/assets/images/scroll-small.svg").rotate-little.absolute.top-15p.left-15p.z-20.h-12p
+				//- img(src="@/assets/images/scroll-small.svg").rotate-more.absolute.top-10p.right-40p.h-10p.z-20
 
 				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-5p.right-5p.h-8p
 				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-15p.left-0.h-6p

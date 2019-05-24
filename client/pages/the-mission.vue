@@ -6,12 +6,14 @@
 			#banner-text.feature-text
 				h1 How Could Crowdsell Change Society?
 
+				p By giving communities a system to incentivize people to contribute to their shared good, we can finally wrestle power away from corporations.
+
 			#banner-picture.w-45p.h-60p.flex.justify-center.items-center.relative
-				img(src="@/assets/images/how-could-crowdsell-change-society_touched.svg").w-55p.absolute.mx-auto.bottom-15p.z-20
-				img(src="@/assets/images/scroll-big-split.svg").absolute.bottom-25p.left-10p.h-22p.z-20
-				img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-18p.right-8p.h-22p.z-20
-				img(src="@/assets/images/scroll-small.svg").rotate-little.absolute.top-15p.left-15p.z-20.h-12p
-				img(src="@/assets/images/scroll-small.svg").rotate-more.absolute.top-10p.right-40p.h-10p.z-20
+				img(src="@/assets/images/how-could-crowdsell-change-society_touched.svg").w-full.absolute.mx-auto.bottom-15p.z-20
+				//- img(src="@/assets/images/scroll-big-split.svg").absolute.bottom-25p.left-10p.h-22p.z-20
+				//- img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-18p.right-8p.h-22p.z-20
+				//- img(src="@/assets/images/scroll-small.svg").rotate-little.absolute.top-15p.left-15p.z-20.h-12p
+				//- img(src="@/assets/images/scroll-small.svg").rotate-more.absolute.top-10p.right-40p.h-10p.z-20
 
 				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-5p.right-5p.h-8p
 				img(src="@/assets/images/cloud.svg").cloud.z-10.absolute.top-15p.left-0.h-6p

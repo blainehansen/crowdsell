@@ -57,6 +57,8 @@
 
 .cloud
 	opacity: 0.2
+	&.faded
+		opacity: 0.1
 	// background-image: linear-gradient(75deg, theme('colors.blue-blue'), theme('colors.azure'))
 // .cloud-gradient-stop-1
 // 	stop-color: theme('colors.blue-blue')
@@ -124,6 +126,29 @@ a
 
 		@apply mb-30
 
+	.content-banner
+		@apply bg-pale-grey-two px-80 py-50 mb-30
+		h3, p
+			@apply text-dark-blue-grey
+
+		&.azure, &.blue, &.red
+			h3, p
+				@apply text-white
+
+		&.azure
+			@apply bg-azure
+
+		&.blue
+			@apply bg-blue-blue
+
+		&.red
+			@apply bg-pastel-red
+
+		h3
+			@apply text-header font-bold leading-tight-kinda
+		p
+			@apply text-lead
+
 .feature-banner
 	@apply h-tile bg-blue-blue
 
@@ -146,16 +171,48 @@ a
 				&:last-child
 					@apply mb-0
 
+.essay-banner
+	@apply h-essay-tile bg-navy-blue
+
+	background-image: url('../images/ornament.svg')
+	background-repeat: no-repeat
+	// background-position: 0% 50%
+	background-size: cover
+
+	.essay-container
+		@apply h-full flex flex-row flex-no-wrap justify-between items-center text-white
+
+		.essay-text
+			@apply text-white
+
+			h1
+				@apply text-hero font-bold mb-20 leading-relaxed
+
+			p
+				@apply text-heavy mb-20
+				&:last-child
+					@apply mb-0
 
 .container
-	&.tight
-		@apply px-225
-
-	&.really-tight
-		@apply px-275
+	@apply px-30
+	@screen lg
+		@apply px-0
 
 	&.medium
-		@apply px-175
+		@apply px-40
+		@screen lg
+			@apply px-175
+
+	&.tight
+		@apply px-50
+		@screen lg
+			@apply px-225
+
+	&.really-tight
+		@apply px-60
+		@screen lg
+			@apply px-275
+
 
 
 // .text-blue-grey

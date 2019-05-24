@@ -183,6 +183,7 @@ module.exports = {
 			...theme('spacing'),
 			...percentages,
 			full: '100%',
+			'essay-tile': '65vh',
 			tile: '80vh',
 			banner: '110vh',
 			'banner-bottom': '10vh',

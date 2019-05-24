@@ -11,7 +11,7 @@
 			:class="{ 'is-invalid': emailInvalid }",
 		)
 		button(@click="submitEmail").rounded-normal.bg-bright-blue.text-white.font-bold.join-button.leading-none.py-20.px-42.ml-auto
-			| Join the Mission
+			| Join us
 
 	#email-assurance.mt-20.text-pastel-red.text-tiny(v-if="emailInvalid") Email Invalid!
 	//- .text-white not necessary, just letting the default of the container take over?

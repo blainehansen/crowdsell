@@ -12,3 +12,11 @@
 	SignUpForm
 
 </template>
+
+<script>
+
+export default {
+	layout: 'mailing-list',
+}
+
+</script>
