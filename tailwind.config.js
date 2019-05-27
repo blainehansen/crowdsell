@@ -46,6 +46,7 @@ module.exports = {
 			'sky-blue': '#6b9cff',
 			cornflower: '#6a75ff',
 			steel: '#848e9e',
+			silver: '#d3d8df',
 
 			'reddish-grey': '#e9e3ff',
 
@@ -165,7 +166,6 @@ module.exports = {
 			header: rem(40),
 			'tricky-logo': rem(31),
 			'tricky-big-logo': rem(49),
-			'very-heavy': rem(30),
 			heavy: rem(30),
 			lead: rem(25),
 			base: rem(20),

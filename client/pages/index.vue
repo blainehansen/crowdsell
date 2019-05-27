@@ -136,7 +136,7 @@
 				| Join the mailing list to hear from us and become a part of this new movement.
 
 			//- SignUpForm(:center, submitText="Submit", assuranceColor="bluey-grey")
-			SignUpForm(assuranceColor="bluey-grey")
+			SignUpForm(assuranceClass="text-bluey-grey")
 
 		img(src="@/assets/images/cloud.svg").cloud.faded.z-10.absolute.top-22p.right-30p.h-8p
 		img(src="@/assets/images/cloud.svg").cloud.faded.z-10.absolute.top-24p.left-25p.h-6p

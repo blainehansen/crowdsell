@@ -55,6 +55,9 @@
 	&-more
 		transform: rotate(-20deg)
 
+.dots
+	opacity: 0.4
+
 .cloud
 	opacity: 0.2
 	&.faded
@@ -73,6 +76,7 @@
 	bottom: -1px
 
 html
+	margin: 0
 	font-family: 'avenir'
 	font-weight: 500
 	line-height: 1.4
@@ -86,7 +90,6 @@ html
 		font-size: 20px
 
 	@apply text-blue-grey
-
 
 
 a
@@ -236,22 +239,21 @@ a
 
 .container
 	@apply px-30
-	@screen lg
-		@apply px-0
-
 	&.medium
 		@apply px-40
-		@screen lg
-			@apply px-175
-
 	&.tight
 		@apply px-50
-		@screen lg
-			@apply px-225
-
 	&.really-tight
 		@apply px-60
-		@screen lg
+
+@screen lg
+	.container
+		@apply px-0
+		&.medium
+			@apply px-175
+		&.tight
+			@apply px-225
+		&.really-tight
 			@apply px-275
 
 

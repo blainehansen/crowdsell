@@ -8,8 +8,8 @@
 
 				p By giving communities a system to incentivize people to contribute to their shared good, we can finally wrestle power away from corporations.
 
-			#banner-picture.feature-picture
-				img(src="@/assets/images/how-could-crowdsell-change-society_touched.svg").w-full.absolute.mx-auto.bottom-15p.z-20
+			#banner-picture.feature-picture.flex
+				img(src="@/assets/images/how-could-crowdsell-change-society_touched.svg").w-full.mx-auto.z-20
 				//- img(src="@/assets/images/scroll-big-split.svg").absolute.bottom-25p.left-10p.h-22p.z-20
 				//- img(src="@/assets/images/scroll-big-together.svg").mirror.absolute.top-18p.right-8p.h-22p.z-20
 				//- img(src="@/assets/images/scroll-small.svg").rotate-little.absolute.top-15p.left-15p.z-20.h-12p

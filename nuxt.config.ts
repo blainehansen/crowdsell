@@ -3,6 +3,24 @@ import pkg from './package.json'
 import NuxtConfiguration from '@nuxt/config'
 import path from 'path'
 
+const purgecss = require('@fullhuman/postcss-purgecss')({
+
+	// Specify the paths to all of the template files in your project
+	content: [
+		'./client/**/*.vue',
+		'./client/**/*.js',
+		'./client/**/*.sss',
+		'./.nuxt/**/*.vue',
+		'./.nuxt/**/*.html',
+		'./.nuxt/**/*.js',
+	],
+
+	// Include any special characters you're using in this regular expression
+	defaultExtractor: (content: any) => content.match(/[A-Za-z0-9-_]+/g) || []
+})
+
+
+
 const plugins = [
 	// require('precss'),
 	require('postcss-advanced-variables')({
@@ -27,6 +45,12 @@ const plugins = [
 	require('tailwindcss'),
 	require('postcss-color-function'),
 	require('autoprefixer'),
+
+	purgecss,
+
+	// ...process.env.NODE_ENV === 'production'
+	// 	? [purgecss]
+	// 	: [],
 ]
 
 export default {
