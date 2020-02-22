@@ -1,6 +1,6 @@
-import pkg from './package.json'
+import pkg from '../package.json'
 
-import NuxtConfiguration from '@nuxt/config'
+import { Configuration as NuxtConfiguration } from '@nuxt/types'
 import path from 'path'
 
 const purgecss = require('@fullhuman/postcss-purgecss')({
@@ -42,7 +42,7 @@ const plugins = [
 			separator: '',
 		}
 	}),
-	require('tailwindcss'),
+	require('tailwindcss')('./client/tailwind.config.js'),
 	require('postcss-color-function'),
 	require('autoprefixer'),
 
@@ -54,6 +54,7 @@ const plugins = [
 ]
 
 export default {
+	buildModules: ['@nuxt/typescript-build'],
 	mode: 'spa',
 
 	server: {
@@ -98,7 +99,7 @@ export default {
 				options: {
 					sourceMap: true,
 					importLoaders: 2,
-					exportOnlyLocals: false
+					onlyLocals: false
 				}
 			}
 			const postcss = {

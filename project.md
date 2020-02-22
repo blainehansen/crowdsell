@@ -1,3 +1,5 @@
+http://blog.felixbreuer.net/2013/07/06/fund-io-as-a-business-model-for-websites-web-services-and-software-development.html
+
 Hello!
 
 I'm working on a small fixed price project, and this piece of your work stood out to me:
