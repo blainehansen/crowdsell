@@ -1,3 +1,36 @@
+# Different ways to fund open source, and the public goods problem in general.
+
+- Basic crowdfunding
+	- It's especially helpful to offer rivalrous/excludable goods as the actual items for sale
+	- To a degree, interest/altruism can make things happen.
+
+- Tricky, "buyer imperative" crowdfunding
+	-
+
+- Average cost threshold protocol, with refund staging.
+	- For situations where there's some justifiable non-rivalrous exclusion inherent to the thing (a network that requires maintenance/gate-keeping/moderation, physical goods).
+
+- Quadratic funding/"democratic allocation" funding from some kind of community pot. Can come in many forms:
+	- groups of companies who get some kind of status/visibility/sponsor role or voting rights.
+	- taxation
+	- these ACTP funded communities
+
+- Any effective kind of minimum basic income.
+	It seems obvious that:
+	- a substantial number of people exist with an intrinsic motivation to work on public good/positive externality problems
+	- the only thing that prevents those people from working on these projects is the need to live a reasonably comfortable life. If that need were addressed, these people would work on these projects.
+
+	Some kind of minimum basic income would essentially "unlock" the other kinds of benefits possible from doing socially beneficial work (increased social status, visility/notability and a positive reputation, benefitting directly from the project)
+
+
+If crowdfunding and open source are both a thing, why haven't they changed the world yet?
+
+
+
+
+https://github.com/nayafia/microgrants
+https://apply.opentech.fund/
+https://www.fordfoundation.org/media/2976/roads-and-bridges-the-unseen-labor-behind-our-digital-infrastructure.pdf
 http://blog.felixbreuer.net/2013/07/06/fund-io-as-a-business-model-for-websites-web-services-and-software-development.html
 
 Hello!
