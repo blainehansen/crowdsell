@@ -1,16 +1,26 @@
 <template lang="pug">
 
-h1 Hello world!
+#home
+	h1 Hello world!
+	div
+		button(@click="incr") yoyo
+	div {{ counter }}
+
 
 </template>
 
 <script lang="ts">
 
-import { createComponent } from '@marketdial/composition-api'
+import { createComponent, ref } from '@marketdial/composition-api'
 
 export default createComponent({
 	setup() {
-		return {}
+		const counter = ref(0)
+		function incr() {
+			counter.value++
+		}
+
+		return { counter, incr }
 	},
 })
 

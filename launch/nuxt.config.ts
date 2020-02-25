@@ -55,6 +55,7 @@ const plugins = [
 
 export default {
 	buildModules: ['@nuxt/typescript-build'],
+	plugins: ['@/plugins/composition-api'],
 	mode: 'spa',
 
 	server: {
@@ -65,6 +66,13 @@ export default {
 		linkActiveClass: 'active',
 		linkExactActiveClass: 'active-exact',
 	},
+
+	// generate: {
+	// 	// https://nuxtjs.org/api/configuration-generate/#routes
+	// 	async routes() {
+	// 		//
+	// 	},
+	// },
 
 	head: {
 		title: pkg.name,
@@ -78,7 +86,6 @@ export default {
 		]
 	},
 
-	// plugins: ['@/plugins/main.js'],
 	// modules: ['vue-scrollto/nuxt'],
 
 	// css: [
