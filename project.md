@@ -28,6 +28,11 @@ If crowdfunding and open source are both a thing, why haven't they changed the w
 
 
 
+https://wiki.snowdrift.coop/market-research/history/software#ransom-systems
+https://wiki.snowdrift.coop/market-research/other-crowdfunding
+https://github.com/nayafia/lemonade-stand
+https://nadiaeghbal.com/research/
+
 https://github.com/nayafia/microgrants
 https://apply.opentech.fund/
 https://www.fordfoundation.org/media/2976/roads-and-bridges-the-unseen-labor-behind-our-digital-infrastructure.pdf
